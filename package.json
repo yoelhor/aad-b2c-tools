@@ -1,0 +1,97 @@
+{
+    "name": "aadb2c",
+    "displayName": "Azure AD B2C (Beta)",
+    "description": "Azure AD B2C custom policy extension",
+    "version": "1.1.0",
+    "publisher": "AzureADB2CTools",
+    "engines": {
+        "vscode": "^1.22.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "icon": "images/icon128.png",
+    "galleryBanner": {
+        "color": "#C80000",
+        "theme": "dark"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/yoelhor/aadb2ctools.git"
+    },
+    "activationEvents": [
+        "*",
+        "onCommand:extension.insertTechnicalProfileIdp",
+        "onCommand:extension.insertTechnicalProfileRESTAPI",
+        "onCommand:extension.insertClaimType"
+    ],
+    "main": "./out/extension",
+    "contributes": {
+        "commands": [
+            {
+                "command": "extension.insertTechnicalProfileIdp",
+                "title": "Add B2C Identity provider technical profile"
+            },
+            {
+                "command": "extension.insertTechnicalProfileRESTAPI",
+                "title": "Add B2C REST API technical profile"
+            },
+            {
+                "command": "extension.insertClaimType",
+                "title": "Add B2C Claim Type"
+            }
+        ],
+        "keybindings": [
+            {
+                "command": "extension.insertTechnicalProfileIdp",
+                "key": "shift+ctrl+1",
+                "mac": "shift+cmd+1",
+                "when": "editorTextFocus"
+            },
+            {
+                "command": "extension.insertTechnicalProfileRESTAPI",
+                "key": "shift+ctrl+2",
+                "mac": "shift+cmd+2",
+                "when": "editorTextFocus"
+            },
+            {
+                "command": "extension.insertClaimType",
+                "key": "shift+ctrl+3",
+                "mac": "shift+cmd+3",
+                "when": "editorTextFocus"
+            }
+        ],
+        "snippets": [
+            {
+                "language": "xml",
+                "path": "./snippets/snippets.json"
+            }
+        ],
+        "views": {
+            "explorer": [
+                {
+                    "id": "CustomPolicyExplorer",
+                    "name": "Custom Policy Explorer",
+                    "when": "CustomPolicyExplorerEnabled"
+                }
+            ]
+        }
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "test": "npm run compile && node ./node_modules/vscode/bin/test"
+    },
+    "devDependencies": {
+        "typescript": "^2.6.1",
+        "vscode": "^1.1.6",
+        "@types/node": "^7.0.43",
+        "@types/mocha": "^2.2.42",
+        "xmldom": "^0.1.27"
+    },
+    "dependencies": {
+        "xmldom": "^0.1.27"
+    }
+}
