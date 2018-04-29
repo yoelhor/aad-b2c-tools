@@ -13,4 +13,4 @@ The Azure AD B2C extension for VS Code lets you quickly navigate through Azure A
 ![Adding XML elements](images/commands.png)
 
 ## Disclaimer
-The extension is open-source code, publish in GitHub. The extension is not part of Azure AD B2C product and it's not supported under any Microsoft standard support program or service. The extension is provided AS IS without warranty of any kind. 
+The extension is open-source code, published in GitHub. The extension is not part of Azure AD B2C product and it's not supported under any Microsoft standard support program or service. The extension is provided AS IS without warranty of any kind. 
