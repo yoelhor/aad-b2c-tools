@@ -221,86 +221,86 @@ export default class Consts {
         '\t      </TechnicalProfiles>\r\n' +
         '\t    </ClaimsProvider>\r\n';
 
-    static TP_IDP_LinkeIn: string = '\t<ClaimsProvider>' +
-        '\t  <Domain>linkedin.com</Domain>' +
-        '\t  <DisplayName>LinkedIn</DisplayName>' +
-        '\t  <TechnicalProfiles>' +
-        '\t    <TechnicalProfile Id="LinkedIn-OAUTH">' +
-        '\t      <DisplayName>LinkedIn</DisplayName>' +
-        '\t      <Protocol Name="OAuth2" />' +
-        '\t      <Metadata>' +
-        '\t        <Item Key="ProviderName">linkedin</Item>' +
-        '\t        <Item Key="authorization_endpoint">https://www.linkedin.com/oauth/v2/authorization</Item>' +
-        '\t        <Item Key="AccessTokenEndpoint">https://www.linkedin.com/oauth/v2/accessToken</Item>' +
-        '\t        <Item Key="ClaimsEndpoint">https://api.linkedin.com/v1/people/~:(id,first-name,last-name,email-address,headline)</Item>' +
-        '\t        <Item Key="ClaimsEndpointAccessTokenName">oauth2_access_token</Item>' +
-        '\t        <Item Key="ClaimsEndpointFormatName">format</Item>' +
-        '\t        <Item Key="ClaimsEndpointFormat">json</Item>' +
-        '\t        <Item Key="scope">r_emailaddress r_basicprofile</Item>' +
-        '\t        <Item Key="HttpBinding">POST</Item>' +
-        '\t        <Item Key="UsePolicyInRedirectUri">0</Item>' +
-        '\t        <Item Key="client_id">Your LinkedIn application client ID</Item>' +
-        '\t      </Metadata>' +
-        '\t      <CryptographicKeys>' +
-        '\t        <Key Id="client_secret" StorageReferenceId="B2C_1A_LinkedInSecret" />' +
-        '\t      </CryptographicKeys>' +
-        '\t      <OutputClaims>' +
-        '\t        <OutputClaim ClaimTypeReferenceId="socialIdpUserId" PartnerClaimType="id" />' +
-        '\t        <OutputClaim ClaimTypeReferenceId="givenName" PartnerClaimType="firstName" />' +
-        '\t        <OutputClaim ClaimTypeReferenceId="surname" PartnerClaimType="lastName" />' +
-        '\t        <OutputClaim ClaimTypeReferenceId="email" PartnerClaimType="emailAddress" />' +
-        '\t        <!--<OutputClaim ClaimTypeReferenceId="jobTitle" PartnerClaimType="headline" />-->' +
-        '\t        <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="linkedin.com" />' +
-        '\t        <OutputClaim ClaimTypeReferenceId="authenticationSource" DefaultValue="socialIdpAuthentication" />' +
-        '\t      </OutputClaims>' +
-        '\t      <OutputClaimsTransformations>' +
-        '\t        <OutputClaimsTransformation ReferenceId="CreateRandomUPNUserName" />' +
-        '\t        <OutputClaimsTransformation ReferenceId="CreateUserPrincipalName" />' +
-        '\t        <OutputClaimsTransformation ReferenceId="CreateAlternativeSecurityId" />' +
-        '\t        <OutputClaimsTransformation ReferenceId="CreateSubjectClaimFromAlternativeSecurityId" />' +
-        '\t      </OutputClaimsTransformations>' +
-        '\t      <UseTechnicalProfileForSessionManagement ReferenceId="SM-SocialLogin" />' +
-        '\t    </TechnicalProfile>' +
-        '\t  </TechnicalProfiles>' +
-        '\t</ClaimsProvider>';
+    static TP_IDP_LinkeIn: string = '\t<ClaimsProvider>\r\n' +
+        '\t  <Domain>linkedin.com</Domain>\r\n' +
+        '\t  <DisplayName>LinkedIn</DisplayName>\r\n' +
+        '\t  <TechnicalProfiles>\r\n' +
+        '\t    <TechnicalProfile Id="LinkedIn-OAUTH">\r\n' +
+        '\t      <DisplayName>LinkedIn</DisplayName>\r\n' +
+        '\t      <Protocol Name="OAuth2" />\r\n' +
+        '\t      <Metadata>\r\n' +
+        '\t        <Item Key="ProviderName">linkedin</Item>\r\n' +
+        '\t        <Item Key="authorization_endpoint">https://www.linkedin.com/oauth/v2/authorization</Item>\r\n' +
+        '\t        <Item Key="AccessTokenEndpoint">https://www.linkedin.com/oauth/v2/accessToken</Item>\r\n' +
+        '\t        <Item Key="ClaimsEndpoint">https://api.linkedin.com/v1/people/~:(id,first-name,last-name,email-address,headline)</Item>\r\n' +
+        '\t        <Item Key="ClaimsEndpointAccessTokenName">oauth2_access_token</Item>\r\n' +
+        '\t        <Item Key="ClaimsEndpointFormatName">format</Item>\r\n' +
+        '\t        <Item Key="ClaimsEndpointFormat">json</Item>\r\n' +
+        '\t        <Item Key="scope">r_emailaddress r_basicprofile</Item>\r\n' +
+        '\t        <Item Key="HttpBinding">POST</Item>\r\n' +
+        '\t        <Item Key="UsePolicyInRedirectUri">0</Item>\r\n' +
+        '\t        <Item Key="client_id">Your LinkedIn application client ID</Item>\r\n' +
+        '\t      </Metadata>\r\n' +
+        '\t      <CryptographicKeys>\r\n' +
+        '\t        <Key Id="client_secret" StorageReferenceId="B2C_1A_LinkedInSecret" />\r\n' +
+        '\t      </CryptographicKeys>\r\n' +
+        '\t      <OutputClaims>\r\n' +
+        '\t        <OutputClaim ClaimTypeReferenceId="socialIdpUserId" PartnerClaimType="id" />\r\n' +
+        '\t        <OutputClaim ClaimTypeReferenceId="givenName" PartnerClaimType="firstName" />\r\n' +
+        '\t        <OutputClaim ClaimTypeReferenceId="surname" PartnerClaimType="lastName" />\r\n' +
+        '\t        <OutputClaim ClaimTypeReferenceId="email" PartnerClaimType="emailAddress" />\r\n' +
+        '\t        <!--<OutputClaim ClaimTypeReferenceId="jobTitle" PartnerClaimType="headline" />-->\r\n' +
+        '\t        <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="linkedin.com" />\r\n' +
+        '\t        <OutputClaim ClaimTypeReferenceId="authenticationSource" DefaultValue="socialIdpAuthentication" />\r\n' +
+        '\t      </OutputClaims>\r\n' +
+        '\t      <OutputClaimsTransformations>\r\n' +
+        '\t        <OutputClaimsTransformation ReferenceId="CreateRandomUPNUserName" />\r\n' +
+        '\t        <OutputClaimsTransformation ReferenceId="CreateUserPrincipalName" />\r\n' +
+        '\t        <OutputClaimsTransformation ReferenceId="CreateAlternativeSecurityId" />\r\n' +
+        '\t        <OutputClaimsTransformation ReferenceId="CreateSubjectClaimFromAlternativeSecurityId" />\r\n' +
+        '\t      </OutputClaimsTransformations>\r\n' +
+        '\t      <UseTechnicalProfileForSessionManagement ReferenceId="SM-SocialLogin" />\r\n' +
+        '\t    </TechnicalProfile>\r\n' +
+        '\t  </TechnicalProfiles>\r\n' +
+        '\t</ClaimsProvider>\r\n';
 
-    static TP_IDP_Twitter: string = '\t<ClaimsProvider>' +
-        '\t    <Domain>twitter.com</Domain>' +
-        '\t    <DisplayName>Twitter</DisplayName>' +
-        '\t    <TechnicalProfiles>' +
-        '\t    <TechnicalProfile Id="Twitter-OAUTH1">' +
-        '\t        <DisplayName>Twitter</DisplayName>' +
-        '\t        <Protocol Name="OAuth1" />' +
-        '\t        <Metadata>' +
-        '\t        <Item Key="ProviderName">Twitter</Item>' +
-        '\t        <Item Key="authorization_endpoint">https://api.twitter.com/oauth/authenticate</Item>' +
-        '\t        <Item Key="access_token_endpoint">https://api.twitter.com/oauth/access_token</Item>' +
-        '\t        <Item Key="request_token_endpoint">https://api.twitter.com/oauth/request_token</Item>' +
-        '\t        <Item Key="ClaimsEndpoint">https://api.twitter.com/1.1/account/verify_credentials.json?include_email=true</Item>' +
-        '\t        <Item Key="ClaimsResponseFormat">json</Item>' +
-        '\t        <Item Key="client_id">Your Twitter application consumer key</Item>' +
-        '\t        </Metadata>' +
-        '\t        <CryptographicKeys>' +
-        '\t        <Key Id="client_secret" StorageReferenceId="B2C_1A_TwitterSecret" />' +
-        '\t        </CryptographicKeys>' +
-        '\t        <InputClaims />' +
-        '\t        <OutputClaims>' +
-        '\t        <OutputClaim ClaimTypeReferenceId="socialIdpUserId" PartnerClaimType="user_id" />' +
-        '\t        <OutputClaim ClaimTypeReferenceId="displayName" PartnerClaimType="screen_name" />' +
-        '\t        <OutputClaim ClaimTypeReferenceId="email" />' +
-        '\t        <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="twitter.com" />' +
-        '\t        <OutputClaim ClaimTypeReferenceId="authenticationSource" DefaultValue="socialIdpAuthentication" />' +
-        '\t        </OutputClaims>' +
-        '\t        <OutputClaimsTransformations>' +
-        '\t        <OutputClaimsTransformation ReferenceId="CreateRandomUPNUserName" />' +
-        '\t        <OutputClaimsTransformation ReferenceId="CreateUserPrincipalName" />' +
-        '\t        <OutputClaimsTransformation ReferenceId="CreateAlternativeSecurityId" />' +
-        '\t        <OutputClaimsTransformation ReferenceId="CreateSubjectClaimFromAlternativeSecurityId" />' +
-        '\t        </OutputClaimsTransformations>' +
-        '\t        <UseTechnicalProfileForSessionManagement ReferenceId="SM-SocialLogin" />' +
-        '\t    </TechnicalProfile>' +
-        '\t    </TechnicalProfiles>' +
-        '\t</ClaimsProvider>';
+    static TP_IDP_Twitter: string = '\t<ClaimsProvider>\r\n' +
+        '\t    <Domain>twitter.com</Domain>\r\n' +
+        '\t    <DisplayName>Twitter</DisplayName>\r\n' +
+        '\t    <TechnicalProfiles>\r\n' +
+        '\t    <TechnicalProfile Id="Twitter-OAUTH1">\r\n' +
+        '\t        <DisplayName>Twitter</DisplayName>\r\n' +
+        '\t        <Protocol Name="OAuth1" />\r\n' +
+        '\t        <Metadata>\r\n' +
+        '\t        <Item Key="ProviderName">Twitter</Item>\r\n' +
+        '\t        <Item Key="authorization_endpoint">https://api.twitter.com/oauth/authenticate</Item>\r\n' +
+        '\t        <Item Key="access_token_endpoint">https://api.twitter.com/oauth/access_token</Item>\r\n' +
+        '\t        <Item Key="request_token_endpoint">https://api.twitter.com/oauth/request_token</Item>\r\n' +
+        '\t        <Item Key="ClaimsEndpoint">https://api.twitter.com/1.1/account/verify_credentials.json?include_email=true</Item>\r\n' +
+        '\t        <Item Key="ClaimsResponseFormat">json</Item>\r\n' +
+        '\t        <Item Key="client_id">Your Twitter application consumer key</Item>\r\n' +
+        '\t        </Metadata>\r\n' +
+        '\t        <CryptographicKeys>\r\n' +
+        '\t        <Key Id="client_secret" StorageReferenceId="B2C_1A_TwitterSecret" />\r\n' +
+        '\t        </CryptographicKeys>\r\n' +
+        '\t        <InputClaims />\r\n' +
+        '\t        <OutputClaims>\r\n' +
+        '\t        <OutputClaim ClaimTypeReferenceId="socialIdpUserId" PartnerClaimType="user_id" />\r\n' +
+        '\t        <OutputClaim ClaimTypeReferenceId="displayName" PartnerClaimType="screen_name" />\r\n' +
+        '\t        <OutputClaim ClaimTypeReferenceId="email" />\r\n' +
+        '\t        <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="twitter.com" />\r\n' +
+        '\t        <OutputClaim ClaimTypeReferenceId="authenticationSource" DefaultValue="socialIdpAuthentication" />\r\n' +
+        '\t        </OutputClaims>\r\n' +
+        '\t        <OutputClaimsTransformations>\r\n' +
+        '\t        <OutputClaimsTransformation ReferenceId="CreateRandomUPNUserName" />\r\n' +
+        '\t        <OutputClaimsTransformation ReferenceId="CreateUserPrincipalName" />\r\n' +
+        '\t        <OutputClaimsTransformation ReferenceId="CreateAlternativeSecurityId" />\r\n' +
+        '\t        <OutputClaimsTransformation ReferenceId="CreateSubjectClaimFromAlternativeSecurityId" />\r\n' +
+        '\t        </OutputClaimsTransformations>\r\n' +
+        '\t        <UseTechnicalProfileForSessionManagement ReferenceId="SM-SocialLogin" />\r\n' +
+        '\t    </TechnicalProfile>\r\n' +
+        '\t    </TechnicalProfiles>\r\n' +
+        '\t</ClaimsProvider>\r\n';
 
     static TP_IDP_ADFS: string = '\t<ClaimsProvider>\r\n' +
         '\t    <Domain>contoso.com</Domain>\r\n' +
@@ -444,7 +444,7 @@ export default class Consts {
         '\t    </TechnicalProfiles>\r\n' +
         '\t</ClaimsProvider>\r\n';
 
-        static TP_REST_Basic: string = '\t<ClaimsProvider>\r\n' +
+    static TP_REST_Basic: string = '\t<ClaimsProvider>\r\n' +
         '\t    <DisplayName>REST APIs</DisplayName>\r\n' +
         '\t    <TechnicalProfiles>\r\n' +
         '\t\r\n' +
@@ -460,7 +460,7 @@ export default class Consts {
         '\t        <CryptographicKeys>\r\n' +
         '\t             <Key Id="BasicAuthenticationUsername" StorageReferenceId="B2C_1A_B2cRestClientId" />\r\n' +
         '\t             <Key Id="BasicAuthenticationPassword" StorageReferenceId="B2C_1A_B2cRestClientSecret" />\r\n' +
-        '\t        </CryptographicKeys>\r\n' +        
+        '\t        </CryptographicKeys>\r\n' +
         '\t        <InputClaims>\r\n' +
         '\t        <InputClaim ClaimTypeReferenceId="email" />\r\n' +
         '\t        <InputClaim ClaimTypeReferenceId="givenName" PartnerClaimType="firstName" />\r\n' +
@@ -475,7 +475,7 @@ export default class Consts {
         '\t    </TechnicalProfiles>\r\n' +
         '\t</ClaimsProvider>\r\n';
 
-        static TP_REST_ClientCertificate: string = '\t<ClaimsProvider>\r\n' +
+    static TP_REST_ClientCertificate: string = '\t<ClaimsProvider>\r\n' +
         '\t    <DisplayName>REST APIs</DisplayName>\r\n' +
         '\t    <TechnicalProfiles>\r\n' +
         '\t\r\n' +
@@ -490,7 +490,7 @@ export default class Consts {
         '\t        </Metadata>\r\n' +
         '\t        <CryptographicKeys>\r\n' +
         '\t             <Key Id="ClientCertificate" StorageReferenceId="B2C_1A_B2cRestClientCertificate" />\r\n' +
-        '\t        </CryptographicKeys>\r\n' +        
+        '\t        </CryptographicKeys>\r\n' +
         '\t        <InputClaims>\r\n' +
         '\t        <InputClaim ClaimTypeReferenceId="email" />\r\n' +
         '\t        <InputClaim ClaimTypeReferenceId="givenName" PartnerClaimType="firstName" />\r\n' +
@@ -504,7 +504,70 @@ export default class Consts {
         '\r\n' +
         '\t    </TechnicalProfiles>\r\n' +
         '\t</ClaimsProvider>\r\n';
-    }
+
+    static CLAIM_TextBox: string = '\t<ClaimType Id="{name}">\r\n' +
+        '\t  <DisplayName>{displayName}</DisplayName>\r\n' +
+        '\t  <DataType>string</DataType>\r\n' +
+        '\t  <UserHelpText>{displayName}</UserHelpText>\r\n' +
+        '\t  <UserInputType>TextBox</UserInputType>\r\n' +
+        '\t</ClaimType>\r\n';
+
+    static CLAIM_RadioSingleSelect: string = '\t<ClaimType Id="{name}">\r\n' +
+        '\t	<DisplayName>{displayName}</DisplayName>\r\n' +
+        '\t	<DataType>string</DataType>\r\n' +
+        '\t	<UserInputType>RadioSingleSelect</UserInputType>\r\n' +
+        '\t	<Restriction>\r\n' +
+        '\t		<Enumeration Text="Bellevue" Value="bellevue" SelectByDefault="false" />\r\n' +
+        '\t		<Enumeration Text="Redmond" Value="redmond" SelectByDefault="false" />\r\n' +
+        '\t		<Enumeration Text="Kirkland" Value="kirkland" SelectByDefault="false" />\r\n' +
+        '\t	</Restriction>\r\n' +
+        '\t</ClaimType>\r\n';
+
+    static CLAIM_DropdownSingleSelect: string = '\t<ClaimType Id="{name}">\r\n' +
+        '\t  <DisplayName>{displayName}</DisplayName>\r\n' +
+        '\t  <DataType>string</DataType>\r\n' +
+        '\t  <UserInputType>DropdownSingleSelect</UserInputType>\r\n' +
+        '\t  <Restriction>\r\n' +
+        '\t    <Enumeration Text="Bellevue" Value="bellevue" SelectByDefault="false" />\r\n' +
+        '\t    <Enumeration Text="Redmond" Value="redmond" SelectByDefault="false" />\r\n' +
+        '\t    <Enumeration Text="Kirkland" Value="kirkland" SelectByDefault="false" />\r\n' +
+        '\t  </Restriction>\r\n' +
+        '\t</ClaimType>\r\n';
+
+    static CLAIM_CheckboxMultiSelect: string = '\t<ClaimType Id="{name}">\r\n' +
+        '\t  <DisplayName>{displayName}</DisplayName>\r\n' +
+        '\t  <DataType>string</DataType>\r\n' +
+        '\t  <UserInputType>CheckboxMultiSelect</UserInputType>\r\n' +
+        '\t  <Restriction>\r\n' +
+        '\t    <Enumeration Text="Bellevue" Value="bellevue" SelectByDefault="false" />\r\n' +
+        '\t    <Enumeration Text="Redmond" Value="redmond" SelectByDefault="false" />\r\n' +
+        '\t    <Enumeration Text="Kirkland" Value="kirkland" SelectByDefault="false" />\r\n' +
+        '\t  </Restriction>\r\n' +
+        '\t</ClaimType>\r\n';
+
+    static CLAIM_DateTimeDropdown: string = '\t<!--Note: Internal use only. Do not persist this claim to Azure AD directory -->\r\n' +
+        '\t<ClaimType Id="{name}">\r\n' +
+        '\t <DisplayName>{displayName}</DisplayName>\r\n' +
+        '\t <DataType>date</DataType>\r\n' +
+        '\t <UserInputType>DateTimeDropdown</UserInputType>\r\n' +
+        '\t</ClaimType>\r\n';
+
+    static CLAIM_Readonly: string = '\t<ClaimType Id="{name}">\r\n' +
+        '\t	<DisplayName>{displayName}</DisplayName>\r\n' +
+        '\t	<DataType>string</DataType>\r\n' +
+        '\t	<UserInputType>Readonly</UserInputType>\r\n' +
+        '\t</ClaimType>\r\n';
+
+    static ApplicationInsightsDebugMode: string = '\t<!--Step 1: Add the following attributes to the <TrustFrameworkPolicy> element\r\n' +
+        '\tDeploymentMode="Development"\r\n' +
+        '\tUserJourneyRecorderEndpoint="urn:journeyrecorder:applicationinsights"\r\n' +
+        '\t-->\r\n' +
+        '\r\n' +
+        '\t<!--Step 2: Add the following node immediately after the DefaultUserJourney element-->\r\n' +
+        '\t<UserJourneyBehaviors>\r\n' +
+        '\t	<JourneyInsights TelemetryEngine="ApplicationInsights" InstrumentationKey="{instrumentationKey}" DeveloperMode="true" ClientEnabled="false" ServerEnabled="true" TelemetryVersion="1.0.0" />\r\n' +
+        '\t</UserJourneyBehaviors>\r\n';
+}
 
 
 

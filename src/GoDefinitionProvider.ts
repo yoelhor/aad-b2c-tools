@@ -1,5 +1,6 @@
 
 import * as vscode from 'vscode';
+import { ReferenceProvider } from './ReferenceProvider';
 
 export default class GoDefinitionProvider implements vscode.DefinitionProvider {
 
@@ -14,27 +15,16 @@ export default class GoDefinitionProvider implements vscode.DefinitionProvider {
 		var doc = new DOMParser().parseFromString(xmlText.toLowerCase());
 
 		// Get the selected word
-		const wordPosition = document.getWordRangeAtPosition(position);
-		if (!wordPosition) return new Promise((resolve) => resolve());
-		const word = document.getText(wordPosition);
+		const word = ReferenceProvider.getSelectedWord(document, position);
 
+		if (word.length == 0)
+			return new Promise((resolve) => resolve());
+
+		// Search for element with such ID
 		var nsAttr = doc.getElementById(word.toLowerCase());
 
-		// Workaround for separated word with dash (-)
-		if (nsAttr == null) {
-			const line = document.lineAt(position.line).text;
-
-			const startWord = line.lastIndexOf('"', wordPosition.start.character);
-
-			if (startWord >= 0) {
-				const endWord = line.indexOf('"', wordPosition.end.character);
-				const newWord = line.substring(startWord + 1, endWord);
-
-				nsAttr = doc.getElementById(newWord.toLowerCase());
-			}
-		}
-
 		if (nsAttr != null) {
+			// Return the selected element
 			return new Promise(resolve => {
 				resolve(new vscode.Location(
 					document.uri,
@@ -42,17 +32,8 @@ export default class GoDefinitionProvider implements vscode.DefinitionProvider {
 			});
 		}
 		else {
+			// Return no found (null)
 			return new Promise((resolve) => resolve());
-
-			/*return new Promise(resolve => {
-				null;
-				});
-			
-				return new Promise(resolve => {
-					resolve(new vscode.Location(
-						null, 
-						null));;
-				});*/
 		}
 	}
 }

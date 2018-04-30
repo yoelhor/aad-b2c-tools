@@ -10,7 +10,7 @@
     "categories": [
         "Other"
     ],
-    "icon": "images/icon128.png",
+    "icon": "media/icon128.png",
     "galleryBanner": {
         "color": "#C80000",
         "theme": "dark"
@@ -30,15 +30,19 @@
         "commands": [
             {
                 "command": "extension.insertTechnicalProfileIdp",
-                "title": "Add B2C Identity provider technical profile"
+                "title": "B2C Add Identity provider technical profile"
             },
             {
                 "command": "extension.insertTechnicalProfileRESTAPI",
-                "title": "Add B2C REST API technical profile"
+                "title": "B2C Add REST API technical profile"
             },
             {
                 "command": "extension.insertClaimType",
-                "title": "Add B2C Claim Type"
+                "title": "B2C Add Claim Type"
+            },
+            {
+                "command": "extension.insertApplicationInsights",
+                "title": "B2C Add Application Insights (debug mode)"
             }
         ],
         "keybindings": [
@@ -58,6 +62,12 @@
                 "command": "extension.insertClaimType",
                 "key": "shift+ctrl+3",
                 "mac": "shift+cmd+3",
+                "when": "editorTextFocus"
+            },
+            {
+                "command": "extension.insertApplicationInsights",
+                "key": "shift+ctrl+4",
+                "mac": "shift+cmd+4",
                 "when": "editorTextFocus"
             }
         ],

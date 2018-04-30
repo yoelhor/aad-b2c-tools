@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 
 export class ReferenceProvider implements vscode.ReferenceProvider {
-    private files: vscode.Uri[] =[];
+    private files: vscode.Uri[] = [];
 
     public provideReferences(
         document: vscode.TextDocument, position: vscode.Position,
@@ -14,6 +14,33 @@ export class ReferenceProvider implements vscode.ReferenceProvider {
         });
 
         return promise;
+    }
+
+
+    public static getSelectedWord(document: vscode.TextDocument, position: vscode.Position): string {
+
+        // Get the selected word
+        const wordPosition = document.getWordRangeAtPosition(position);
+        if (!wordPosition) return "";
+
+        //const word1 = document.getText(wordPosition).toLowerCase();
+
+        // Temporary workaround for separated word with dash (-) or dot (.)
+        const line = document.lineAt(position.line).text;
+
+        // Search for the quotation marks
+        let startWord = line.lastIndexOf('"', wordPosition.start.character);
+        let endWord = line.indexOf('"', wordPosition.end.character);
+        let word2 = line.substring(startWord + 1, endWord).toLowerCase();
+
+        // In case of XML body element, search for the <> marks
+        if (word2 === "" || word2.indexOf(">") > 0 || word2.indexOf("<") > 0) {
+            startWord = line.lastIndexOf('>', wordPosition.start.character);
+            endWord = line.indexOf('<', wordPosition.end.character);
+            word2 = line.substring(startWord + 1, endWord).toLowerCase();
+        }
+
+        return word2;
     }
 
     private processSearch(
@@ -32,17 +59,10 @@ export class ReferenceProvider implements vscode.ReferenceProvider {
 
         }
 
-        // Get the selected word
-        const wordPosition = document.getWordRangeAtPosition(position);
-        if (!wordPosition) return new Promise((resolve) => resolve());
-        const word = document.getText(wordPosition).toLowerCase();
+        const word = ReferenceProvider.getSelectedWord(document, position);
 
-
-        // Workaround for separated word with dash (-)
-        const line = document.lineAt(position.line).text;
-        const startWord = line.lastIndexOf('"', wordPosition.start.character);
-        const endWord = line.indexOf('"', wordPosition.end.character);
-        const newWord = line.substring(startWord + 1, endWord).toLowerCase();
+        if (word.length == 0)
+            return Promise.resolve(null);
 
         return Promise.all(promises_array)
             .then((files: any) => {
@@ -50,16 +70,63 @@ export class ReferenceProvider implements vscode.ReferenceProvider {
                 for (let file of files) {
                     var data = file.Data.replace(/( )(Id=|Id =|Id  =)/gi, " id=");
                     var doc = new DOMParser().parseFromString(data.toLowerCase());
+                    var listLength: number = list.length;
 
-                    this.searchElement(doc, list, file.Uri, "TechnicalProfile", "Id", word, newWord);
-                    this.searchElement(doc, list, file.Uri, "ValidationTechnicalProfile", "ReferenceId", word, newWord);
-                    this.searchElement(doc, list, file.Uri, "ClaimsExchange", "TechnicalProfileReferenceId", word, newWord);
-                    this.searchElement(doc, list, file.Uri, "UseTechnicalProfileForSessionManagement", "ReferenceId", word, newWord);
-                    this.searchElement(doc, list, file.Uri, "IncludeTechnicalProfile", "ReferenceId", word, newWord);
+                    // Technical profiles
+                    this.searchElement(doc, list, file.Uri, "TechnicalProfile", "Id", word);
+                    this.searchElement(doc, list, file.Uri, "ValidationTechnicalProfile", "ReferenceId", word);
+                    this.searchElement(doc, list, file.Uri, "ClaimsExchange", "TechnicalProfileReferenceId", word);
+                    this.searchElement(doc, list, file.Uri, "OrchestrationStep", "CpimIssuerTechnicalProfileReferenceId", word);
+                    this.searchElement(doc, list, file.Uri, "UseTechnicalProfileForSessionManagement", "ReferenceId", word);
+                    this.searchElement(doc, list, file.Uri, "IncludeTechnicalProfile", "ReferenceId", word);
 
-                    this.searchElement(doc, list, file.Uri, "OutputClaim", "ClaimTypeReferenceId", word, newWord);
-                    this.searchElement(doc, list, file.Uri, "InputClaim", "ClaimTypeReferenceId", word, newWord);
-                    this.searchElement(doc, list, file.Uri, "Value", null, word, newWord);
+                    //Policy name
+                    if (list.length == listLength) {
+                        this.searchElement(doc, list, file.Uri, "TrustFrameworkPolicy", "PolicyId", word);
+                        this.searchElement(doc, list, file.Uri, "PolicyId", null, word);
+                    }
+
+                    //Claim definitios
+                    if (list.length == listLength) {
+                        this.searchElement(doc, list, file.Uri, "OutputClaim", "ClaimTypeReferenceId", word);
+                        this.searchElement(doc, list, file.Uri, "InputClaim", "ClaimTypeReferenceId", word);
+                        this.searchElement(doc, list, file.Uri, "Value", null, word);
+                        this.searchElement(doc, list, file.Uri, "LocalizedCollection", "ElementId", word);
+                        this.searchElement(doc, list, file.Uri, "LocalizedString", "ElementId", word);
+                        this.searchElement(doc, list, file.Uri, "SubjectNamingInfo", "ClaimType", word);
+                        this.searchElement(doc, list, file.Uri, "PersistedClaim", "ClaimTypeReferenceId", word);
+                    }
+                    //Claim Transformation
+                    if (list.length == listLength) {
+                        this.searchElement(doc, list, file.Uri, "ClaimsTransformation", "Id", word);
+                        this.searchElement(doc, list, file.Uri, "InputClaimsTransformation", "ReferenceId", word);
+                        this.searchElement(doc, list, file.Uri, "OutputClaimsTransformation", "ReferenceId", word);
+                    }
+
+                    //User journey
+                    if (list.length == listLength) {
+                        this.searchElement(doc, list, file.Uri, "UserJourney", "Id", word);
+                        this.searchElement(doc, list, file.Uri, "DefaultUserJourney", "ReferenceId", word);
+                    }
+
+                    //Content definition
+                    if (list.length == listLength) {
+                        this.searchElement(doc, list, file.Uri, "ContentDefinition", "Id", word);
+                        this.searchElement(doc, list, file.Uri, "OrchestrationStep", "ContentDefinitionReferenceId", word);
+                        this.searchElement(doc, list, file.Uri, "Item", null, word);
+                    }
+
+                    //LocalizedResourcesReference
+                    if (list.length == listLength) {
+                        this.searchElement(doc, list, file.Uri, "LocalizedResourcesReference", "LocalizedResourcesReferenceId", word);
+                        this.searchElement(doc, list, file.Uri, "LocalizedResources", "Id", word);
+                    }
+
+                    //ClientDefinition
+                    if (list.length == listLength) {
+                        this.searchElement(doc, list, file.Uri, "ClientDefinition", "Id", word);
+                        this.searchElement(doc, list, file.Uri, "ClientDefinition", "ReferenceId", word);
+                    }
                 }
 
                 if (list.length > 0)
@@ -75,8 +142,7 @@ export class ReferenceProvider implements vscode.ReferenceProvider {
         uri: vscode.Uri,
         elementTagName: string,
         elementAttribute: string | null,
-        word1: string,
-        word2: string) {
+        word: string) {
 
         elementTagName = elementTagName.toLowerCase();
 
@@ -91,8 +157,8 @@ export class ReferenceProvider implements vscode.ReferenceProvider {
             const element = elements[i];
             // If search returns items, add the items to the location arry
             if (element != null &&
-                ((elementAttribute != null && (element.getAttribute(elementAttribute) === word1 || element.getAttribute(elementAttribute) === word2)) ||
-                (elementAttribute === null && (element.textContent === word1 || element.textContent === word2)))) {
+                ((elementAttribute != null && (element.getAttribute(elementAttribute) === word)) ||
+                    (elementAttribute === null && (element.textContent === word)))) {
                 let start: vscode.Position = new vscode.Position(element.lineNumber - 1, element.columnNumber - 1);
                 let end: vscode.Position = new vscode.Position(element.lineNumber, 0);
 
