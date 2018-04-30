@@ -28,4 +28,4 @@ After you run the commends, B2C extension shows you information message with a l
 ![InformationMessage](media/moreinfo.png)
 
 ## Disclaimer
-The extension is open-source project, published in GitHub. The extension is not part of Azure AD B2C product and it's not supported under any Microsoft standard support program or service. The extension is provided AS IS without warranty of any kind. 
+The extension is developed and managed by the open-source community in [GitHub](https://github.com/yoelhor/aadb2ctools.git). The extension is not part of Azure AD B2C product and it's not supported under any Microsoft standard support program or service. The extension is provided AS IS without warranty of any kind. For any issue, visit the [GitHub](https://github.com/yoelhor/aadb2ctools.git) repository.
