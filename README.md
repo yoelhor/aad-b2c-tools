@@ -2,6 +2,10 @@
 
 The Azure AD B2C extension for VS Code lets you quickly navigate through Azure AD B2C [custom policy](https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-overview-custom). Create new elements, such as: technical profiles and claim definition. For more information, see [Get started with custom policies](https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-get-started-custom).
 
+## Get started
+To start working with your custom policy. Open you Visual Studio Code, and open your folder that containing the custom policy XML files.
+![Custom policy navigator](media/openfolder.png)
+
 ## Azure AD B2C Custom policy Features
 ### Custom policy explorer
 From the **Custom policy explorer** click on the XML element type and select the element you want to open. Note: custom policy explorer shows elements from  selected file only.
@@ -28,4 +32,4 @@ After you run the commends, B2C extension shows you information message with a l
 ![InformationMessage](media/moreinfo.png)
 
 ## Disclaimer
-The extension is developed and managed by the open-source community in [GitHub](https://github.com/yoelhor/aadb2ctools.git). The extension is not part of Azure AD B2C product and it's not supported under any Microsoft standard support program or service. The extension is provided AS IS without warranty of any kind. For any issue, visit the [GitHub](https://github.com/yoelhor/aadb2ctools.git) repository.
+The extension is developed and managed by the open-source community in [GitHub](https://github.com/yoelhor/aad-b2c-tools.git). The extension is not part of Azure AD B2C product and it's not supported under any Microsoft standard support program or service. The extension is provided AS IS without warranty of any kind. For any issue, visit the [GitHub](https://github.com/yoelhor/aad-b2c-tools.git) repository.
