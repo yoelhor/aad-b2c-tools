@@ -3,7 +3,7 @@
 The Azure AD B2C extension for VS Code lets you quickly navigate through Azure AD B2C [custom policy](https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-overview-custom). Create new elements, such as: technical profiles and claim definition. For more information, see [Get started with custom policies](https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-get-started-custom).
 
 ## Get started
-To start working with your custom policy. Open you Visual Studio Code, and open your folder that containing the custom policy XML files.
+To start working with your custom policy. Open you Visual Studio Code, and open your folder that containing the custom policy XML files. Or open the policy XML files directly from any folder.
 
 ![Custom policy navigator](media/openfolder.png)
 

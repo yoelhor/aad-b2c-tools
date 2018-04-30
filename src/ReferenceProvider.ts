@@ -8,12 +8,18 @@ export class ReferenceProvider implements vscode.ReferenceProvider {
         options: { includeDeclaration: boolean }, token: vscode.CancellationToken):
         Thenable<vscode.Location[] | null> {
 
-        var promise = vscode.workspace.findFiles(new vscode.RelativePattern(vscode.workspace.rootPath as string, '{**/*.xml}')).then((res) => {
-            this.files = res;
-            return this.processSearch(document, position);
-        });
+        // Run this code only if user open a directory workspace
+        if (vscode.workspace.rootPath) {
+            var promise = vscode.workspace.findFiles(new vscode.RelativePattern(vscode.workspace.rootPath as string, '{**/*.xml}')).then((res) => {
+                this.files = res;
+                return this.processSearch(document, position);
+            });
 
-        return promise;
+            return promise;
+        }
+
+        return this.processSearch(document, position);
+
     }
 
 
@@ -52,11 +58,20 @@ export class ReferenceProvider implements vscode.ReferenceProvider {
         let list: vscode.Location[] = [];
         var fs = require('fs');
 
-        for (const file of this.files) {
-            promises_array.push(new Promise((resolve: any) => fs.readFile(file.fsPath, 'utf8', function (err: any, data: any) {
-                resolve(new FileData(file, data));
-            })));
 
+        if (vscode.workspace.rootPath) {
+            // Run this code only if user open a directory workspace
+            for (const file of this.files) {
+                promises_array.push(new Promise((resolve: any) => fs.readFile(file.fsPath, 'utf8', function (err: any, data: any) {
+                    resolve(new FileData(file, data));
+                })));
+
+            }
+        }
+        else {
+            // Run this code only if open files directly
+            for (const doc of vscode.workspace.textDocuments)
+                promises_array.push(new Promise((resolve: any) => resolve(new FileData(doc.uri, doc.getText()))));
         }
 
         const word = ReferenceProvider.getSelectedWord(document, position);
