@@ -4,11 +4,13 @@ The Azure AD B2C extension for VS Code lets you quickly navigate through Azure A
 
 ## Get started
 To start working with your custom policy. Open you Visual Studio Code, and open your folder that containing the custom policy XML files.
+
 ![Custom policy navigator](media/openfolder.png)
 
 ## Azure AD B2C Custom policy Features
 ### Custom policy explorer
 From the **Custom policy explorer** click on the XML element type and select the element you want to open. Note: custom policy explorer shows elements from  selected file only.
+
 ![Custom policy navigator](media/explorer.png)
 
 ### Go to definition and find all references
@@ -28,7 +30,8 @@ You can add following elements to your policy. Note: make sure your cursor is lo
 ![Adding XML elements](media/commands.png)
 
 ### Help and more information
-After you run the commends, B2C extension shows you information message with a link to relevant article
+After you run the commends, B2C extension shows you information message with a link to relevant article.
+
 ![InformationMessage](media/moreinfo.png)
 
 ## Disclaimer
