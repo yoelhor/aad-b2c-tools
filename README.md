@@ -9,14 +9,14 @@ To start working with your custom policy. Open you Visual Studio Code, and open 
 
 ## Azure AD B2C Custom policy Features
 ### Custom policy explorer
-From the **Custom policy explorer** click on the XML element type and select the element you want to open. Note: custom policy explorer shows elements from  selected file only.
+From **Custom policy explorer** click on the XML element type and select the element you want to open. Note: custom policy explorer shows elements from  selected file only.
 
 ![Custom policy navigator](media/explorer.png)
 
 ### Go to definition and find all references
 To go any XML element definition. Clt-Click, click F12 or right-click and select **Go to definition** or **Peak definition**. Note: Go to definition navigates you to the source element in the selected file only.
 
-To search for references in your **Open folder** or any files you open with VS code, select **Find all references** or click Shift+F12.
+To search for references in your **Open folder** XML files or any XML file you open with VS code, select **Find all references** or click Shift+F12.
 
 ![Go to definition and find all references](media/goto.png)
 
