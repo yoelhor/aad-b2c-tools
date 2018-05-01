@@ -16,7 +16,7 @@ From the **Custom policy explorer** click on the XML element type and select the
 ### Go to definition and find all references
 To go any XML element definition. Clt-Click, click F12 or right-click and select **Go to definition** or **Peak definition**. Note: Go to definition navigates you to the source element in the selected file only.
 
-To search for any references in your **Open folder**, select **Find all references** or click Shift+F12.
+To search for references in your **Open folder** or any files you open with VS code, select **Find all references** or click Shift+F12.
 
 ![Go to definition and find all references](media/goto.png)
 
