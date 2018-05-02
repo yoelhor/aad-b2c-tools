@@ -69,7 +69,7 @@ export default class CustomPolicyExplorerProvider implements vscode.TreeDataProv
 		const keys: String[] = [];
 
 		if (!parentElementKey) {
-			keys.push("root|UserJourney|User Journeis");
+			keys.push("root|UserJourney|User Journeys");
 			keys.push("root|ClaimsProvider|Claims Providers");
 			keys.push("root|TechnicalProfile|Technical Profiles");
 			keys.push("root|ClaimType|Claim Types");
@@ -85,23 +85,52 @@ export default class CustomPolicyExplorerProvider implements vscode.TreeDataProv
 				var i: number;
 				for (i = 0; i < nsAttr.length; i++) {
 					let title: string = 'Default';
+					let children: string = '';
 
 					// Get the element title
 					if (elementValues[1] == "ClaimsProvider") {
 						var subNode = nsAttr[i].getElementsByTagName("DisplayName");
-						if (subNode != null)
+						if (subNode != null) {
 							title = nsAttr[i].getElementsByTagName("DisplayName")[0].textContent
+
+							// Get the claims provider's technical profiles
+							var technicalProfiles = nsAttr[i].getElementsByTagName("TechnicalProfile");
+
+							var x: number;
+							for (x = 0; x < technicalProfiles.length; x++) {
+
+								// Add the element to the list
+								children += technicalProfiles[x].getAttribute("id") + ";"
+							}
+						}
 					}
 					else {
 						title = nsAttr[i].getAttribute("id");
 					}
-					
-					// Add the element to the list
-					keys.push(elementValues[1] + "|" + title + "|" + nsAttr[i].lineNumber + "|" + nsAttr[i].columnNumber);
-				}
 
-				keys.sort();
+					// Add the element to the list
+					keys.push(elementValues[1] + "|" + title + "|" + nsAttr[i].lineNumber + "|" + nsAttr[i].columnNumber + "|" + children);
+				}
 			}
+			else if (elementValues[0] == "ClaimsProvider") {
+
+				if (elementValues[4] && elementValues[4] != "") {
+					var descendants = elementValues[4].split(";");
+
+					for (let entry of descendants) {
+						if (entry && entry != "") {
+							// Lookup the XML element
+							var nsAttr = this.xmlDoc.getElementById(entry);
+
+							// Add the element to the list
+							keys.push(nsAttr.tagName + "|" + nsAttr.getAttribute("id") + "|" + nsAttr.lineNumber + "|" + nsAttr.columnNumber );
+						}
+					}
+
+				}
+			}
+
+			keys.sort();
 		}
 
 		return Promise.resolve(keys);
@@ -113,13 +142,18 @@ export default class CustomPolicyExplorerProvider implements vscode.TreeDataProv
 		const elementValues: String[] = elementKey.split("|");
 
 		if (elementValues[0] == "root") {
+			// For the root elements, check the amount of such element type
 			var nsAttr = this.xmlDoc.getElementsByTagName(elementValues[1]);
-
 			treeItem = new vscode.TreeItem(elementValues[2] as string, nsAttr.length > 0 ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None);
 		}
 		else {
-			treeItem = new vscode.TreeItem(elementValues[1] as string, vscode.TreeItemCollapsibleState.None);
-
+			if (elementValues[0] == "ClaimsProvider") {
+				// For the ClaimsProvider elements, check if the claim provider has technical profile
+				treeItem = new vscode.TreeItem(elementValues[1] as string, elementValues[4].split(";").length > 0 ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None);
+			}
+			else {
+				treeItem = new vscode.TreeItem(elementValues[1] as string, vscode.TreeItemCollapsibleState.None);
+			}
 
 			const start: vscode.Position = new vscode.Position(Number(elementValues[2]) - 1, Number(elementValues[3]));
 			const end: vscode.Position = new vscode.Position(Number(elementValues[2]) - 1, Number(elementValues[3]));
