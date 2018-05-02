@@ -124,6 +124,13 @@ export class ReferenceProvider implements vscode.ReferenceProvider {
                         this.searchElement(doc, list, file.Uri, "DefaultUserJourney", "ReferenceId", word);
                     }
 
+                    //Orchestration steps
+                    if (list.length == listLength) {
+                        this.searchElement(doc, list, file.Uri, "ClaimsExchange", "Id", word);
+                        this.searchElement(doc, list, file.Uri, "ClaimsProviderSelection", "TargetClaimsExchangeId", word);
+                        this.searchElement(doc, list, file.Uri, "ClaimsProviderSelection", "ValidationClaimsExchangeId", word);
+                    }
+
                     //Content definition
                     if (list.length == listLength) {
                         this.searchElement(doc, list, file.Uri, "ContentDefinition", "Id", word);
