@@ -1,7 +1,4 @@
 # Change Log
-All notable changes to the "aadb2c" extension will be documented in this file.
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
-
-## [Unreleased]
-- Initial release
+## 3 May 2018
+- **Go to definition** - If the element is not found in the selected file. Or if the selected element points to another file (the XML element is overwrite). The extension search the definition is all open files. 

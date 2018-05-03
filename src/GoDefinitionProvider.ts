@@ -1,6 +1,7 @@
 
 import * as vscode from 'vscode';
 import { ReferenceProvider } from './ReferenceProvider';
+import { FileData } from './ReferenceProvider';
 
 export default class GoDefinitionProvider implements vscode.DefinitionProvider {
 
@@ -11,8 +12,6 @@ export default class GoDefinitionProvider implements vscode.DefinitionProvider {
 
 		// Load the ativated XML file and replace the element Id with id
 		var DOMParser = require('xmldom').DOMParser;
-		var xmlText = document.getText().replace(/( )(Id=|Id =|Id  =)/gi, " id=");
-		var doc = new DOMParser().parseFromString(xmlText.toLowerCase());
 
 		// Get the selected word
 		const word = ReferenceProvider.getSelectedWord(document, position);
@@ -20,20 +19,42 @@ export default class GoDefinitionProvider implements vscode.DefinitionProvider {
 		if (word.length == 0)
 			return new Promise((resolve) => resolve());
 
-		// Search for element with such ID
-		var nsAttr = doc.getElementById(word.toLowerCase());
 
-		if (nsAttr != null) {
-			// Return the selected element
-			return new Promise(resolve => {
-				resolve(new vscode.Location(
-					document.uri,
-					new vscode.Position(nsAttr.lineNumber - 1, nsAttr.columnNumber)));;
-			});
+		var files: FileData[] = [];
+
+		// Add the selected file
+		files.push(new FileData(document.uri, document.getText().replace(/( )(Id=|Id =|Id  =)/gi, " id=")));
+
+		// Add the rest of open files
+		for (const doc of vscode.workspace.textDocuments) {
+
+			// Skip selected file
+			if (doc.uri != document.uri)
+				files.push(new FileData(doc.uri, doc.getText().replace(/( )(Id=|Id =|Id  =)/gi, " id=")))
 		}
-		else {
-			// Return no found (null)
-			return new Promise((resolve) => resolve());
+
+		// Iterate through files array
+		for (const file of files) {
+
+			var xmlDoc = new DOMParser().parseFromString(file.Data.toLowerCase());
+
+			// Search for element with such ID
+			var nsAttr = xmlDoc.getElementById(word.toLowerCase());
+
+			// If element found and it's not the same element the user pointing (same file and same line)
+			if (nsAttr != null && 
+				!(file.Uri === document.uri && (nsAttr.lineNumber == position.line || nsAttr.lineNumber - 1 == position.line))) {
+				
+					// Return the selected element
+				return new Promise(resolve => {
+					resolve(new vscode.Location(
+						file.Uri,
+						new vscode.Position(nsAttr.lineNumber - 1, nsAttr.columnNumber)));;
+				});
+			}
 		}
+
+		// Return no found (null)
+		return new Promise((resolve) => resolve());
 	}
 }
