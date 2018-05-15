@@ -596,7 +596,13 @@ export default class Consts {
         '\t	<AdminHelpText>Add help text here</AdminHelpText>\r\n' +
         '\t	<UserHelpText>Add help text here</UserHelpText>\r\n' +
         '\t</ClaimType>\r\n';
-}
+        
+        static CLAIM_Long: string = '\t<ClaimType Id="{name}">\r\n' +
+        '\t	<DisplayName>{displayName}</DisplayName>\r\n' +
+        '\t	<DataType>long</DataType>\r\n' +
+        '\t	<AdminHelpText>Add help text here</AdminHelpText>\r\n' +
+        '\t	<UserHelpText>Add help text here</UserHelpText>\r\n' +
+        '\t</ClaimType>\r\n';}
 
 
 

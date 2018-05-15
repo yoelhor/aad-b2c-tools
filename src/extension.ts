@@ -70,7 +70,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Add Claim Type command
     let insertClaimTypeCommand = vscode.commands.registerCommand('extension.insertClaimType', () => {
-        let UserInputTypeList = ['TextBox', 'Radio Single Select', 'Dropdown Single Select', 'Checkbox Multi Select', 'DateTime Dropdown', 'Read only', 'Paragraph','String collection' , 'Integer', 'Boolean'];
+        let UserInputTypeList = ['TextBox', 'Radio Single Select', 'Dropdown Single Select', 'Checkbox Multi Select', 'DateTime Dropdown', 'Read only', 'Paragraph','String collection' , 'Integer', 'Long', 'Boolean'];
         let name: string | undefined = 'Default';
         let displayName: string | undefined = 'Default';
         let userInputType: string | undefined = 'none';
@@ -111,6 +111,7 @@ export function activate(context: vscode.ExtensionContext) {
                     case "Paragraph": SnippetProvider.insertText(Costs.CLAIM_Paragraph.replace("{name}", name as string).replace("{displayName}", displayName as string));;
                     case "String collection": SnippetProvider.insertText(Costs.CLAIM_stringCollection.replace("{name}", name as string).replace("{displayName}", displayName as string));;
                     case "Integer": SnippetProvider.insertText(Costs.CLAIM_Integer.replace("{name}", name as string).replace("{displayName}", displayName as string));;
+                    case "Long": SnippetProvider.insertText(Costs.CLAIM_Long.replace("{name}", name as string).replace("{displayName}", displayName as string));;
                     case "Boolean": SnippetProvider.insertText(Costs.CLAIM_Boolean.replace("{name}", name as string).replace("{displayName}", displayName as string));;
                 } 
             })
