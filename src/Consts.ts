@@ -558,6 +558,12 @@ export default class Consts {
         '\t	<UserInputType>Readonly</UserInputType>\r\n' +
         '\t</ClaimType>\r\n';
 
+    static CLAIM_Paragraph: string = '\t<ClaimType Id="{name}">\r\n' +
+        '\t	<DisplayName>{displayName}</DisplayName>\r\n' +
+        '\t	<DataType>string</DataType>\r\n' +
+        '\t	<UserInputType>Paragraph</UserInputType>\r\n' +
+        '\t</ClaimType>\r\n';
+
     static ApplicationInsightsDebugMode: string = '\t<!--Step 1: Add the following attributes to the <TrustFrameworkPolicy> element\r\n' +
         '\tDeploymentMode="Development"\r\n' +
         '\tUserJourneyRecorderEndpoint="urn:journeyrecorder:applicationinsights"\r\n' +

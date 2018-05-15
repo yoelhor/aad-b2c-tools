@@ -50,7 +50,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Add Claim Type command
     let insertClaimTypeCommand = vscode.commands.registerCommand('extension.insertClaimType', () => {
-        let UserInputTypeList = ['TextBox', 'Radio Single Select', 'Dropdown Single Select', 'Checkbox Multi Select', 'DateTime Dropdown', 'Read only'];
+        let UserInputTypeList = ['TextBox', 'Radio Single Select', 'Dropdown Single Select', 'Checkbox Multi Select', 'DateTime Dropdown', 'Read only' ,'Paragraph'];
         let name: string | undefined = 'Default';
         let displayName: string | undefined = 'Default';
         let userInputType: string | undefined = 'none';
@@ -88,6 +88,7 @@ export function activate(context: vscode.ExtensionContext) {
                     case "Checkbox Multi Select": SnippetProvider.insertText(Costs.CLAIM_CheckboxMultiSelect.replace("{name}", name as string).replace("{displayName}", displayName as string));;
                     case "DateTime Dropdown": SnippetProvider.insertText(Costs.CLAIM_DateTimeDropdown.replace("{name}", name as string).replace("{displayName}", displayName as string));;
                     case "Read only": SnippetProvider.insertText(Costs.CLAIM_Readonly.replace("{name}", name as string).replace("{displayName}", displayName as string));;
+                    case "Paragraph": SnippetProvider.insertText(Costs.CLAIM_Paragraph.replace("{name}", name as string).replace("{displayName}", displayName as string));;
                 }
             })
             .then(() => {
