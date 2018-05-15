@@ -10,6 +10,7 @@ import GoDefinitionProvider from './GoDefinitionProvider';
 import CustomPolicyExplorerProvider from './CustomPolicyExplorerProvider';
 import { ReferenceProvider } from './ReferenceProvider';
 import Costs from './Consts';
+import * as path from 'path';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -18,6 +19,25 @@ export function activate(context: vscode.ExtensionContext) {
     // Use the console to output diagnostic information (console.log) and errors (console.error)
     // This line of code will only be executed once when your extension is activated
     console.log('Congratulations, your extension "aadb2c" is now active!');
+
+    if (vscode.workspace.rootPath) {
+        let pattern = path.join(vscode.workspace.rootPath as string, '*.xml');
+        console.log("File system watcher started: "+ pattern);
+        let fileWatcher = vscode.workspace.createFileSystemWatcher(pattern);
+
+        context.subscriptions.push(fileWatcher.onDidCreate((filePath) => {
+            console.log(filePath + " created!");
+                //do something
+        }));
+        context.subscriptions.push(fileWatcher.onDidChange((filePath) => {
+            console.log(filePath + " changed!");
+                //do something
+        }));
+        context.subscriptions.push(fileWatcher.onDidDelete((filePath) => {
+            console.log(filePath + " deleted!");
+                //do something
+        }));
+    }
 
     //Demo: Custom Policy Explorer
     const customPolicyExplorerProvider = new CustomPolicyExplorerProvider();
@@ -50,7 +70,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Add Claim Type command
     let insertClaimTypeCommand = vscode.commands.registerCommand('extension.insertClaimType', () => {
-        let UserInputTypeList = ['TextBox', 'Radio Single Select', 'Dropdown Single Select', 'Checkbox Multi Select', 'DateTime Dropdown', 'Read only' ,'Paragraph'];
+        let UserInputTypeList = ['TextBox', 'Radio Single Select', 'Dropdown Single Select', 'Checkbox Multi Select', 'DateTime Dropdown', 'Read only', 'Paragraph'];
         let name: string | undefined = 'Default';
         let displayName: string | undefined = 'Default';
         let userInputType: string | undefined = 'none';
