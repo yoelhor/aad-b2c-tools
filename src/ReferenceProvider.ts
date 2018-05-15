@@ -55,23 +55,33 @@ export class ReferenceProvider implements vscode.ReferenceProvider {
 
         var DOMParser = require('xmldom').DOMParser;
         let promises_array: Array<any> = [];
+        let openedFiles: string[] = [];
         let list: vscode.Location[] = [];
         var fs = require('fs');
 
 
+        // Run this code only if open files directly
+        for (const doc of vscode.workspace.textDocuments) {
+            promises_array.push(new Promise((resolve: any) => resolve(new FileData(doc.uri, doc.getText()))));
+            openedFiles.push(doc.uri.fsPath.toLocaleLowerCase())
+        }
+
         if (vscode.workspace.rootPath) {
             // Run this code only if user open a directory workspace
             for (const file of this.files) {
-                promises_array.push(new Promise((resolve: any) => fs.readFile(file.fsPath, 'utf8', function (err: any, data: any) {
-                    resolve(new FileData(file, data));
-                })));
 
+                // Check if the file is open. If yes, take precedence over unsaved version
+                var openedFile = openedFiles.filter(x => x == file.fsPath.toLocaleLowerCase())
+
+                if (openedFile == null || openedFile.length == 0) {
+                    promises_array.push(new Promise((resolve: any) => fs.readFile(file.fsPath, 'utf8', function (err: any, data: any) {
+                        resolve(new FileData(file, data));
+                    })));
+                }
             }
         }
         else {
-            // Run this code only if open files directly
-            for (const doc of vscode.workspace.textDocuments)
-                promises_array.push(new Promise((resolve: any) => resolve(new FileData(doc.uri, doc.getText()))));
+
         }
 
         const word = ReferenceProvider.getSelectedWord(document, position);
