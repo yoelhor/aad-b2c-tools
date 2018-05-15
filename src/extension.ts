@@ -70,7 +70,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Add Claim Type command
     let insertClaimTypeCommand = vscode.commands.registerCommand('extension.insertClaimType', () => {
-        let UserInputTypeList = ['TextBox', 'Radio Single Select', 'Dropdown Single Select', 'Checkbox Multi Select', 'DateTime Dropdown', 'Read only', 'Paragraph'];
+        let UserInputTypeList = ['TextBox', 'Radio Single Select', 'Dropdown Single Select', 'Checkbox Multi Select', 'DateTime Dropdown', 'Read only', 'Paragraph','String collection' , 'Integer', 'Boolean'];
         let name: string | undefined = 'Default';
         let displayName: string | undefined = 'Default';
         let userInputType: string | undefined = 'none';
@@ -109,7 +109,10 @@ export function activate(context: vscode.ExtensionContext) {
                     case "DateTime Dropdown": SnippetProvider.insertText(Costs.CLAIM_DateTimeDropdown.replace("{name}", name as string).replace("{displayName}", displayName as string));;
                     case "Read only": SnippetProvider.insertText(Costs.CLAIM_Readonly.replace("{name}", name as string).replace("{displayName}", displayName as string));;
                     case "Paragraph": SnippetProvider.insertText(Costs.CLAIM_Paragraph.replace("{name}", name as string).replace("{displayName}", displayName as string));;
-                }
+                    case "String collection": SnippetProvider.insertText(Costs.CLAIM_stringCollection.replace("{name}", name as string).replace("{displayName}", displayName as string));;
+                    case "Integer": SnippetProvider.insertText(Costs.CLAIM_Integer.replace("{name}", name as string).replace("{displayName}", displayName as string));;
+                    case "Boolean": SnippetProvider.insertText(Costs.CLAIM_Boolean.replace("{name}", name as string).replace("{displayName}", displayName as string));;
+                } 
             })
             .then(() => {
                 return vscode.window.showInformationMessage("For more information, see: [Modify sign up to add new claims and configure user input.](https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-configure-signup-self-asserted-custom). To store a custom attributes in Azure AD directory, you need also to change the Claim type name to 'extension_" + name + "' and set the application. For more information, see [Creating and using custom attributes in a custom profile edit policy](https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-create-custom-attributes-profile-edit-custom) ")
