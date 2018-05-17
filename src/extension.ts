@@ -4,7 +4,7 @@
 import * as vscode from 'vscode';
 
 //Demo: Import classes
-//import HoverProvider from './HoverProvider';
+import HoverProvider from './HoverProvider';
 import SnippetProvider from './SnippetProvider';
 import GoDefinitionProvider from './GoDefinitionProvider';
 import CustomPolicyExplorerProvider from './CustomPolicyExplorerProvider';
@@ -61,11 +61,11 @@ export function activate(context: vscode.ExtensionContext) {
 
 
     // Demo: register the hover provider
-    // context.subscriptions.push(
-    //     vscode.languages.registerHoverProvider([
-    //         { language: 'xml', scheme: 'file', pattern: '**/*xml*' }
-    //     ],
-    //         new HoverProvider()));
+    context.subscriptions.push(
+        vscode.languages.registerHoverProvider([
+            { language: 'xml', scheme: 'file', pattern: '**/*xml*' }
+        ],
+            new HoverProvider()));
 
 
     // Add Claim Type command

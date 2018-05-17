@@ -29,6 +29,10 @@ You can add following elements to your policy. Note: make sure your cursor is lo
 
 ![Adding XML elements](media/commands.png)
 
+### XML Schema quick help;
+![XML Schema quick help](media/hover.gif)
+
+
 ### Help and more information
 After you run the commends, B2C extension shows you information message with a link to relevant article.
 
