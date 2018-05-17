@@ -29,7 +29,10 @@ You can add following elements to your policy. Note: make sure your cursor is lo
 
 ![Adding XML elements](media/commands.png)
 
-### XML Schema quick help;
+### XML Schema quick help
+
+Move your mouse over any XML tag name, to see the description
+
 ![XML Schema quick help](media/hover.gif)
 
 
