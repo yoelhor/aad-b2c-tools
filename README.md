@@ -29,17 +29,16 @@ You can add following elements to your policy. Note: make sure your cursor is lo
 
 ![Adding XML elements](media/commands.png)
 
+### Help and more information
+After you run the commends, B2C extension shows you information message with a link to relevant article.
+
+![InformationMessage](media/moreinfo.png)
+
 ### XML Schema quick help
 
 Move your mouse over any XML tag name, to see the description
 
 ![XML Schema quick help](media/hover.gif)
-
-
-### Help and more information
-After you run the commends, B2C extension shows you information message with a link to relevant article.
-
-![InformationMessage](media/moreinfo.png)
 
 ## Disclaimer
 The extension is developed and managed by the open-source community in [GitHub](https://github.com/yoelhor/aad-b2c-tools.git). The extension is not part of Azure AD B2C product and it's not supported under any Microsoft standard support program or service. The extension is provided AS IS without warranty of any kind. For any issue, visit the [GitHub](https://github.com/yoelhor/aad-b2c-tools.git) repository.
