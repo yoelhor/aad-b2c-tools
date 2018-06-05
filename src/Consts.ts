@@ -454,8 +454,8 @@ export default class Consts {
         '\t        <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.RestfulProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />\r\n' +
         '\t        <Metadata>\r\n' +
         '\t        <Item Key="ServiceUrl">{serviceUri}</Item>\r\n' +
-        '\t        <Item Key="AuthenticationType">None</Item>\r\n' +
-        '\t        <Item Key="SendClaimsIn">Basic</Item>\r\n' +
+        '\t        <Item Key="AuthenticationType">Basic</Item>\r\n' +
+        '\t        <Item Key="SendClaimsIn">Body</Item>\r\n' +
         '\t        </Metadata>\r\n' +
         '\t        <CryptographicKeys>\r\n' +
         '\t             <Key Id="BasicAuthenticationUsername" StorageReferenceId="B2C_1A_B2cRestClientId" />\r\n' +
@@ -485,8 +485,8 @@ export default class Consts {
         '\t        <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.RestfulProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />\r\n' +
         '\t        <Metadata>\r\n' +
         '\t        <Item Key="ServiceUrl">{serviceUri}</Item>\r\n' +
-        '\t        <Item Key="AuthenticationType">None</Item>\r\n' +
-        '\t        <Item Key="SendClaimsIn">ClientCertificate</Item>\r\n' +
+        '\t        <Item Key="AuthenticationType">ClientCertificate</Item>\r\n' +
+        '\t        <Item Key="SendClaimsIn">Body</Item>\r\n' +
         '\t        </Metadata>\r\n' +
         '\t        <CryptographicKeys>\r\n' +
         '\t             <Key Id="ClientCertificate" StorageReferenceId="B2C_1A_B2cRestClientCertificate" />\r\n' +
