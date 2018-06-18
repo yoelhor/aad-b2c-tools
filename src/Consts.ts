@@ -602,7 +602,11 @@ export default class Consts {
         '\t	<DataType>long</DataType>\r\n' +
         '\t	<AdminHelpText>Add help text here</AdminHelpText>\r\n' +
         '\t	<UserHelpText>Add help text here</UserHelpText>\r\n' +
-        '\t</ClaimType>\r\n';}
+        '\t</ClaimType>\r\n';
 
+        
+        static ADALresource: string ="https://graph.microsoft.com"; 
+        static ADALauthURLPrefix="https://login.microsoftonline.com/"; 
+        static B2CGraphEndpoint="https://graph.microsoft.com/testcpimtf/trustFrameworkPolicies/";
 
-
+    }

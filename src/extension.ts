@@ -12,6 +12,9 @@ import { ReferenceProvider } from './ReferenceProvider';
 import Costs from './Consts';
 import * as path from 'path';
 
+import * as adal from 'adal-node'; // Adding ADAL for Policy Upload
+import B2CUtils from './B2CUtils';
+
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -242,6 +245,77 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     context.subscriptions.push(insertApplicationInsightsConommand);
+
+
+
+    // Upload B2C Policy
+    let uploadB2CPolicyConommand = vscode.commands.registerCommand('extension.policy.upload', () => {
+      
+        var PolicyInfo = B2CUtils.getPolicyInfo();
+        var clientID  = B2CUtils.getB2CAPIClientID(context);
+        var authURL=Costs.ADALauthURLPrefix + PolicyInfo.TenantId; 
+        var authcontext= new adal.AuthenticationContext(authURL);
+        var username = "";
+        var password = "";
+       
+        authcontext.acquireToken(Costs.ADALresource,username,clientID,function(err,tokenResponse){
+            if (err) {
+                // First Time Auth you will need to enter your username / password
+                vscode.window.showInformationMessage("You dont seem to be logged in, please enter your username and password");
+                vscode.window.showInputBox({ prompt: "Type your username" })
+                .then(result => {
+                    if (!result)
+                        return Promise.reject('user cancelled');
+        
+                        username = result;
+                })
+                .then(() => {
+                vscode.window.showInputBox({ prompt: "Type your password", password: true })
+                .then(result => {
+                    if (!result)
+                        return Promise.reject('user cancelled');
+        
+                        password = result;
+                })
+                .then(() => {
+                    authcontext.acquireTokenWithUsernamePassword(Costs.ADALresource,username,password,clientID,function(err,tokenResponse){
+                    if (err) {
+                        console.log('well that didn\'t work: ' + err.stack);
+                        if(err.message.includes("AADSTS65001"))
+                        {
+                            vscode.window.showErrorMessage("An Admin needs to consent, Please use the following link to consent: " ,"Consent").then(selection => {
+                                if(selection == "Consent")
+                                {
+                                   // 6731de76-14a6-49ae-97bc-6eba6914391e
+                                   // vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(authURL + "/oauth2/authorize?client_id=" + clientID + "&response_type=code&redirect_uri=https://graph.microsoft.com&response_mode=query&scope=openid&state=12345&prompt=admin_consent"))
+                                   vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(authURL + "/oauth2/authorize?client_id=" + clientID + "&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%2Fmyapp%2F &response_mode=query&scope=openid&state=12345&prompt=admin_consent"))
+                                }
+                                else
+                                    return;
+                              });
+                        }
+                        else{
+                            vscode.window.showErrorMessage("Error signing in: " + err.message);
+                        }
+                        
+                      } else {
+                        // Authentication Successful - Upload Policy
+                        B2CUtils.uploadpolicy( tokenResponse as adal.TokenResponse,PolicyInfo.PolicyId);
+                      }
+                    })
+                })
+                });
+
+            } else {
+                // No need to auth again as we should have an access token
+                B2CUtils.uploadpolicy( tokenResponse as adal.TokenResponse,PolicyInfo.PolicyId);
+            }
+        });
+
+    });
+    
+
+    context.subscriptions.push(uploadB2CPolicyConommand);
 }
 
 // this method is called when your extension is deactivated

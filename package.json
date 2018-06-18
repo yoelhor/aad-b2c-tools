@@ -2,7 +2,7 @@
     "name": "aadb2c",
     "displayName": "Azure AD B2C (Beta)",
     "description": "Azure AD B2C custom policy extension",
-    "version": "1.2.15",
+    "version": "1.3.00",
     "publisher": "AzureADB2CTools",
     "engines": {
         "vscode": "^1.22.0"
@@ -43,6 +43,10 @@
             {
                 "command": "extension.insertApplicationInsights",
                 "title": "B2C Add Application Insights (debug mode)"
+            },
+            {
+                "command": "extension.policy.upload",
+                "title": "B2C Policy Upload"
             }
         ],
         "keybindings": [
@@ -102,6 +106,10 @@
         "xmldom": "^0.1.27"
     },
     "dependencies": {
+        "adal-node": "^0.1.28",
+        "request": "^2.87.0",
+        "request-promise": "^4.2.2",
+        "web-request": "^1.0.7",
         "xmldom": "^0.1.27"
     }
 }
