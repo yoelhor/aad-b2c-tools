@@ -8,6 +8,7 @@ import HoverProvider from './HoverProvider';
 import SnippetProvider from './SnippetProvider';
 import GoDefinitionProvider from './GoDefinitionProvider';
 import CustomPolicyExplorerProvider from './CustomPolicyExplorerProvider';
+import ApplicationInsightsExplorerExplorerProvider from './ApplicationInsightsExplorerExplorerProvider';
 import { ReferenceProvider } from './ReferenceProvider';
 import Costs from './Consts';
 import * as path from 'path';
@@ -42,11 +43,16 @@ export function activate(context: vscode.ExtensionContext) {
     //Demo: Custom Policy Explorer
     const customPolicyExplorerProvider = new CustomPolicyExplorerProvider();
     vscode.window.registerTreeDataProvider('CustomPolicyExplorer', customPolicyExplorerProvider);
-
     vscode.commands.registerCommand('jsonOutline.refresh', () => customPolicyExplorerProvider.refresh());
     vscode.commands.registerCommand('jsonOutline.refreshNode', offset => customPolicyExplorerProvider.refresh(offset));
     vscode.commands.registerCommand('extension.openJsonSelection', range => customPolicyExplorerProvider.select(range));
 
+    //Demo: Application Insights Explorer
+    const applicationInsightsExplorerProvider = new ApplicationInsightsExplorerExplorerProvider();
+    vscode.window.registerTreeDataProvider('ApplicationInsightsExplorer', applicationInsightsExplorerProvider);
+    vscode.commands.registerCommand('ApplicationInsightsExplorer.refresh', () => applicationInsightsExplorerProvider.refresh());
+    vscode.commands.registerCommand('ApplicationInsightsExplorer.show', range => applicationInsightsExplorerProvider.show(range));
+    
     // Demo: Find all reference
     context.subscriptions.push(
         vscode.languages.registerReferenceProvider(

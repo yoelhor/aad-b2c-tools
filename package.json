@@ -2,7 +2,7 @@
     "name": "aadb2c",
     "displayName": "Azure AD B2C (Beta)",
     "description": "Azure AD B2C custom policy extension",
-    "version": "1.2.19",
+    "version": "1.2.21",
     "publisher": "AzureADB2CTools",
     "engines": {
         "vscode": "^1.22.0"
@@ -43,7 +43,24 @@
             {
                 "command": "extension.insertApplicationInsights",
                 "title": "B2C Add Application Insights (debug mode)"
+            },
+			{
+				"command": "ApplicationInsightsExplorer.refresh",
+				"title": "Refresh 123",
+				"icon": {
+					"light": "resources/light/refresh.svg",
+					"dark": "resources/dark/refresh.svg"
+				}
             }
+            ,
+			{
+				"command": "ApplicationInsightsExplorer.settings",
+				"title": "Settings",
+				"icon": {
+					"light": "resources/light/settings.svg",
+					"dark": "resources/dark/settings.svg"
+				}
+			}
         ],
         "keybindings": [
             {
@@ -83,8 +100,47 @@
                     "id": "CustomPolicyExplorer",
                     "name": "Custom Policy Explorer",
                     "when": "CustomPolicyExplorerEnabled"
+                },
+                {
+                    "id": "ApplicationInsightsExplorer",
+                    "name": "Application Insights trace",
+                    "when": "CustomPolicyExplorerEnabled"
                 }
             ]
+        },
+		"menus": {
+			"view/title": [
+				{
+					"command": "ApplicationInsightsExplorer.settings",
+                    "when": "view == ApplicationInsightsExplorer",
+                    "group": "navigation"
+				},
+				{
+					"command": "ApplicationInsightsExplorer.refresh",
+					"when": "view == ApplicationInsightsExplorer",
+					"group": "navigation"
+				}
+			]
+		},"configuration": {
+            "type": "object",
+            "title": "Azure AD B2C Application Insights",
+            "properties": {
+                "aadb2c.ai.id": {
+                    "type": ["string", "null"],
+                    "default": null,
+                    "description": "Your Application ID"
+                },
+                "aadb2c.ai.key": {
+                    "type": ["string", "null"],
+                    "default": null,
+                    "description": "Your Application Key"
+                },
+                "aadb2c.ai.rowsLimit": {
+                    "type": "integer",
+                    "default": 10,
+                    "description": "Your Application Key"
+                }
+            }
         }
     },
     "scripts": {
@@ -99,7 +155,8 @@
         "vscode": "^1.1.6",
         "@types/node": "^7.0.43",
         "@types/mocha": "^2.2.42",
-        "xmldom": "^0.1.27"
+        "xmldom": "^0.1.27",
+        "request": "2.88.0"
     },
     "dependencies": {
         "xmldom": "^0.1.27"
