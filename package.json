@@ -12,8 +12,8 @@
     ],
     "icon": "media/icon128.png",
     "galleryBanner": {
-        "color": "#eff1f3",
-        "theme": "dark"
+        "color": "#5c2d91",
+        "theme": "light"
     },
     "repository": {
         "type": "git",
