@@ -2,7 +2,7 @@
     "name": "aadb2c",
     "displayName": "Azure AD B2C",
     "description": "Azure AD B2C custom policy extension",
-    "version": "1.2.21",
+    "version": "1.2.22",
     "publisher": "AzureADB2CTools",
     "engines": {
         "vscode": "^1.22.0"
@@ -44,23 +44,22 @@
                 "command": "extension.insertApplicationInsights",
                 "title": "B2C Add Application Insights (debug mode)"
             },
-			{
-				"command": "ApplicationInsightsExplorer.refresh",
-				"title": "Refresh 123",
-				"icon": {
-					"light": "resources/light/refresh.svg",
-					"dark": "resources/dark/refresh.svg"
-				}
+            {
+                "command": "ApplicationInsightsExplorer.refresh",
+                "title": "Refresh 123",
+                "icon": {
+                    "light": "resources/light/refresh.svg",
+                    "dark": "resources/dark/refresh.svg"
+                }
+            },
+            {
+                "command": "ApplicationInsightsExplorer.settings",
+                "title": "Settings",
+                "icon": {
+                    "light": "resources/light/settings.svg",
+                    "dark": "resources/dark/settings.svg"
+                }
             }
-            ,
-			{
-				"command": "ApplicationInsightsExplorer.settings",
-				"title": "Settings",
-				"icon": {
-					"light": "resources/light/settings.svg",
-					"dark": "resources/dark/settings.svg"
-				}
-			}
         ],
         "keybindings": [
             {
@@ -108,30 +107,35 @@
                 }
             ]
         },
-		"menus": {
-			"view/title": [
-				{
-					"command": "ApplicationInsightsExplorer.settings",
+        "menus": {
+            "view/title": [
+                {
+                    "command": "ApplicationInsightsExplorer.settings",
                     "when": "view == ApplicationInsightsExplorer",
                     "group": "navigation"
-				},
-				{
-					"command": "ApplicationInsightsExplorer.refresh",
-					"when": "view == ApplicationInsightsExplorer",
-					"group": "navigation"
-				}
-			]
-		},"configuration": {
+                },
+                {
+                    "command": "ApplicationInsightsExplorer.refresh",
+                    "when": "view == ApplicationInsightsExplorer",
+                    "group": "navigation"
+                }
+            ]
+        },
+        "configuration": {
             "type": "object",
             "title": "Azure AD B2C Application Insights",
             "properties": {
                 "aadb2c.ai.id": {
-                    "type": ["string"],
+                    "type": [
+                        "string"
+                    ],
                     "default": "",
                     "description": "Your Application Insights ID"
                 },
                 "aadb2c.ai.key": {
-                    "type": ["string"],
+                    "type": [
+                        "string"
+                    ],
                     "default": "",
                     "description": "Your Application Insights Key"
                 },
