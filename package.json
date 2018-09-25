@@ -41,12 +41,8 @@
                 "title": "B2C Add Claim Type"
             },
             {
-                "command": "extension.insertApplicationInsights",
-                "title": "B2C Add Application Insights (debug mode)"
-            },
-            {
                 "command": "ApplicationInsightsExplorer.refresh",
-                "title": "Refresh 123",
+                "title": "Refresh",
                 "icon": {
                     "light": "resources/light/refresh.svg",
                     "dark": "resources/dark/refresh.svg"
@@ -58,6 +54,14 @@
                 "icon": {
                     "light": "resources/light/settings.svg",
                     "dark": "resources/dark/settings.svg"
+                }
+            },
+            {
+                "command": "ApplicationInsightsExplorer.add",
+                "title": "B2C Add Application Insights to a relying party policy",
+                "icon": {
+                    "light": "resources/light/add.svg",
+                    "dark": "resources/dark/add.svg"
                 }
             }
         ],
@@ -81,7 +85,7 @@
                 "when": "editorTextFocus"
             },
             {
-                "command": "extension.insertApplicationInsights",
+                "command": "ApplicationInsightsExplorer.add",
                 "key": "shift+ctrl+4",
                 "mac": "shift+cmd+4",
                 "when": "editorTextFocus"
@@ -116,6 +120,11 @@
                 },
                 {
                     "command": "ApplicationInsightsExplorer.refresh",
+                    "when": "view == ApplicationInsightsExplorer",
+                    "group": "navigation"
+                },
+                {
+                    "command": "ApplicationInsightsExplorer.add",
                     "when": "view == ApplicationInsightsExplorer",
                     "group": "navigation"
                 }

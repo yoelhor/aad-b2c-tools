@@ -231,7 +231,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 
     // Add application insights command
-    let insertApplicationInsightsConommand = vscode.commands.registerCommand('extension.insertApplicationInsights', () => {
+    let insertApplicationInsightsConommand = vscode.commands.registerCommand('ApplicationInsightsExplorer.add', () => {
         let instrumentationKey: string | undefined = 'Default';
 
         vscode.window.showInputBox({ prompt: "Type your instrumentation key" })
