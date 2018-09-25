@@ -126,19 +126,19 @@
             "title": "Azure AD B2C Application Insights",
             "properties": {
                 "aadb2c.ai.id": {
-                    "type": ["string", "null"],
-                    "default": null,
+                    "type": ["string"],
+                    "default": "",
                     "description": "Your Application ID"
                 },
                 "aadb2c.ai.key": {
-                    "type": ["string", "null"],
-                    "default": null,
+                    "type": ["string"],
+                    "default": "",
                     "description": "Your Application Key"
                 },
-                "aadb2c.ai.rowsLimit": {
+                "aadb2c.ai.maxRows": {
                     "type": "integer",
                     "default": 10,
-                    "description": "Your Application Key"
+                    "description": "The number of events to return"
                 }
             }
         }

@@ -1,20 +1,21 @@
 import * as vscode from 'vscode';
+import * as path from 'path';
 
-class AppInsightsItem{
+class AppInsightsItem {
 	Id: String;
 	Tenant: String;
 	UserJourney: String;
 	OrchestrationStep: String;
 	CorrelationId: String;
 	Data: String;
-	
+
 	constructor(id: String, tenant: String, userJourney: String, orchestrationStep: String, correlationId: String, data: String) {
-		this.Id = id;	
-		this.Tenant = tenant;	
-		this.UserJourney = userJourney;	
-		this.OrchestrationStep = orchestrationStep;	
-		this.CorrelationId = correlationId;	
-		this.Data = data;	
+		this.Id = id;
+		this.Tenant = tenant;
+		this.UserJourney = userJourney;
+		this.OrchestrationStep = orchestrationStep;
+		this.CorrelationId = correlationId;
+		this.Data = data;
 	}
 }
 
@@ -27,8 +28,9 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 	autoRefresh: boolean = false;
 	AppInsightsItems: AppInsightsItem[] = [];
 	panel;
+	error: String = "";
 
-	constructor(/*private context: vscode.ExtensionContext*/) {
+	constructor(private context: vscode.ExtensionContext) {
 
 		this.editor = vscode.window.activeTextEditor as vscode.TextEditor;
 		vscode.window.onDidChangeActiveTextEditor(() => this.onActiveEditorChanged());
@@ -41,8 +43,7 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 	}
 
 	onActiveEditorChanged(): void {
-		if (this.panel && this.panel.visible)
-		{
+		if (this.panel && this.panel.visible) {
 			vscode.commands.executeCommand('setContext', 'CustomPolicyExplorerEnabled', true);
 			this.refresh();
 			return;
@@ -62,43 +63,52 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 	}
 
 	parseTree(): void {
-		this.editor = vscode.window.activeTextEditor as vscode.TextEditor;
+		this.error = '';
 
-		if (this.editor && this.editor.document) {
-			var request = require('request');
-			
-			var config = vscode.workspace.getConfiguration('aadb2c.ai');
-			var rowsLimit = config.get('rawsLimit');
+		var request = require('request');
 
-			if (!rowsLimit)
-			rowsLimit =10;
+		// Check the configuration
+		var config = vscode.workspace.getConfiguration('aadb2c.ai');
 
-			var options = {
-			  url: 'https://api.applicationinsights.io/v1/apps/' +  config.get('id') + '/events/traces?$top=' + rowsLimit + '&$orderby=timestamp desc&$select=id,trace/message,customDimensions',
-			  headers: {
-				'X-API-Key': config.get('key')
-			  }
-			};
-			
-			function callback(this: ApplicationInsightsExplorerExplorerProvider, error, response, body) {
-			  if (!error && response.statusCode == 200) {
-				body = body.replace('""','"');
+		if (!config || (!config.id && !config.key))
+			this.error = "Application insights configuration not found";
+		else if (!config.id)
+			this.error = "Application insights Id not found";
+		else if (!config.key)
+			this.error = "Application insights Key not found";
+
+		if (this.error) {
+			this._onDidChangeTreeData.fire(null)
+			return;
+		}
+
+		// Prepare the Application insights call
+		var options = {
+			url: 'https://api.applicationinsights.io/v1/apps/' + config.id + '/events/traces?$top=' + config.maxRows + '&$orderby=timestamp desc&$select=id,trace/message,customDimensions',
+			headers: {
+				'X-API-Key': config.key
+			}
+		};
+
+		// Application insights call-back function
+		function callback(this: ApplicationInsightsExplorerExplorerProvider, error, response, body) {
+			if (!error && response.statusCode == 200) {
+				body = body.replace('""', '"');
 				var info = JSON.parse(body);
 				console.log("Application Insights returned: " + info.value.length);
-				
+
 				this.AppInsightsItems = [];
 				for (var i = 0; i < info.value.length; i++) {
-					var element  = info.value[i];
-	
-					var currentStepIndex =  element.trace.message.indexOf('CurrentStep');
+					var element = info.value[i];
+
+					var currentStepIndex = element.trace.message.indexOf('CurrentStep');
 					var currentStep = 'Not specified';
-					if (currentStepIndex > 0)
-					{
+					if (currentStepIndex > 0) {
 						currentStepIndex = element.trace.message.indexOf(':', currentStepIndex);
 						var endOfRaw = element.trace.message.indexOf('\r\n', currentStepIndex);
 						currentStep = "Step " + element.trace.message.substring(currentStepIndex + 1, endOfRaw).trim();
 					}
-	
+
 					this.AppInsightsItems.push(new AppInsightsItem(
 						info.value[i].id,
 						info.value[i].customDimensions.Tenant,
@@ -108,65 +118,75 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 						element.trace.message
 					));
 				}
-	
+
 				this._onDidChangeTreeData.fire(null)
-			  }
 			}
-			
-			request(options, callback.bind(this));
+			else if (response.statusCode == 404) {
+				vscode.window.showErrorMessage("Wrong Application insights Id");
+			}
+			else if (response.statusCode == 403) {
+				vscode.window.showErrorMessage("The provided credentials have insufficient access to perform the requested operation. Check your application key.");
+			} else {
+				vscode.window.showErrorMessage(body);
+			}
 		}
 
-
+		// CallApplication insights REST API endpoint
+		request(options, callback.bind(this));
 	}
-	
+
 
 	getChildren(parentElementKey?: String): Thenable<String[]> {
 		const keys: String[] = [];
 
-		if (!parentElementKey) {
-			// Load the root elements (user journeys)
-			var distinct: String[] = [];
-			for (var i = 0; i < this.AppInsightsItems.length; i++)
-			{
-				var userJourney = this.AppInsightsItems[i].UserJourney;
-				if( distinct.indexOf(userJourney) > (-1)) continue;
-				{
-					distinct.push(userJourney);
-					keys.push("UserJourney|" + userJourney);
-				}
-			}
+		if (this.error) {
+			keys.push("Error|" + this.error);
+		}
+		else if (this.AppInsightsItems.length == 0) {
+			keys.push("Error|Application Insights produced empty result from the last 12 hours.");
 		}
 		else {
-			const elementValues: String[] = parentElementKey.split("|");
-
-			// Load the root elements' (user journeys) children
-			if (elementValues[0] == "UserJourney") {
-
-				// Load the list of correction IDs
+			if (!parentElementKey) {
+				// Load the root elements (user journeys)
 				var distinct: String[] = [];
-				for (var i = 0; i < this.AppInsightsItems.length; i++)
-				{
-					var correlationId = this.AppInsightsItems[i].CorrelationId;
-					if( elementValues[1] != this.AppInsightsItems[i].UserJourney || 
-						distinct.indexOf(correlationId) > (-1)) continue;
+				for (var i = 0; i < this.AppInsightsItems.length; i++) {
+					var userJourney = this.AppInsightsItems[i].UserJourney;
+					if (distinct.indexOf(userJourney) > (-1)) continue;
 					{
-						distinct.push(correlationId);
-						keys.push("CorrelationId|" + correlationId);
+						distinct.push(userJourney);
+						keys.push("UserJourney|" + userJourney);
 					}
 				}
 			}
-			else if (elementValues[0] == "CorrelationId") {
-				// Load the list of orchestration steps
-				for (var i = 0; i < this.AppInsightsItems.length; i++)
-				{
-					var correlationId = this.AppInsightsItems[i].CorrelationId;
-					if( elementValues[1] != correlationId) continue;
-					{
-						keys.push("OrchestrationStep|" + this.AppInsightsItems[i].OrchestrationStep + "|" + this.AppInsightsItems[i].Id);
-					}
-				}
-			}
+			else {
+				const elementValues: String[] = parentElementKey.split("|");
 
+				// Load the root elements' children
+				if (elementValues[0] == "UserJourney") {
+
+					// Load the list of correction IDs
+					var distinct: String[] = [];
+					for (var i = 0; i < this.AppInsightsItems.length; i++) {
+						var correlationId = this.AppInsightsItems[i].CorrelationId;
+						if (elementValues[1] != this.AppInsightsItems[i].UserJourney ||
+							distinct.indexOf(correlationId) > (-1)) continue;
+						{
+							distinct.push(correlationId);
+							keys.push("CorrelationId|" + correlationId);
+						}
+					}
+				}
+				else if (elementValues[0] == "CorrelationId") {
+					// Load the list of orchestration steps
+					for (var i = 0; i < this.AppInsightsItems.length; i++) {
+						var correlationId = this.AppInsightsItems[i].CorrelationId;
+						if (elementValues[1] != correlationId) continue;
+						{
+							keys.push("OrchestrationStep|" + this.AppInsightsItems[i].OrchestrationStep + "|" + this.AppInsightsItems[i].Id);
+						}
+					}
+				}
+			}
 			keys.sort();
 		}
 
@@ -184,6 +204,10 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 		else if (elementValues[0] == "CorrelationId") {
 			treeItem = new vscode.TreeItem(elementValues[1] as string, vscode.TreeItemCollapsibleState.Collapsed);
 		}
+		else if (elementValues[0] == "Error") {
+			treeItem = new vscode.TreeItem(elementValues[1] as string, vscode.TreeItemCollapsibleState.None);
+			treeItem.iconPath = this.getIcon("warning.svg");
+		}
 		else {
 
 			treeItem = new vscode.TreeItem(elementValues[1] as string, vscode.TreeItemCollapsibleState.None);
@@ -198,24 +222,31 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 		return treeItem;
 	}
 
+	getIcon(fileName: String): any {
+		return {
+			light: this.context.asAbsolutePath(path.join('resources', 'light', fileName.toString())),
+			dark: this.context.asAbsolutePath(path.join('resources', 'dark', fileName.toString()))
+		}
+	}
+
 	show(id: String) {
 
-		for (var i = 0; i < this.AppInsightsItems.length; i++)
-		{
-			if( id != this.AppInsightsItems[i].Id ) continue;
+		for (var i = 0; i < this.AppInsightsItems.length; i++) {
+			if (id != this.AppInsightsItems[i].Id) continue;
 			{
 				if (!this.panel)
-					this.panel = vscode.window.createWebviewPanel('ApplicationInsightsData', "Application Insights Explorer", vscode.ViewColumn.One, { });
+					this.panel = vscode.window.createWebviewPanel('ApplicationInsightsData', "Application Insights Explorer", vscode.ViewColumn.One, {});
+
+				this.panel.onDidDispose(() => {
+					// When the panel is closed, cancel any future updates to the webview content
+					this.panel = null;
+				}, null, null);
 
 				// And set its HTML content
 				this.panel.webview.html = this.getWebviewContent(this.AppInsightsItems[i]);
-				
-
 				break;
 			}
 		}
-
-
 	}
 
 	getWebviewContent(item: AppInsightsItem) {
@@ -251,4 +282,99 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 	</body>
 	</html>`;
 	}
+
+	settings() {
+
+		if (!this.panel)
+			this.panel = vscode.window.createWebviewPanel('ApplicationInsightsSettings', "Application Insights Settings", vscode.ViewColumn.One, {
+				// Enable scripts in the webview
+				enableScripts: true
+			});
+
+		// Handle messages from the webview
+		this.panel.webview.onDidReceiveMessage(message => {
+
+			// Load the configuration
+			var config = vscode.workspace.getConfiguration('aadb2c.ai');
+			config.update("id", message.id);
+			config.update("key", message.key);
+			config.update("maxRows", Number(message.maxRows));
+			this.panel.dispose();
+			this.refresh();
+
+		}, undefined, undefined);
+
+		this.panel.onDidDispose(() => {
+			// When the panel is closed, cancel any future updates to the webview content
+			this.panel = null;
+		}, null, null);
+
+		// And set its HTML content
+		this.panel.webview.html = this.getSettingsWebviewContent();
+	}
+
+	getSettingsWebviewContent() {
+
+		// Load the configuration
+		var config = vscode.workspace.getConfiguration('aadb2c.ai');
+
+		return `<!DOCTYPE html>
+	<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Application Insights Explorer</title>
+	<style>
+		body.vscode-light {
+			color: black;
+		}
+		
+		body.vscode-dark {
+			color: white;
+		}
+		
+		body.vscode-high-contrast {
+			color: red;
+		}
+	</style>
+	<script>
+		function save() {
+			const vscode = acquireVsCodeApi();
+			const id = document.getElementById('id');
+			const key = document.getElementById('key');
+			const maxRows = document.getElementById('maxRows');
+
+			vscode.postMessage({
+				id: id.value,
+				key: key.value, 
+				maxRows: maxRows.value, 
+			})
+		}
+	</script>	
+	</head>
+	<body>
+		<H1>Application Insights Settings</h3>
+		<table>
+		<tr>
+			<td>Your Application ID</td>
+			<td><input type="text" id="id" value="` + config.id + `"></td>
+		</tr>
+		<tr>
+			<td>Your Application key</td>
+			<td><input type="text" id="key" value="` + config.key + `"></td>
+		</tr>
+		<tr>
+			<td>The number of events to return</td>
+			<td><input type="number" id="maxRows" value="` + config.maxRows + `"  min="1" max="50"></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td><input type="button" onclick="save()" id="save" value="Save"></td>
+		</tr>
+		</table>
+	</body>
+	</html>`;
+	}
+
+
 }

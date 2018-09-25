@@ -48,10 +48,12 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand('extension.openJsonSelection', range => customPolicyExplorerProvider.select(range));
 
     //Demo: Application Insights Explorer
-    const applicationInsightsExplorerProvider = new ApplicationInsightsExplorerExplorerProvider();
+    const applicationInsightsExplorerProvider = new ApplicationInsightsExplorerExplorerProvider(context);
     vscode.window.registerTreeDataProvider('ApplicationInsightsExplorer', applicationInsightsExplorerProvider);
     vscode.commands.registerCommand('ApplicationInsightsExplorer.refresh', () => applicationInsightsExplorerProvider.refresh());
     vscode.commands.registerCommand('ApplicationInsightsExplorer.show', range => applicationInsightsExplorerProvider.show(range));
+    vscode.commands.registerCommand('ApplicationInsightsExplorer.settings', range => applicationInsightsExplorerProvider.settings());
+
     
     // Demo: Find all reference
     context.subscriptions.push(

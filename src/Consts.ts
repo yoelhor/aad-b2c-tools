@@ -418,30 +418,30 @@ export default class Consts {
     static TP_IDP_VK: string = '\tNot implemented yet\r\n';
 
     static TP_REST_None: string = '\t<ClaimsProvider>\r\n' +
-        '\t    <DisplayName>REST APIs</DisplayName>\r\n' +
-        '\t    <TechnicalProfiles>\r\n' +
+        '\t  <DisplayName>REST APIs</DisplayName>\r\n' +
+        '\t  <TechnicalProfiles>\r\n' +
         '\t\r\n' +
-        '\t    <!-- Custom Restful service -->\r\n' +
-        '\t    <TechnicalProfile Id="{name}">\r\n' +
-        '\t        <DisplayName>Validate user input data and return loyaltyNumber claim</DisplayName>\r\n' +
-        '\t        <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.RestfulProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />\r\n' +
-        '\t        <Metadata>\r\n' +
-        '\t        <Item Key="ServiceUrl">{serviceUri}</Item>\r\n' +
-        '\t        <Item Key="AuthenticationType">None</Item>\r\n' +
-        '\t        <Item Key="SendClaimsIn">Body</Item>\r\n' +
-        '\t        </Metadata>\r\n' +
-        '\t        <InputClaims>\r\n' +
-        '\t        <InputClaim ClaimTypeReferenceId="email" />\r\n' +
-        '\t        <InputClaim ClaimTypeReferenceId="givenName" PartnerClaimType="firstName" />\r\n' +
-        '\t        <InputClaim ClaimTypeReferenceId="surname" PartnerClaimType="lastName" />\r\n' +
-        '\t        </InputClaims>\r\n' +
-        '\t        <OutputClaims>\r\n' +
-        '\t        <OutputClaim ClaimTypeReferenceId="loyaltyNumber" PartnerClaimType="loyaltyNumber" />\r\n' +
-        '\t        </OutputClaims>\r\n' +
-        '\t        <UseTechnicalProfileForSessionManagement ReferenceId="SM-Noop" />\r\n' +
-        '\t    </TechnicalProfile>\r\n' +
+        '\t  <!-- Custom Restful service -->\r\n' +
+        '\t  <TechnicalProfile Id="{name}">\r\n' +
+        '\t    <DisplayName>Validate user input data and return loyaltyNumber claim</DisplayName>\r\n' +
+        '\t    <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.RestfulProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />\r\n' +
+        '\t    <Metadata>\r\n' +
+        '\t      <Item Key="ServiceUrl">{serviceUri}</Item>\r\n' +
+        '\t      <Item Key="AuthenticationType">None</Item>\r\n' +
+        '\t      <Item Key="SendClaimsIn">Body</Item>\r\n' +
+        '\t    </Metadata>\r\n' +
+        '\t    <InputClaims>\r\n' +
+        '\t      <InputClaim ClaimTypeReferenceId="email" />\r\n' +
+        '\t      <InputClaim ClaimTypeReferenceId="givenName" PartnerClaimType="firstName" />\r\n' +
+        '\t      <InputClaim ClaimTypeReferenceId="surname" PartnerClaimType="lastName" />\r\n' +
+        '\t    </InputClaims>\r\n' +
+        '\t    <OutputClaims>\r\n' +
+        '\t      <OutputClaim ClaimTypeReferenceId="loyaltyNumber" PartnerClaimType="loyaltyNumber" />\r\n' +
+        '\t    </OutputClaims>\r\n' +
+        '\t    <UseTechnicalProfileForSessionManagement ReferenceId="SM-Noop" />\r\n' +
+        '\t  </TechnicalProfile>\r\n' +
         '\r\n' +
-        '\t    </TechnicalProfiles>\r\n' +
+        '\t  </TechnicalProfiles>\r\n' +
         '\t</ClaimsProvider>\r\n';
 
     static TP_REST_Basic: string = '\t<ClaimsProvider>\r\n' +
@@ -476,31 +476,31 @@ export default class Consts {
         '\t</ClaimsProvider>\r\n';
 
     static TP_REST_ClientCertificate: string = '\t<ClaimsProvider>\r\n' +
-        '\t    <DisplayName>REST APIs</DisplayName>\r\n' +
-        '\t    <TechnicalProfiles>\r\n' +
+        '\t  <DisplayName>REST APIs</DisplayName>\r\n' +
+        '\t  <TechnicalProfiles>\r\n' +
         '\t\r\n' +
-        '\t    <!-- Custom Restful service -->\r\n' +
-        '\t    <TechnicalProfile Id="{name}">\r\n' +
-        '\t        <DisplayName>Validate user input data and return loyaltyNumber claim</DisplayName>\r\n' +
-        '\t        <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.RestfulProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />\r\n' +
-        '\t        <Metadata>\r\n' +
-        '\t        <Item Key="ServiceUrl">{serviceUri}</Item>\r\n' +
-        '\t        <Item Key="AuthenticationType">ClientCertificate</Item>\r\n' +
-        '\t        <Item Key="SendClaimsIn">Body</Item>\r\n' +
-        '\t        </Metadata>\r\n' +
-        '\t        <CryptographicKeys>\r\n' +
-        '\t             <Key Id="ClientCertificate" StorageReferenceId="B2C_1A_B2cRestClientCertificate" />\r\n' +
-        '\t        </CryptographicKeys>\r\n' +
-        '\t        <InputClaims>\r\n' +
-        '\t        <InputClaim ClaimTypeReferenceId="email" />\r\n' +
-        '\t        <InputClaim ClaimTypeReferenceId="givenName" PartnerClaimType="firstName" />\r\n' +
-        '\t        <InputClaim ClaimTypeReferenceId="surname" PartnerClaimType="lastName" />\r\n' +
-        '\t        </InputClaims>\r\n' +
-        '\t        <OutputClaims>\r\n' +
-        '\t        <OutputClaim ClaimTypeReferenceId="loyaltyNumber" PartnerClaimType="loyaltyNumber" />\r\n' +
-        '\t        </OutputClaims>\r\n' +
-        '\t        <UseTechnicalProfileForSessionManagement ReferenceId="SM-Noop" />\r\n' +
-        '\t    </TechnicalProfile>\r\n' +
+        '\t  <!-- Custom Restful service -->\r\n' +
+        '\t  <TechnicalProfile Id="{name}">\r\n' +
+        '\t    <DisplayName>Validate user input data and return loyaltyNumber claim</DisplayName>\r\n' +
+        '\t    <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.RestfulProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />\r\n' +
+        '\t    <Metadata>\r\n' +
+        '\t      <Item Key="ServiceUrl">{serviceUri}</Item>\r\n' +
+        '\t      <Item Key="AuthenticationType">ClientCertificate</Item>\r\n' +
+        '\t      <Item Key="SendClaimsIn">Body</Item>\r\n' +
+        '\t    </Metadata>\r\n' +
+        '\t    <CryptographicKeys>\r\n' +
+        '\t      <Key Id="ClientCertificate" StorageReferenceId="B2C_1A_B2cRestClientCertificate" />\r\n' +
+        '\t    </CryptographicKeys>\r\n' +
+        '\t    <InputClaims>\r\n' +
+        '\t      <InputClaim ClaimTypeReferenceId="email" />\r\n' +
+        '\t      <InputClaim ClaimTypeReferenceId="givenName" PartnerClaimType="firstName" />\r\n' +
+        '\t      <InputClaim ClaimTypeReferenceId="surname" PartnerClaimType="lastName" />\r\n' +
+        '\t    </InputClaims>\r\n' +
+        '\t    <OutputClaims>\r\n' +
+        '\t      <OutputClaim ClaimTypeReferenceId="loyaltyNumber" PartnerClaimType="loyaltyNumber" />\r\n' +
+        '\t      </OutputClaims>\r\n' +
+        '\t    <UseTechnicalProfileForSessionManagement ReferenceId="SM-Noop" />\r\n' +
+        '\t  </TechnicalProfile>\r\n' +
         '\r\n' +
         '\t    </TechnicalProfiles>\r\n' +
         '\t</ClaimsProvider>\r\n';
@@ -508,24 +508,26 @@ export default class Consts {
     static CLAIM_TextBox: string = '\t<ClaimType Id="{name}">\r\n' +
         '\t  <DisplayName>{displayName}</DisplayName>\r\n' +
         '\t  <DataType>string</DataType>\r\n' +
-        '\t  <UserHelpText>{displayName}</UserHelpText>\r\n' +
+        '\t  <UserHelpText>Add help text here</UserHelpText>\r\n' +
         '\t  <UserInputType>TextBox</UserInputType>\r\n' +
         '\t</ClaimType>\r\n';
 
     static CLAIM_RadioSingleSelect: string = '\t<ClaimType Id="{name}">\r\n' +
-        '\t	<DisplayName>{displayName}</DisplayName>\r\n' +
-        '\t	<DataType>string</DataType>\r\n' +
-        '\t	<UserInputType>RadioSingleSelect</UserInputType>\r\n' +
-        '\t	<Restriction>\r\n' +
+        '\t	 <DisplayName>{displayName}</DisplayName>\r\n' +
+        '\t	 <DataType>string</DataType>\r\n' +
+        '\t  <UserHelpText>Add help text here</UserHelpText>\r\n' +
+        '\t	 <UserInputType>RadioSingleSelect</UserInputType>\r\n' +
+        '\t	 <Restriction>\r\n' +
         '\t		<Enumeration Text="Bellevue" Value="bellevue" SelectByDefault="false" />\r\n' +
         '\t		<Enumeration Text="Redmond" Value="redmond" SelectByDefault="false" />\r\n' +
         '\t		<Enumeration Text="Kirkland" Value="kirkland" SelectByDefault="false" />\r\n' +
-        '\t	</Restriction>\r\n' +
+        '\t	 </Restriction>\r\n' +
         '\t</ClaimType>\r\n';
 
     static CLAIM_DropdownSingleSelect: string = '\t<ClaimType Id="{name}">\r\n' +
         '\t  <DisplayName>{displayName}</DisplayName>\r\n' +
         '\t  <DataType>string</DataType>\r\n' +
+        '\t  <UserHelpText>Add help text here</UserHelpText>\r\n' +
         '\t  <UserInputType>DropdownSingleSelect</UserInputType>\r\n' +
         '\t  <Restriction>\r\n' +
         '\t    <Enumeration Text="Bellevue" Value="bellevue" SelectByDefault="false" />\r\n' +
@@ -537,6 +539,7 @@ export default class Consts {
     static CLAIM_CheckboxMultiSelect: string = '\t<ClaimType Id="{name}">\r\n' +
         '\t  <DisplayName>{displayName}</DisplayName>\r\n' +
         '\t  <DataType>string</DataType>\r\n' +
+        '\t  <UserHelpText>Add help text here</UserHelpText>\r\n' +
         '\t  <UserInputType>CheckboxMultiSelect</UserInputType>\r\n' +
         '\t  <Restriction>\r\n' +
         '\t    <Enumeration Text="Bellevue" Value="bellevue" SelectByDefault="false" />\r\n' +
@@ -549,18 +552,21 @@ export default class Consts {
         '\t<ClaimType Id="{name}">\r\n' +
         '\t <DisplayName>{displayName}</DisplayName>\r\n' +
         '\t <DataType>date</DataType>\r\n' +
+        '\t  <UserHelpText>Add help text here</UserHelpText>\r\n' +
         '\t <UserInputType>DateTimeDropdown</UserInputType>\r\n' +
         '\t</ClaimType>\r\n';
 
     static CLAIM_Readonly: string = '\t<ClaimType Id="{name}">\r\n' +
         '\t	<DisplayName>{displayName}</DisplayName>\r\n' +
         '\t	<DataType>string</DataType>\r\n' +
+        '\t  <UserHelpText>Add help text here</UserHelpText>\r\n' +
         '\t	<UserInputType>Readonly</UserInputType>\r\n' +
         '\t</ClaimType>\r\n';
 
     static CLAIM_Paragraph: string = '\t<ClaimType Id="{name}">\r\n' +
         '\t	<DisplayName>{displayName}</DisplayName>\r\n' +
         '\t	<DataType>string</DataType>\r\n' +
+        '\t  <UserHelpText>Add help text here</UserHelpText>\r\n' +
         '\t	<UserInputType>Paragraph</UserInputType>\r\n' +
         '\t</ClaimType>\r\n';
 
