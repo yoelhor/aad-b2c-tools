@@ -394,7 +394,7 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 	<body>
 		<H1>Application Insights Settings</h3>
 
-		<a href="http://www.google.com">test</a>
+		<a href="https://github.com/yoelhor/aad-b2c-vs-code-extension/blob/master/help/app-insights.md">Click here to learn how to configure Application insights</a><br />&nbsp;
 
 		<table>
 		<tr>

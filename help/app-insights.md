@@ -71,7 +71,7 @@ Sample:
 
 3. Upload the policy.
 
-## 3. Set up Azure AD B2C VS Code extension
+## 4. Set up Azure AD B2C VS Code extension
 Azure AD B2C VS Code extension provides two different scopes for settings:
 - **User Global Settings** - Settings that apply globally to any instance of VS Code you open.
 - **Workspace Settings** - Settings stored inside your workspace and only apply when the workspace is opened (using VS Code **open folder**).

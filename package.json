@@ -12,7 +12,7 @@
     ],
     "icon": "media/icon128.png",
     "galleryBanner": {
-        "color": "#C80000",
+        "color": "#eff1f3",
         "theme": "dark"
     },
     "repository": {
@@ -128,12 +128,12 @@
                 "aadb2c.ai.id": {
                     "type": ["string"],
                     "default": "",
-                    "description": "Your Application ID"
+                    "description": "Your Application Insights ID"
                 },
                 "aadb2c.ai.key": {
                     "type": ["string"],
                     "default": "",
-                    "description": "Your Application Key"
+                    "description": "Your Application Insights Key"
                 },
                 "aadb2c.ai.maxRows": {
                     "type": "integer",
