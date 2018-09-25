@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
+import { ConfigurationTarget } from 'vscode';
 
 class AppInsightsItem {
 	Id: String;
@@ -309,9 +310,16 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 
 			// Load the configuration
 			var config = vscode.workspace.getConfiguration('aadb2c.ai');
-			config.update("id", message.id);
-			config.update("key", message.key);
-			config.update("maxRows", Number(message.maxRows));
+
+			var configurationTarget: ConfigurationTarget = ConfigurationTarget.Workspace;
+			// Run this code only if user open a directory workspace
+			if (!vscode.workspace.rootPath) {
+				configurationTarget = ConfigurationTarget.Global;
+			}
+
+			config.update("id", message.id, configurationTarget);
+			config.update("key", message.key, configurationTarget);
+			config.update("maxRows", Number(message.maxRows), configurationTarget);
 			this.panel.dispose();
 
 			// Trick, place a delay and the values get loaded
@@ -334,6 +342,20 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 
 		// Load the configuration
 		var config = vscode.workspace.getConfiguration('aadb2c.ai');
+		var targetConfigFile: String = "";
+
+		if (vscode.workspace.rootPath) {
+			targetConfigFile = "<b>Workspace folder</b> settings file is located here:<br />" + path.join(vscode.workspace.rootPath, ".vscode", "settings.json");
+		}
+		else
+		{
+			targetConfigFile = `Depending on your platform, the <b>global</b> user settings file is located here:
+			<ul>
+				<li><b>Windows</b> %APPDATA%\\Code\\User\\settings.json</li>
+				<li><b>macOS</b> $HOME/Library/Application Support/Code/User/settings.json</li>
+				<li><b>Linux</b> $HOME/.config/Code/User/settings.json</li>
+			</ul>`;
+		}
 
 		return `<!DOCTYPE html>
 	<html lang="en">
@@ -371,6 +393,9 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 	</head>
 	<body>
 		<H1>Application Insights Settings</h3>
+
+		<a href="http://www.google.com">test</a>
+
 		<table>
 		<tr>
 			<td>Your Application ID</td>
@@ -389,6 +414,10 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 			<td><input type="button" onclick="save()" id="save" value="Save"></td>
 		</tr>
 		</table>
+
+		<H2>Settings file locations</H2>
+		` + targetConfigFile + `
+
 	</body>
 	</html>`;
 	}
