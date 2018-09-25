@@ -98,12 +98,12 @@
             "explorer": [
                 {
                     "id": "CustomPolicyExplorer",
-                    "name": "Custom Policy Explorer",
+                    "name": "Azure AD B2C Policy Explorer",
                     "when": "CustomPolicyExplorerEnabled"
                 },
                 {
                     "id": "ApplicationInsightsExplorer",
-                    "name": "Application Insights trace",
+                    "name": "Azure AD B2C Trace (app insights)",
                     "when": "CustomPolicyExplorerEnabled"
                 }
             ]

@@ -38,7 +38,7 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 		this.onActiveEditorChanged();
 	}
 
-	refresh(elementKey?: String): void {
+	refresh(Initiator?: String): void {
 		this.parseTree();
 	}
 
@@ -63,7 +63,7 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 	}
 
 	parseTree(): void {
-		this.error = '';
+		this.error = 'loading';
 
 		var request = require('request');
 
@@ -77,9 +77,12 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 		else if (!config.key)
 			this.error = "Application insights Key not found";
 
-		if (this.error) {
+		if (this.error && this.error != 'loading') {
 			this._onDidChangeTreeData.fire(null)
 			return;
+		}
+		else if (this.error && this.error == 'loading') {
+			this._onDidChangeTreeData.fire(null)
 		}
 
 		// Prepare the Application insights call
@@ -93,6 +96,7 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 		// Application insights call-back function
 		function callback(this: ApplicationInsightsExplorerExplorerProvider, error, response, body) {
 			if (!error && response.statusCode == 200) {
+				this.error = "";
 				body = body.replace('""', '"');
 				var info = JSON.parse(body);
 				console.log("Application Insights returned: " + info.value.length);
@@ -123,11 +127,17 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 			}
 			else if (response.statusCode == 404) {
 				vscode.window.showErrorMessage("Wrong Application insights Id");
+				this.error = "Wrong Application insights Id";
+				this._onDidChangeTreeData.fire(null);
 			}
 			else if (response.statusCode == 403) {
 				vscode.window.showErrorMessage("The provided credentials have insufficient access to perform the requested operation. Check your application key.");
+				this.error = "The provided credentials have insufficient access to perform the requested operation. Check your application key.";
+				this._onDidChangeTreeData.fire(null);
 			} else {
 				vscode.window.showErrorMessage(body);
+				this.error = "General error";
+				this._onDidChangeTreeData.fire(null);
 			}
 		}
 
@@ -139,8 +149,11 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 	getChildren(parentElementKey?: String): Thenable<String[]> {
 		const keys: String[] = [];
 
-		if (this.error) {
+		if (this.error != "" && this.error != "loading") {
 			keys.push("Error|" + this.error);
+		}
+		else if (this.error != "" && this.error == "loading") {
+			keys.push("Error|Loading...");
 		}
 		else if (this.AppInsightsItems.length == 0) {
 			keys.push("Error|Application Insights produced empty result from the last 12 hours.");
@@ -300,6 +313,10 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 			config.update("key", message.key);
 			config.update("maxRows", Number(message.maxRows));
 			this.panel.dispose();
+
+			// Trick, place a delay and the values get loaded
+			setTimeout(() => this.refresh(), 2500);
+
 			this.refresh();
 
 		}, undefined, undefined);
