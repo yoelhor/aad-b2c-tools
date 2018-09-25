@@ -11,10 +11,6 @@
         "Other"
     ],
     "icon": "media/icon128.png",
-    "galleryBanner": {
-        "color": "#5c2d91",
-        "theme": "dark"
-    },
     "repository": {
         "type": "git",
         "url": "https://github.com/yoelhor/aad-b2c-tools.git"
