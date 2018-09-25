@@ -1,7 +1,7 @@
 # Change Log
 
 ## 18 October 2018
-- Adding Azure Application Insights trace log integration. Learn more [here](https://github.com/yoelhor/aad-b2c-vs-code-extension/blob/master/help/app-insights.md)
+- Adding Azure Application Insights trace log integration. Learn more [here](https://github.com/yoelhor/aad-b2c-vs-code-extension/blob/master/src/help/app-insights.md)
 
 ## 18 May 2018
 - **Go to definition** - Always take precedence of editor open files, over unsaved version from file system (workspace folder)
