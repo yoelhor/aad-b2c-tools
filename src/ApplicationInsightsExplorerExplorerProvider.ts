@@ -8,14 +8,16 @@ class AppInsightsItem {
 	UserJourney: String;
 	OrchestrationStep: String;
 	CorrelationId: String;
+	Timestamp: String;
 	Data: String;
 
-	constructor(id: String, tenant: String, userJourney: String, orchestrationStep: String, correlationId: String, data: String) {
+	constructor(id: String, tenant: String, userJourney: String, orchestrationStep: String, correlationId: String, timestamp:String, data: String) {
 		this.Id = id;
 		this.Tenant = tenant;
 		this.UserJourney = userJourney;
 		this.OrchestrationStep = orchestrationStep;
 		this.CorrelationId = correlationId;
+		this.Timestamp = timestamp;
 		this.Data = data;
 	}
 }
@@ -88,7 +90,7 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 
 		// Prepare the Application insights call
 		var options = {
-			url: 'https://api.applicationinsights.io/v1/apps/' + config.id + '/events/traces?$top=' + config.maxRows + '&$orderby=timestamp desc&$select=id,trace/message,customDimensions',
+			url: 'https://api.applicationinsights.io/v1/apps/' + config.id + '/events/traces?$top=' + config.maxRows + '&$orderby=timestamp desc&$select=id,timestamp,trace/message,customDimensions',
 			headers: {
 				'X-API-Key': config.key
 			}
@@ -107,7 +109,7 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 					var element = info.value[i];
 
 					var currentStepIndex = element.trace.message.indexOf('CurrentStep');
-					var currentStep = 'Not specified';
+					var currentStep = '';
 					if (currentStepIndex > 0) {
 						currentStepIndex = element.trace.message.indexOf(':', currentStepIndex);
 						var endOfRaw = element.trace.message.indexOf('\r\n', currentStepIndex);
@@ -120,6 +122,7 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 						info.value[i].customDimensions.UserJourney,
 						currentStep,
 						info.value[i].customDimensions.CorrelationId,
+						info.value[i].timestamp,
 						element.trace.message
 					));
 				}
@@ -181,12 +184,25 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 					// Load the list of correction IDs
 					var distinct: String[] = [];
 					for (var i = 0; i < this.AppInsightsItems.length; i++) {
+						
 						var correlationId = this.AppInsightsItems[i].CorrelationId;
+
 						if (elementValues[1] != this.AppInsightsItems[i].UserJourney ||
 							distinct.indexOf(correlationId) > (-1)) continue;
 						{
 							distinct.push(correlationId);
-							keys.push("CorrelationId|" + correlationId);
+
+							// Get the first data and time of this correlation id
+							var minTimestamp;
+							for (var x = 0; x < this.AppInsightsItems.length; x++) {
+								if (this.AppInsightsItems[x].CorrelationId != correlationId) continue;
+								{
+									var timestamp = new Date(Date.parse(this.AppInsightsItems[x].Timestamp.toString()));
+									if (!minTimestamp || timestamp < minTimestamp)
+										minTimestamp = timestamp;
+								}
+							}
+							keys.push("CorrelationId|" + this.formatDate(minTimestamp) + " (" + correlationId.split("-")[0] + ")|" + correlationId);
 						}
 					}
 				}
@@ -194,9 +210,11 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 					// Load the list of orchestration steps
 					for (var i = 0; i < this.AppInsightsItems.length; i++) {
 						var correlationId = this.AppInsightsItems[i].CorrelationId;
-						if (elementValues[1] != correlationId) continue;
+						if (elementValues[2] != correlationId) continue;
 						{
-							keys.push("OrchestrationStep|" + this.AppInsightsItems[i].OrchestrationStep + "|" + this.AppInsightsItems[i].Id);
+							var timestamp = new Date(Date.parse(this.AppInsightsItems[i].Timestamp.toString()));
+							var setp =  this.AppInsightsItems[i].OrchestrationStep ? " (" + this.AppInsightsItems[i].OrchestrationStep + ")" : "";
+							keys.push("OrchestrationStep|" + this.formatDate(timestamp) + setp + "|" + this.AppInsightsItems[i].Id);
 						}
 					}
 				}
@@ -205,6 +223,15 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 		}
 
 		return Promise.resolve(keys);
+	}
+
+	formatDate(date:Date)
+	{
+		return date.getFullYear().toString() + "-"  + this.pad(date.getMonth()) + "-"  + this.pad(date.getDate()) + " "  + this.pad(date.getHours()) + ":"  + this.pad(date.getMinutes()) + ":"  + this.pad(date.getSeconds());
+	}
+	pad(date: number)
+	{
+		return date.toString().length < 2 ? "0" + date :  date; 
 	}
 
 	getTreeItem(elementKey: String): vscode.TreeItem {
@@ -285,10 +312,14 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 	</style>
 	</head>
 	<body>
-		<h3>User Journey: ` + item.UserJourney + `</h3>
-		<h3>Correlation Id :` + item.CorrelationId + `</h3>
-		<h3>Orchestration Step: ` + item.OrchestrationStep + `</h3>
-		<h3>Id: ` + item.Id + `</h3>
+		<ul>
+  			<li><b>User Journey</b>: ` + item.UserJourney + `</li>
+  			<li><b>Correlation Id</b>: ` + item.CorrelationId + `</li>
+			<li><b>Orchestration Step</b>: ` + item.OrchestrationStep + `</li>
+			<li><b>App insights Id</b>: ` + item.Id + `</li>
+			<li><b>App insights timestamp</b>: ` + item.Timestamp + `</li>
+		</ul>
+
 		<textarea type="text"  name="txtarea" style="width:100%;height:100vw">
 		` + item.Data + `
 		</textarea>
