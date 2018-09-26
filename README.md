@@ -2,6 +2,9 @@
 
 The Azure AD B2C extension for VS Code lets you quickly navigate through Azure AD B2C [custom policy](https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-overview-custom). Create new elements, such as: technical profiles and claim definition. For more information, see [Get started with custom policies](https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-get-started-custom).
 
+## Having an issue?
+Please contact us at b2ctools@outlook.com
+
 ## Get started
 To start working with your custom policy. Open you Visual Studio Code, and open your folder that containing the custom policy XML files. Or open the policy XML files directly from any folder.
 
@@ -41,7 +44,10 @@ Move your mouse over any XML tag name, to see the description
 ![XML Schema quick help](media/hover.gif)
 
 ### Application Insights
-Collect logs from Azure AD B2C and diagnose problems with your Azure AD B2C vscode extension. Read more [here](https://github.com/yoelhor/aad-b2c-vs-code-extension/blob/master/src/help/app-insights.md)
+Collect logs from Azure AD B2C and diagnose problems with your Azure AD B2C vscode extension. Read more [here](https://github.com/yoelhor/aad-b2c-vs-code-extension/blob/master/src/help/app-insights.md). The logs are organized by the **policy name**, **correlation Id** (the application insights presents the first digit of the correlation Id), and the **log timestamp**. This allows you to find the relevant log based on the lcoal timestamp and see the user jouney as executed by Azure AD B2C.
+
+![Application Insights](media/ai.png)
+
 
 ## Disclaimer
 The extension is developed and managed by the open-source community in [GitHub](https://github.com/yoelhor/aad-b2c-tools.git). The extension is not part of Azure AD B2C product and it's not supported under any Microsoft standard support program or service. The extension is provided AS IS without warranty of any kind. For any issue, visit the [GitHub](https://github.com/yoelhor/aad-b2c-tools.git) repository.
