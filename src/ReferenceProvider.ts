@@ -206,6 +206,9 @@ export class ReferenceProvider implements vscode.ReferenceProvider {
 export class FileData {
     public Uri: vscode.Uri;
     public Data: string;
+    public Policy: string;
+    public ParentPolicy: string;
+    public Level: number;
 
     constructor(uri: vscode.Uri, data: string) {
         this.Uri = uri;
