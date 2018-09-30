@@ -48,8 +48,7 @@ export default class GoDefinitionProvider implements vscode.DefinitionProvider {
 					});
 				}).then(() => {
 					return this.processSearch(word, document, files, position);
-				}
-				);
+				});
 
 			return promise;
 		}
@@ -85,8 +84,6 @@ export default class GoDefinitionProvider implements vscode.DefinitionProvider {
 					files[i].ParentPolicy = policyid[0].textContent;
 				}
 			}
-
-			console.log(files[i].Uri)
 		}
 
 		hierarchyFiles = this.getHierarchy(files, files[0], hierarchyFiles, 1);

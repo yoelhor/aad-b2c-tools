@@ -102,7 +102,6 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 				this.error = "";
 				body = body.replace('""', '"');
 				var info = JSON.parse(body);
-				console.log("Application Insights returned: " + info.value.length);
 
 				this.AppInsightsItems = [];
 				for (var i = 0; i < info.value.length; i++) {
