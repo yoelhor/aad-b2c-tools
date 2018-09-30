@@ -9,7 +9,7 @@ export default class GoDefinitionProvider implements vscode.DefinitionProvider {
 	public provideDefinition(
 		document: vscode.TextDocument,
 		position: vscode.Position,
-		token: vscode.CancellationToken): Thenable<vscode.Location> {
+		token: vscode.CancellationToken): Thenable<vscode.Definition> {
 
 		// Get the selected word
 		const word = ReferenceProvider.getSelectedWord(document, position);
@@ -47,7 +47,6 @@ export default class GoDefinitionProvider implements vscode.DefinitionProvider {
 						}
 					});
 				}).then(() => {
-					console.log("End of list");
 					return this.processSearch(word, document, files, position);
 				}
 				);
@@ -57,14 +56,13 @@ export default class GoDefinitionProvider implements vscode.DefinitionProvider {
 		else {
 			return this.processSearch(word, document, files, position);
 		}
-
 	}
 
 	private processSearch(
 		word: String,
 		document: vscode.TextDocument,
 		files: FileData[],
-		position: vscode.Position): Thenable<vscode.Location> {
+		position: vscode.Position): Thenable<vscode.Location[]> {
 
 		// Load the ativated XML file and replace the element Id with id
 		var DOMParser = require('xmldom').DOMParser;
@@ -108,10 +106,13 @@ export default class GoDefinitionProvider implements vscode.DefinitionProvider {
 				var location = new vscode.Location(
 					file.Uri,
 					new vscode.Position(nsAttr.lineNumber - 1, nsAttr.columnNumber));
+				
+				var locations: vscode.Location[] = [];
+				locations.push(location);
 
 				// Return the selected element
 				return new Promise(resolve => {
-					resolve(location);;
+					resolve(locations);;
 				});
 			}
 		}
