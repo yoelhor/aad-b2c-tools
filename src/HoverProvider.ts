@@ -87,12 +87,14 @@ export default class HoverProvider {
             var promise = goDefinitionProvider.provideDefinitionExt(document, position, token, true)
                 .then((locations) => {
                     var message: String = "**" + word + "**\r\n\r\n";
+                    
+                    var locs:vscode.Location[] = locations as vscode.Location[];
 
-                    for (var i = 0; i < locations.length; i++) {
+                    for (var i = 0; i < locs.length; i++) {
                         message += "[" + path.basename(locations[i].uri.toString()) + "](" + locations[i].uri._formatted + "#" + locations[i].range.start.line + ")\r\n\r\n";
                     }
 
-                    if (locations.length > 0)
+                    if (locs.length > 0)
                         return new Hover(message.toString());
                     else
                         return new Hover("");
