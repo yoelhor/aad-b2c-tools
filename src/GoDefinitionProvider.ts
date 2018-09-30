@@ -11,6 +11,15 @@ export default class GoDefinitionProvider implements vscode.DefinitionProvider {
 		position: vscode.Position,
 		token: vscode.CancellationToken): Thenable<vscode.Definition> {
 
+		return this.provideDefinitionExt(document, position, token, false);
+	}
+
+	public provideDefinitionExt(
+		document: vscode.TextDocument,
+		position: vscode.Position,
+		token: vscode.CancellationToken,
+		showAll: boolean): Thenable<vscode.Definition> {
+
 		// Get the selected word
 		const word = ReferenceProvider.getSelectedWord(document, position);
 
@@ -47,13 +56,13 @@ export default class GoDefinitionProvider implements vscode.DefinitionProvider {
 						}
 					});
 				}).then(() => {
-					return this.processSearch(word, document, files, position);
+					return this.processSearch(word, document, files, position, showAll);
 				});
 
 			return promise;
 		}
 		else {
-			return this.processSearch(word, document, files, position);
+			return this.processSearch(word, document, files, position, showAll);
 		}
 	}
 
@@ -61,7 +70,8 @@ export default class GoDefinitionProvider implements vscode.DefinitionProvider {
 		word: String,
 		document: vscode.TextDocument,
 		files: FileData[],
-		position: vscode.Position): Thenable<vscode.Location[]> {
+		position: vscode.Position,
+		showAll: boolean): Thenable<vscode.Location[]> {
 
 		// Load the ativated XML file and replace the element Id with id
 		var DOMParser = require('xmldom').DOMParser;
@@ -85,8 +95,12 @@ export default class GoDefinitionProvider implements vscode.DefinitionProvider {
 				}
 			}
 		}
+		var locations: vscode.Location[] = [];
 
-		hierarchyFiles = this.getHierarchy(files, files[0], hierarchyFiles, 1);
+		if (!showAll)
+			hierarchyFiles = this.getHierarchy(files, files[0], hierarchyFiles, 1);
+		else
+			hierarchyFiles = files;
 
 		// Iterate through files array
 		for (const file of hierarchyFiles) {
@@ -103,17 +117,23 @@ export default class GoDefinitionProvider implements vscode.DefinitionProvider {
 				var location = new vscode.Location(
 					file.Uri,
 					new vscode.Position(nsAttr.lineNumber - 1, nsAttr.columnNumber));
-				
-				var locations: vscode.Location[] = [];
+
 				locations.push(location);
 
 				// Return the selected element
-				return new Promise(resolve => {
-					resolve(locations);;
-				});
+				if (!showAll) {
+					return new Promise(resolve => {
+						resolve(locations);;
+					});
+				}
 			}
 		}
 
+		if (showAll) {
+			return new Promise(resolve => {
+				resolve(locations);;
+			});
+		}
 
 		// Return no found (null)
 		return new Promise((resolve) => resolve());

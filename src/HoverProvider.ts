@@ -84,16 +84,24 @@ export default class HoverProvider {
         else {
             var goDefinitionProvider: GoDefinitionProvider = new GoDefinitionProvider();
 
-            var promise = goDefinitionProvider.provideDefinition(document, position, token)
+            var promise = goDefinitionProvider.provideDefinitionExt(document, position, token, true)
                 .then((locations) => {
-                    
-                    return new Hover("**" + word + "**\r\n\r\n[" + path.basename(locations[0].uri.toString()) + "](" + locations[0].uri._formatted + "#" + locations[0].range.start.line + ")");
+                    var message: String = "**" + word + "**\r\n\r\n";
+
+                    for (var i = 0; i < locations.length; i++) {
+                        message += "[" + path.basename(locations[i].uri.toString()) + "](" + locations[i].uri._formatted + "#" + locations[i].range.start.line + ")\r\n\r\n";
+                    }
+
+                    if (locations.length > 0)
+                        return new Hover(message.toString());
+                    else
+                        return new Hover("");
                 })
                 .then((hover) => {
                     return hover;
                 });
 
-            return promise;    
+            return promise;
 
         }
     }
