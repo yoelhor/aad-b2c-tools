@@ -21,24 +21,24 @@ export function activate(context: vscode.ExtensionContext) {
     // This line of code will only be executed once when your extension is activated
     console.log('Congratulations, your extension "aadb2c" is now active!');
 
-    if (vscode.workspace.rootPath) {
-        let pattern = path.join(vscode.workspace.rootPath as string, '*.xml');
-        console.log("File system watcher started: " + pattern);
-        let fileWatcher = vscode.workspace.createFileSystemWatcher(pattern);
+    // if (vscode.workspace.rootPath) {
+    //     let pattern = path.join(vscode.workspace.rootPath as string, '*.xml');
+    //     console.log("File system watcher started: " + pattern);
+    //     let fileWatcher = vscode.workspace.createFileSystemWatcher(pattern);
 
-        context.subscriptions.push(fileWatcher.onDidCreate((filePath) => {
-            console.log(filePath + " created!");
-            //do something
-        }));
-        context.subscriptions.push(fileWatcher.onDidChange((filePath) => {
-            console.log(filePath + " changed!");
-            //do something
-        }));
-        context.subscriptions.push(fileWatcher.onDidDelete((filePath) => {
-            console.log(filePath + " deleted!");
-            //do something
-        }));
-    }
+    //     context.subscriptions.push(fileWatcher.onDidCreate((filePath) => {
+    //         console.log(filePath + " created!");
+    //         //do something
+    //     }));
+    //     context.subscriptions.push(fileWatcher.onDidChange((filePath) => {
+    //         console.log(filePath + " changed!");
+    //         //do something
+    //     }));
+    //     context.subscriptions.push(fileWatcher.onDidDelete((filePath) => {
+    //         console.log(filePath + " deleted!");
+    //         //do something
+    //     }));
+    // }
 
 
 
@@ -59,7 +59,10 @@ export function activate(context: vscode.ExtensionContext) {
     // Demo: Find all reference
     context.subscriptions.push(
         vscode.languages.registerReferenceProvider(
-            "xml", new ReferenceProvider()));
+            [
+                { language: 'xml', scheme: 'file', pattern: '**/*xml*' }
+            ],
+            new ReferenceProvider()));
 
     // Demo: register go to definiton provider
     context.subscriptions.push(

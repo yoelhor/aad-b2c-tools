@@ -46,7 +46,7 @@ export default class GoDefinitionProvider implements vscode.DefinitionProvider {
 			var promise = vscode.workspace.findFiles(new vscode.RelativePattern(vscode.workspace.rootPath as string, '*.{xml}'))
 				.then((uris) => {
 					uris.forEach((uri) => {
-						if (uri.fsPath.indexOf("?") == 0) {
+						if (uri.fsPath.indexOf("?") <= 0) {
 							// Check if the file is open. If yes, take precedence over unsaved version
 							var openedFile = files.filter(x => x.Uri.fsPath == uri.fsPath)
 
