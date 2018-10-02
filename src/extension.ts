@@ -6,12 +6,12 @@ import * as vscode from 'vscode';
 //Demo: Import classes
 import HoverProvider from './HoverProvider';
 import SnippetProvider from './SnippetProvider';
-import GoDefinitionProvider from './GoDefinitionProvider';
+//import GoDefinitionProvider from './GoDefinitionProvider';
 import CustomPolicyExplorerProvider from './CustomPolicyExplorerProvider';
 import ApplicationInsightsExplorerExplorerProvider from './ApplicationInsightsExplorerExplorerProvider';
 import { ReferenceProvider } from './ReferenceProvider';
 import Costs from './Consts';
-import * as path from 'path';
+//import * as path from 'path';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
