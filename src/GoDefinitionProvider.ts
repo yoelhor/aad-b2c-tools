@@ -43,7 +43,7 @@ export default class GoDefinitionProvider implements vscode.DefinitionProvider {
 		// Run this code only if user open a directory workspace
 		if (vscode.workspace.rootPath) {
 
-			var promise = vscode.workspace.findFiles(new vscode.RelativePattern(vscode.workspace.rootPath as string, '{**/*.xml}'))
+			var promise = vscode.workspace.findFiles(new vscode.RelativePattern(vscode.workspace.rootPath as string, '*.{xml}'))
 				.then((uris) => {
 					uris.forEach((uri) => {
 
@@ -112,7 +112,9 @@ export default class GoDefinitionProvider implements vscode.DefinitionProvider {
 
 			// If element found and it's not the same element the user pointing (same file and same line)
 			if (nsAttr != null &&
-				!(file.Uri === document.uri && (nsAttr.lineNumber == position.line || nsAttr.lineNumber - 1 == position.line))) {
+				!(file.Uri === document.uri && (nsAttr.lineNumber == position.line || nsAttr.lineNumber - 1 == position.line)) &&
+				!(showAll && nsAttr.tagName == "claimsexchange")) // this element has multiple instances under different user journeys 
+				 {
 
 				var location = new vscode.Location(
 					file.Uri,
