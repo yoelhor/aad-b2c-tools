@@ -373,12 +373,15 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 		// Load the configuration
 		var config = vscode.workspace.getConfiguration('aadb2c.ai');
 		var targetConfigFile: String = "";
+		var title: String;
 
 		if (vscode.workspace.rootPath) {
+			title = "Application Insights Settings (workspace)";
 			targetConfigFile = "<b>Workspace folder</b> settings file is located here:<br />" + path.join(vscode.workspace.rootPath, ".vscode", "settings.json");
 		}
 		else
 		{
+			title = "Application Insights Settings (global)";
 			targetConfigFile = `Depending on your platform, the <b>global</b> user settings file is located here:
 			<ul>
 				<li><b>Windows</b> %APPDATA%\\Code\\User\\settings.json</li>
@@ -422,7 +425,7 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 	</script>	
 	</head>
 	<body>
-		<H1>Application Insights Settings</h3>
+		<H1>` + title + `</h3>
 
 		<a href="https://github.com/yoelhor/aad-b2c-vs-code-extension/blob/master/src/help/app-insights.md">Click here to learn how to configure Application insights</a><br />&nbsp;
 

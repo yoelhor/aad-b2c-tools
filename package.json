@@ -150,7 +150,7 @@
                 },
                 "aadb2c.ai.maxRows": {
                     "type": "integer",
-                    "default": 10,
+                    "default": 30,
                     "description": "The number of events to return"
                 }
             }
