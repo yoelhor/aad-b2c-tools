@@ -10,8 +10,9 @@ class AppInsightsItem {
 	CorrelationId: String;
 	Timestamp: String;
 	Data: String;
+	HasException: boolean;
 
-	constructor(id: String, tenant: String, userJourney: String, orchestrationStep: String, correlationId: String, timestamp:String, data: String) {
+	constructor(id: String, tenant: String, userJourney: String, orchestrationStep: String, correlationId: String, timestamp: String, data: String, hasException: boolean) {
 		this.Id = id;
 		this.Tenant = tenant;
 		this.UserJourney = userJourney;
@@ -19,6 +20,7 @@ class AppInsightsItem {
 		this.CorrelationId = correlationId;
 		this.Timestamp = timestamp;
 		this.Data = data;
+		this.HasException = hasException;
 	}
 }
 
@@ -122,7 +124,8 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 						currentStep,
 						info.value[i].customDimensions.CorrelationId,
 						info.value[i].timestamp,
-						element.trace.message
+						element.trace.message,
+						(element.trace.message.indexOf('Exception') > 0)
 					));
 				}
 
@@ -183,7 +186,7 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 					// Load the list of correction IDs
 					var distinct: String[] = [];
 					for (var i = 0; i < this.AppInsightsItems.length; i++) {
-						
+
 						var correlationId = this.AppInsightsItems[i].CorrelationId;
 
 						if (elementValues[1] != this.AppInsightsItems[i].UserJourney ||
@@ -212,8 +215,8 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 						if (elementValues[2] != correlationId) continue;
 						{
 							var timestamp = new Date(Date.parse(this.AppInsightsItems[i].Timestamp.toString()));
-							var setp =  this.AppInsightsItems[i].OrchestrationStep ? " (" + this.AppInsightsItems[i].OrchestrationStep + ")" : "";
-							keys.push("OrchestrationStep|" + this.formatDate(timestamp) + setp + "|" + this.AppInsightsItems[i].Id);
+							var setp = this.AppInsightsItems[i].OrchestrationStep ? " (" + this.AppInsightsItems[i].OrchestrationStep + ")" : "";
+							keys.push("OrchestrationStep|" + this.formatDate(timestamp) + setp + "|" + this.AppInsightsItems[i].Id + "|" + this.AppInsightsItems[i].HasException);
 						}
 					}
 				}
@@ -224,13 +227,11 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 		return Promise.resolve(keys);
 	}
 
-	formatDate(date:Date)
-	{
-		return date.getFullYear().toString() + "-"  + this.pad(date.getMonth()) + "-"  + this.pad(date.getDate()) + " "  + this.pad(date.getHours()) + ":"  + this.pad(date.getMinutes()) + ":"  + this.pad(date.getSeconds());
+	formatDate(date: Date) {
+		return date.getFullYear().toString() + "-" + this.pad(date.getMonth()) + "-" + this.pad(date.getDate()) + " " + this.pad(date.getHours()) + ":" + this.pad(date.getMinutes()) + ":" + this.pad(date.getSeconds());
 	}
-	pad(date: number)
-	{
-		return date.toString().length < 2 ? "0" + date :  date; 
+	pad(date: number) {
+		return date.toString().length < 2 ? "0" + date : date;
 	}
 
 	getTreeItem(elementKey: String): vscode.TreeItem {
@@ -257,6 +258,10 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 				title: '',
 				arguments: [elementValues[2]]
 			};
+
+			if (elementValues[3] === 'true') {
+				treeItem.iconPath = this.getIcon("warning.svg");
+			}
 		}
 
 		return treeItem;
@@ -379,8 +384,7 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 			title = "Application Insights Settings (workspace)";
 			targetConfigFile = "<b>Workspace folder</b> settings file is located here:<br />" + path.join(vscode.workspace.rootPath, ".vscode", "settings.json");
 		}
-		else
-		{
+		else {
 			title = "Application Insights Settings (global)";
 			targetConfigFile = `Depending on your platform, the <b>global</b> user settings file is located here:
 			<ul>
