@@ -46,13 +46,14 @@ export default class GoDefinitionProvider implements vscode.DefinitionProvider {
 			var promise = vscode.workspace.findFiles(new vscode.RelativePattern(vscode.workspace.rootPath as string, '*.{xml}'))
 				.then((uris) => {
 					uris.forEach((uri) => {
+						if (uri.fsPath.indexOf("?") == 0) {
+							// Check if the file is open. If yes, take precedence over unsaved version
+							var openedFile = files.filter(x => x.Uri.fsPath == uri.fsPath)
 
-						// Check if the file is open. If yes, take precedence over unsaved version
-						var openedFile = files.filter(x => x.Uri.fsPath == uri.fsPath)
-
-						if (openedFile == null || openedFile.length == 0) {
-							var data = fs.readFileSync(uri.fsPath, 'utf8');
-							files.push(new FileData(uri, data.toString().replace(/( )(Id=|Id =|Id  =)/gi, " id=")));
+							if (openedFile == null || openedFile.length == 0) {
+								var data = fs.readFileSync(uri.fsPath, 'utf8');
+								files.push(new FileData(uri, data.toString().replace(/( )(Id=|Id =|Id  =)/gi, " id=")));
+							}
 						}
 					});
 				}).then(() => {
@@ -114,7 +115,7 @@ export default class GoDefinitionProvider implements vscode.DefinitionProvider {
 			if (nsAttr != null &&
 				!(file.Uri === document.uri && (nsAttr.lineNumber == position.line || nsAttr.lineNumber - 1 == position.line)) &&
 				!(showAll && nsAttr.tagName == "claimsexchange")) // this element has multiple instances under different user journeys 
-				 {
+			{
 
 				var location = new vscode.Location(
 					file.Uri,
