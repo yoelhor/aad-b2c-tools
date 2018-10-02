@@ -36,7 +36,7 @@ export default class GoDefinitionProvider implements vscode.DefinitionProvider {
 		for (const doc of vscode.workspace.textDocuments) {
 
 			// Skip selected file
-			if (doc.uri != document.uri)
+			if (doc.uri != document.uri && doc.uri.scheme != "git")
 				files.push(new FileData(doc.uri, doc.getText().replace(/( )(Id=|Id =|Id  =)/gi, " id=")))
 		}
 
