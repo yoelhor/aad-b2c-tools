@@ -172,6 +172,7 @@
         "request": "2.88.0"
     },
     "dependencies": {
-        "xmldom": "^0.1.27"
+        "xmldom": "^0.1.27",
+        "request": "2.88.0"
     }
 }
