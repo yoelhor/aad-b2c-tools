@@ -6,7 +6,7 @@ import * as vscode from 'vscode';
 //Demo: Import classes
 import HoverProvider from './HoverProvider';
 import SnippetProvider from './SnippetProvider';
-//import GoDefinitionProvider from './GoDefinitionProvider';
+import GoDefinitionProvider from './GoDefinitionProvider';
 import CustomPolicyExplorerProvider from './CustomPolicyExplorerProvider';
 import ApplicationInsightsExplorerExplorerProvider from './ApplicationInsightsExplorerExplorerProvider';
 import { ReferenceProvider } from './ReferenceProvider';
@@ -56,12 +56,24 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand('ApplicationInsightsExplorer.show', range => applicationInsightsExplorerProvider.show(range));
     vscode.commands.registerCommand('ApplicationInsightsExplorer.settings', range => applicationInsightsExplorerProvider.settings());
 
-
-
-    // Demo: register go to definiton provider
+    // Demo: Find all reference
     context.subscriptions.push(
         vscode.languages.registerReferenceProvider(
             "xml", new ReferenceProvider()));
+
+    // Demo: register go to definiton provider
+    context.subscriptions.push(
+        vscode.languages.registerDefinitionProvider([
+            { language: 'xml', scheme: 'file', pattern: '**/*xml*' }
+        ],
+            new GoDefinitionProvider()));
+
+    // Demo: register find all references
+    context.subscriptions.push(
+        vscode.languages.registerReferenceProvider([
+            { language: 'xml', scheme: 'file', pattern: '**/*xml*' }
+        ],
+            new ReferenceProvider()));
 
     // Demo: register the hover provider
     context.subscriptions.push(
