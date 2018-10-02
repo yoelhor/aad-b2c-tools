@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { Hover } from 'vscode';
 import GoDefinitionProvider from './GoDefinitionProvider';
 import path = require('path');
+import { ReferenceProvider } from './ReferenceProvider';
 
 export default class HoverProvider {
 
@@ -34,7 +35,8 @@ export default class HoverProvider {
 
         const wordPosition = document.getWordRangeAtPosition(position);
         if (!wordPosition) return new Promise((resolve) => resolve());
-        const word = document.getText(wordPosition);
+        //const word = document.getText(wordPosition);
+        const word = ReferenceProvider.getSelectedWord(document, position);
         var key: KeywordData = new KeywordData("", "", "", null);
 
         try {

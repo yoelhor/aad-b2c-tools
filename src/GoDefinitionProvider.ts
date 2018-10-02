@@ -21,7 +21,7 @@ export default class GoDefinitionProvider implements vscode.DefinitionProvider {
 		showAll: boolean): Thenable<vscode.Definition> {
 
 		// Get the selected word
-		const word = ReferenceProvider.getSelectedWord(document, position);
+		const word = ReferenceProvider.getSelectedWord(document, position).toLowerCase();
 
 		if (word.length == 0)
 			return new Promise((resolve) => resolve());

@@ -22,28 +22,37 @@ export class ReferenceProvider implements vscode.ReferenceProvider {
 
     }
 
-
     public static getSelectedWord(document: vscode.TextDocument, position: vscode.Position): string {
 
         // Get the selected word
         const wordPosition = document.getWordRangeAtPosition(position);
         if (!wordPosition) return "";
 
-        //const word1 = document.getText(wordPosition).toLowerCase();
 
         // Temporary workaround for separated word with dash (-) or dot (.)
         const line = document.lineAt(position.line).text;
+        var startWord: number = wordPosition.start.character;
+        var endWord: number = wordPosition.end.character;
+        var word2: string = "";
 
-        // Search for the quotation marks
-        let startWord = line.lastIndexOf('"', wordPosition.start.character);
-        let endWord = line.indexOf('"', wordPosition.end.character);
-        let word2 = line.substring(startWord + 1, endWord).toLowerCase();
+        // Go back toward the start of the line
+        for (var i = wordPosition.start.character; i > 0; i--) {
+            if (line[i] == "<" || line[i] == " " || line[i] == "'" || line[i] == '"' || line[i] == '\r\n') {
+                startWord = i;
+                break;
+            }
+        }
 
-        // In case of XML body element, search for the <> marks
-        if (word2 === "" || word2.indexOf(">") > 0 || word2.indexOf("<") > 0) {
-            startWord = line.lastIndexOf('>', wordPosition.start.character);
-            endWord = line.indexOf('<', wordPosition.end.character);
-            word2 = line.substring(startWord + 1, endWord).toLowerCase();
+        // Go back toward the end of the line
+        for (var i = wordPosition.end.character; i < line.length; i++) {
+            if (line[i] == ">" || line[i] == " " || line[i] == "'" || line[i] == '"' || line[i] == '\r\n') {
+                endWord = i;
+                break;
+            }
+        }
+
+        if (endWord > startWord) {
+            word2 = line.substring(startWord + 1, endWord);
         }
 
         return word2;
@@ -84,7 +93,7 @@ export class ReferenceProvider implements vscode.ReferenceProvider {
 
         }
 
-        const word = ReferenceProvider.getSelectedWord(document, position);
+        const word = ReferenceProvider.getSelectedWord(document, position).toLowerCase();
 
         if (word.length == 0)
             return Promise.resolve(null);
