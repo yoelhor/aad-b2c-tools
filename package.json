@@ -42,7 +42,7 @@
             },
             {
                 "command": "extension.policy.build",
-                "title": "B2C policy build"
+                "title": "B2C Policy build"
             },
             {
                 "command": "ApplicationInsightsExplorer.refresh",

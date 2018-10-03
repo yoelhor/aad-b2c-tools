@@ -49,7 +49,7 @@ Collect logs from Azure AD B2C and diagnose problems with your Azure AD B2C vsco
 ![Application Insights](media/ai.png)
 
 ### App Settings
-Allows you to manage the values of your Azure AD B2C environments. When you execute the **B2C policy build** command, the extension finds and replace the values of your settings with the ones configure in the policy file, and creates a directory that contains all of your policy files (after the replacement). In the following example, the extension replaces the keys with the value configure in the `appsettings.json` file: 
+Allows you to manage the values of your Azure AD B2C environments. When you execute the **B2C Policy build** command, the extension finds and replace the values of your settings with the ones configure in the policy file, and creates a directory that contains all of your policy files (after the replacement). In the following example, the extension replaces the keys with the value configure in the `appsettings.json` file: 
 - {Settings:Tenant}
 - {Settings:IdentityExperienceFrameworkAppId}
 - {Settings:ProxyIdentityExperienceFrameworkAppId}
