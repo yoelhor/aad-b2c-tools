@@ -9,7 +9,7 @@ export default class PolicBuild {
         var rootPath: string;
         // Check if a folder is opend
         if ((!vscode.workspace.workspaceFolders) || (vscode.workspace.workspaceFolders.length == 0)) {
-            vscode.window.showInformationMessage("To build and a policy you need to open the policy folder in VS code");
+            vscode.window.showWarningMessage("To build a policy you need to open the policy folder in VS code");
             return;
         }
 
@@ -85,6 +85,8 @@ export default class PolicBuild {
                                             if (err) throw err;
                                         });
                                     });
+
+                                    vscode.window.showInformationMessage("You policies successfully exported and stored under the Environment folder.");
                                 });
 
                             });

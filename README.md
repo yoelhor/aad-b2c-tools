@@ -48,6 +48,49 @@ Collect logs from Azure AD B2C and diagnose problems with your Azure AD B2C vsco
 
 ![Application Insights](media/ai.png)
 
+### App Settings
+Allows you to manage the values of your Azure AD B2C environments. When you execute the **B2C policy build** command, the extension finds and replace the values of your settings with the ones configure in the policy file, and creates a directory that contains all of your policy files (after the replacement). In the following example, the extension replaces the keys with the value configure in the `appsettings.json` file: 
+- {Settings:Tenant}
+- {Settings:IdentityExperienceFrameworkAppId}
+- {Settings:ProxyIdentityExperienceFrameworkAppId}
+- {Settings:FacebookAppId}
+
+![App Settings](media/app-settings.png)
+
+The configuration `appsettings.json` file contains the values for each environment. You can add more settings, to accommodate your needs, such as the URL of a REST API end point, Google+ app Id, URL of content definitions, and so on. In the policy file, use the format of **Settings:** and the key name `{Settings:Key}`.
+
+```JSON
+{
+  "Environments": [
+  {
+    "Name": "Test",
+    "Production": false,
+    "Tenant": "your-tenant.onmicrosoft.com",
+    "IdentityExperienceFrameworkAppId": "Your AD app Id",
+    "ProxyIdentityExperienceFrameworkAppId": "Your AD Proxy app Id",
+    "FacebookAppId": "0"
+  },
+  {
+    "Name": "QA",
+    "Production": false,
+    "Tenant": "your-tenant.onmicrosoft.com",
+    "IdentityExperienceFrameworkAppId": "Your AD app Id",
+    "ProxyIdentityExperienceFrameworkAppId": "Your AD Proxy app Id",
+    "FacebookAppId": "0"
+  },
+  {
+    "Name": "Production",
+    "Production": true,
+    "Tenant": "your-tenant.onmicrosoft.com",
+    "IdentityExperienceFrameworkAppId": "Your AD app Id",
+    "ProxyIdentityExperienceFrameworkAppId": "Your AD Proxy app Id",
+    "FacebookAppId": "0"
+  }]
+}
+```
+
+After the command is completed, you will find the exported policies under the **Environment** folder.
+
 
 ## Disclaimer
 The extension is developed and managed by the open-source community in [GitHub](https://github.com/yoelhor/aad-b2c-tools.git). The extension is not part of Azure AD B2C product and it's not supported under any Microsoft standard support program or service. The extension is provided AS IS without warranty of any kind. For any issue, visit the [GitHub](https://github.com/yoelhor/aad-b2c-tools.git) repository.
