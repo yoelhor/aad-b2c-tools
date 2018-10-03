@@ -580,7 +580,7 @@ export default class Consts {
         '\t	<JourneyInsights TelemetryEngine="ApplicationInsights" InstrumentationKey="{instrumentationKey}" DeveloperMode="true" ClientEnabled="false" ServerEnabled="true" TelemetryVersion="1.0.0" />\r\n' +
         '\t</UserJourneyBehaviors>\r\n';
 
-        static CLAIM_stringCollection: string = '\t<ClaimType Id="{name}">\r\n' +
+    static CLAIM_stringCollection: string = '\t<ClaimType Id="{name}">\r\n' +
         '\t	<DisplayName>{displayName}</DisplayName>\r\n' +
         '\t	<DataType>stringCollection</DataType>\r\n' +
         '\t	<AdminHelpText>Add help text here</AdminHelpText>\r\n' +
@@ -588,7 +588,7 @@ export default class Consts {
         '\t</ClaimType>\r\n';
 
 
-        static CLAIM_Boolean: string = '\t<ClaimType Id="{name}">\r\n' +
+    static CLAIM_Boolean: string = '\t<ClaimType Id="{name}">\r\n' +
         '\t	<DisplayName>{displayName}</DisplayName>\r\n' +
         '\t	<DataType>boolean</DataType>\r\n' +
         '\t	<AdminHelpText>Add help text here</AdminHelpText>\r\n' +
@@ -596,19 +596,43 @@ export default class Consts {
         '\t</ClaimType>\r\n';
 
 
-        static CLAIM_Integer: string = '\t<ClaimType Id="{name}">\r\n' +
+    static CLAIM_Integer: string = '\t<ClaimType Id="{name}">\r\n' +
         '\t	<DisplayName>{displayName}</DisplayName>\r\n' +
         '\t	<DataType>int</DataType>\r\n' +
         '\t	<AdminHelpText>Add help text here</AdminHelpText>\r\n' +
         '\t	<UserHelpText>Add help text here</UserHelpText>\r\n' +
         '\t</ClaimType>\r\n';
-        
-        static CLAIM_Long: string = '\t<ClaimType Id="{name}">\r\n' +
+
+    static CLAIM_Long: string = '\t<ClaimType Id="{name}">\r\n' +
         '\t	<DisplayName>{displayName}</DisplayName>\r\n' +
         '\t	<DataType>long</DataType>\r\n' +
         '\t	<AdminHelpText>Add help text here</AdminHelpText>\r\n' +
         '\t	<UserHelpText>Add help text here</UserHelpText>\r\n' +
-        '\t</ClaimType>\r\n';}
+        '\t</ClaimType>\r\n';
 
+    static DefaultDeploymentSettings: string = `
+{
+    "Environments": [
+        {
+            "Name": "Test",
+            "Production": false,
+            "Tenant": "your-tenant.onmicrosoft.com",
+            "FacebookAppId": "0"
+        },
+        {
+            "Name": "QA",
+            "Production": false,
+            "Tenant": "your-tenant.onmicrosoft.com",
+            "FacebookAppId": "0"
+        },
+        {
+            "Name": "Production",
+            "Production": true,
+            "Tenant": "your-tenant.onmicrosoft.com",
+            "FacebookAppId": "0"
+        }
+    ]
+}`;
+}
 
 

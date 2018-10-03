@@ -10,6 +10,7 @@ import CustomPolicyExplorerProvider from './CustomPolicyExplorerProvider';
 import ApplicationInsightsExplorerExplorerProvider from './ApplicationInsightsExplorerExplorerProvider';
 import { ReferenceProvider } from './ReferenceProvider';
 import InsertCommands from './InsertCommands';
+import PolicBuild from './PolicyBuild';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -71,6 +72,9 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Add application insights command
     context.subscriptions.push(vscode.commands.registerCommand('ApplicationInsightsExplorer.add', () => InsertCommands.InsertApplicationInsights()));
+
+    // Policy build
+    context.subscriptions.push(vscode.commands.registerCommand('extension.policy.build', () => PolicBuild.Build()));
 }
 
 // this method is called when your extension is deactivated

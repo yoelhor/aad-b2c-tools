@@ -41,6 +41,10 @@
                 "title": "B2C Add Claim Type"
             },
             {
+                "command": "extension.policy.build",
+                "title": "B2C policy build"
+            },
+            {
                 "command": "ApplicationInsightsExplorer.refresh",
                 "title": "Refresh",
                 "icon": {
@@ -88,6 +92,12 @@
                 "command": "ApplicationInsightsExplorer.add",
                 "key": "shift+ctrl+4",
                 "mac": "shift+cmd+4",
+                "when": "editorTextFocus"
+            },
+            {
+                "command": "extension.policy.build",
+                "key": "shift+ctrl+5",
+                "mac": "shift+cmd+5",
                 "when": "editorTextFocus"
             }
         ],
