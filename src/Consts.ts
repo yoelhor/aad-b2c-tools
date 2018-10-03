@@ -617,18 +617,24 @@ export default class Consts {
             "Name": "Test",
             "Production": false,
             "Tenant": "your-tenant.onmicrosoft.com",
+            "IdentityExperienceFrameworkAppId": "Your AD app Id",
+            "ProxyIdentityExperienceFrameworkAppId": "Your AD Proxy app Id",
             "FacebookAppId": "0"
         },
         {
             "Name": "QA",
             "Production": false,
             "Tenant": "your-tenant.onmicrosoft.com",
+            "IdentityExperienceFrameworkAppId": "Your AD app Id",
+            "ProxyIdentityExperienceFrameworkAppId": "Your AD Proxy app Id",
             "FacebookAppId": "0"
         },
         {
             "Name": "Production",
             "Production": true,
             "Tenant": "your-tenant.onmicrosoft.com",
+            "IdentityExperienceFrameworkAppId": "Your AD app Id",
+            "ProxyIdentityExperienceFrameworkAppId": "Your AD Proxy app Id",
             "FacebookAppId": "0"
         }
     ]

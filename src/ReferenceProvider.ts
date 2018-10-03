@@ -10,7 +10,7 @@ export class ReferenceProvider implements vscode.ReferenceProvider {
 
         // Run this code only if user open a directory workspace
         if (vscode.workspace.rootPath) {
-            var promise = vscode.workspace.findFiles(new vscode.RelativePattern(vscode.workspace.rootPath as string, '{**/*.xml}')).then((res) => {
+            var promise = vscode.workspace.findFiles(new vscode.RelativePattern(vscode.workspace.rootPath as string, '*.{xml}')).then((res) => {
                 this.files = res;
                 return this.processSearch(document, position);
             });
@@ -37,7 +37,7 @@ export class ReferenceProvider implements vscode.ReferenceProvider {
 
         // Go back toward the start of the line
         for (var i = wordPosition.start.character; i > 0; i--) {
-            if (line[i] == "<" || line[i] == " " || line[i] == "'" || line[i] == '"' || line[i] == '\r\n') {
+            if (line[i] == "<" || line[i] == ">" || line[i] == " " || line[i] == "'" || line[i] == '"' || line[i] == '\r\n') {
                 startWord = i;
                 break;
             }
@@ -45,7 +45,7 @@ export class ReferenceProvider implements vscode.ReferenceProvider {
 
         // Go back toward the end of the line
         for (var i = wordPosition.end.character; i < line.length; i++) {
-            if (line[i] == ">" || line[i] == " " || line[i] == "'" || line[i] == '"' || line[i] == '\r\n') {
+            if (line[i] == "<" || line[i] == ">" || line[i] == " " || line[i] == "'" || line[i] == '"' || line[i] == '\r\n') {
                 endWord = i;
                 break;
             }
@@ -71,6 +71,9 @@ export class ReferenceProvider implements vscode.ReferenceProvider {
 
         // Run this code only if open files directly
         for (const doc of vscode.workspace.textDocuments) {
+             // Skip deployment output environments files 
+            if (doc.uri.fsPath.toLowerCase().indexOf("/environments/")) continue;
+            
             promises_array.push(new Promise((resolve: any) => resolve(new FileData(doc.uri, doc.getText()))));
             openedFiles.push(doc.uri.fsPath.toLocaleLowerCase())
         }

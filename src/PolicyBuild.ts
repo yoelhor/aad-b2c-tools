@@ -77,7 +77,7 @@ export default class PolicBuild {
                                         var policContent = file.Data;
 
                                         Object.keys(entry).forEach(key => {
-                                            policContent = policContent.replace("{Settings:" + key + "}", entry[key]);
+                                            policContent = policContent.replace(new RegExp("\{Settings:" + key + "\}", "g"), entry[key]);
                                         });
 
                                         // Save the  policy

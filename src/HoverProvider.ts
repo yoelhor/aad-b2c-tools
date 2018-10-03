@@ -35,7 +35,6 @@ export default class HoverProvider {
 
         const wordPosition = document.getWordRangeAtPosition(position);
         if (!wordPosition) return new Promise((resolve) => resolve());
-        //const word = document.getText(wordPosition);
         const word = ReferenceProvider.getSelectedWord(document, position);
         var key: KeywordData = new KeywordData("", "", "", null);
 

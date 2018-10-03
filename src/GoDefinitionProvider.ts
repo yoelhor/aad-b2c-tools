@@ -30,10 +30,16 @@ export default class GoDefinitionProvider implements vscode.DefinitionProvider {
 		var files: FileData[] = [];
 
 		// Add the selected file
-		files.push(new FileData(document.uri, document.getText().replace(/( )(Id=|Id =|Id  =)/gi, " id=")));
-
+		// Skip deployment output environments files 
+		if (!document.uri.fsPath.toLowerCase().indexOf("/environments/")) {
+			files.push(new FileData(document.uri, document.getText().replace(/( )(Id=|Id =|Id  =)/gi, " id=")));
+		}
+		
 		// Add the rest of open files
 		for (const doc of vscode.workspace.textDocuments) {
+
+			// Skip deployment output environments files 
+			if (doc.uri.fsPath.toLowerCase().indexOf("/environments/")) continue;
 
 			// Skip selected file
 			if (doc.uri != document.uri && doc.uri.scheme != "git")
