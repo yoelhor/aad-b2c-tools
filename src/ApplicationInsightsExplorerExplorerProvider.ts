@@ -33,6 +33,7 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 	autoRefresh: boolean = false;
 	AppInsightsItems: AppInsightsItem[] = [];
 	panel;
+	panelConfig;
 	error: String = "";
 
 	constructor(private context: vscode.ExtensionContext) {
@@ -48,22 +49,14 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 	}
 
 	onActiveEditorChanged(): void {
-		if (this.panel && this.panel.visible) {
+		if ((this.panel && this.panel.visible) ||
+			(this.panelConfig && this.panelConfig.visible) ||
+			(vscode.window.activeTextEditor && vscode.window.activeTextEditor.document.uri.scheme === 'file' && vscode.window.activeTextEditor.document.languageId === 'xml')){
 			vscode.commands.executeCommand('setContext', 'CustomPolicyExplorerEnabled', true);
-			this.refresh();
-			return;
 		}
-
-		if (vscode.window.activeTextEditor) {
-			if (vscode.window.activeTextEditor.document.uri.scheme === 'file') {
-				const enabled = vscode.window.activeTextEditor.document.languageId === 'xml';
-				vscode.commands.executeCommand('setContext', 'CustomPolicyExplorerEnabled', enabled);
-				if (enabled) {
-					this.refresh();
-				}
-			}
-		} else {
-			vscode.commands.executeCommand('setContext', 'CustomPolicyExplorerEnabled', false);
+		else
+		{
+			vscode.commands.executeCommand('setContext', 'CustomPolicyExplorerEnabled', false);	
 		}
 	}
 
@@ -289,6 +282,14 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 
 				// And set its HTML content
 				this.panel.webview.html = this.getWebviewContent(this.AppInsightsItems[i]);
+				this.panel.reveal();
+				this.panel.onDidChangeViewState( (e) => 
+				{
+					if (e.webviewPanel._visible)
+					{
+						vscode.commands.executeCommand('setContext', 'CustomPolicyExplorerEnabled', true);
+					}
+				})
 				break;
 			}
 		}
@@ -334,14 +335,14 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 
 	settings() {
 
-		if (!this.panel)
-			this.panel = vscode.window.createWebviewPanel('ApplicationInsightsSettings', "Application Insights Settings", vscode.ViewColumn.One, {
+		if (!this.panelConfig)
+			this.panelConfig = vscode.window.createWebviewPanel('ApplicationInsightsSettings', "Application Insights Settings", vscode.ViewColumn.One, {
 				// Enable scripts in the webview
 				enableScripts: true
 			});
 
 		// Handle messages from the webview
-		this.panel.webview.onDidReceiveMessage(message => {
+		this.panelConfig.webview.onDidReceiveMessage(message => {
 
 			// Load the configuration
 			var config = vscode.workspace.getConfiguration('aadb2c.ai');
@@ -355,22 +356,21 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 			config.update("id", message.id, configurationTarget);
 			config.update("key", message.key, configurationTarget);
 			config.update("maxRows", Number(message.maxRows), configurationTarget);
-			this.panel.dispose();
+			this.panelConfig.dispose();
 
 			// Trick, place a delay and the values get loaded
 			setTimeout(() => this.refresh(), 2500);
 
-			this.refresh();
-
 		}, undefined, undefined);
 
-		this.panel.onDidDispose(() => {
+		this.panelConfig.onDidDispose(() => {
 			// When the panel is closed, cancel any future updates to the webview content
-			this.panel = null;
+			this.panelConfig = null;
 		}, null, null);
 
 		// And set its HTML content
-		this.panel.webview.html = this.getSettingsWebviewContent();
+		this.panelConfig.webview.html = this.getSettingsWebviewContent();
+		this.panelConfig.reveal();
 	}
 
 	getSettingsWebviewContent() {
