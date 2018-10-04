@@ -115,12 +115,12 @@ You can add, or remove environments, keys, and values, to accommodate your needs
     "FacebookAppId": "0",
     "MicrosoftAppId": "0",
     "GoogleAppId": "0",
-    "RESTApiServer",
-    "HTMLPagesServer"
+    "RESTApiServer": "The location of your REST API",
+    "HTMLPagesServer": "The location of your HTML page layout files"
   }]
 }
 ```
-After the command is completed, you will find the exported policies under the **Environment** folder. Before you upload the policy to your Azure AD B2C tenant, check the values of the exported policy files.
+After the command is completed, you will find the exported policies under the **Environment** folder. **Important**: Before you upload the policy to your Azure AD B2C tenant, check the values of the exported policy files.
 
 
 ## Disclaimer
