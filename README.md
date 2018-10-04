@@ -49,7 +49,7 @@ Collect logs from Azure AD B2C and diagnose problems with your Azure AD B2C vsco
 ![Application Insights](media/ai.png)
 
 ### App Settings
-Allows you to manage the values of your Azure AD B2C environments. When you execute the **B2C Policy build** command, the extension finds and replace the values of your settings with the ones configure in the policy file, and creates a directory that contains all of your policy files (after the replacement). In the following example, the extension replaces the keys with the value configure in the `appsettings.json` file: 
+Allows you to manage the values of your Azure AD B2C environments. When you execute the **B2C Policy build** command, the VS code extension finds and replaces the values of your settings with the ones configure in the policy file, and creates a directory that contains all of your policy files (after the replacement). In the following example, the extension replaces the keys with the value configure in the `appsettings.json` file: 
 - {Settings:Tenant}
 - {Settings:IdentityExperienceFrameworkAppId}
 - {Settings:ProxyIdentityExperienceFrameworkAppId}
@@ -57,7 +57,9 @@ Allows you to manage the values of your Azure AD B2C environments. When you exec
 
 ![App Settings](media/app-settings.png)
 
-The configuration `appsettings.json` file contains the values for each environment. You can add more settings, to accommodate your needs, such as the URL of a REST API end point, Google+ app Id, URL of content definitions, and so on. In the policy file, use the format of **Settings:** and the key name `{Settings:Key}`.
+The configuration `appsettings.json` file contains the keys with their values for each environment. The **Name** key contains the environment name, which VS code extension uses to create such a folder under the environments folder - use your operation system legal characters only. The **Production** key (boolean) is preserved for future use, indicating whether the environment is a production one. In the policy file, use the format of **Settings:** and the key name, for example `{Settings:Key}`.
+
+On the first time you run the **B2C Policy build** command, the VS code extension lets you create the  `appsettings.json` file, with default set of environments, keys, and values:
 
 ```JSON
 {
@@ -88,8 +90,37 @@ The configuration `appsettings.json` file contains the values for each environme
   }]
 }
 ```
+You can add, or remove environments, keys, and values, to accommodate your needs. For example, you can add new settings, such as the URL of a REST API end point, Google+ app Id, URL of content definitions, and so on. You can also add new environment, such as pre-prod. Make sure you provide the same set of key (with the relevant values) for each environment. In the following example, we add the **Pre-Production** environment and new set of key-values.
 
-After the command is completed, you will find the exported policies under the **Environment** folder.
+```JSON
+{
+  "Environments": [
+  {
+    "Name": "Test",
+    ...
+  },
+  {
+    "Name": "QA",
+    ...
+  },
+  {
+    "Name": "Pre-Production",
+  },
+  {
+    "Name": "Production",
+    "Production": true,
+    "Tenant": "your-tenant.onmicrosoft.com",
+    "IdentityExperienceFrameworkAppId": "Your AD app Id",
+    "ProxyIdentityExperienceFrameworkAppId": "Your AD Proxy app Id",
+    "FacebookAppId": "0",
+    "MicrosoftAppId": "0",
+    "GoogleAppId": "0",
+    "RESTApiServer",
+    "HTMLPagesServer"
+  }]
+}
+```
+After the command is completed, you will find the exported policies under the **Environment** folder. Before you upload the policy to your Azure AD B2C tenant, check the values of the exported policy files.
 
 
 ## Disclaimer
