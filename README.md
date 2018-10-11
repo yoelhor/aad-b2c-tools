@@ -57,7 +57,13 @@ Allows you to manage the values of your Azure AD B2C environments. When you exec
 
 ![App Settings](media/app-settings.png)
 
-The configuration `appsettings.json` file contains the keys with their values for each environment. The **Name** key contains the environment name, which VS code extension uses to create such a folder under the environments folder - use your operation system legal characters only. The **Production** key (boolean) is preserved for future use, indicating whether the environment is a production one. In the policy file, use the format of **Settings:** and the key name, for example `{Settings:Key}`.
+The configuration `appsettings.json` file contains the keys with their values for each environment. 
+- **Name** contains the environment name which VS code extension uses to create the environmant folder (under the environments parent folder). Use your operation system legal characters only. 
+- **Tenant** specify the tenant name, such as contoso.onmicrosoft.com. In the policy file, use the format of **Settings:Tenant**, for example `{Settings:Tenant}`.
+-  **Production**  (boolean) is preserved for future use, indicating whether the environment is a production one. 
+- **PolicySettings** contains a collection of key-value pair with your settings. In the policy file, use the format of **Settings:** and the key name, for example `{Settings:FacebookAppId}`.
+
+
 
 On the first time you run the **B2C Policy build** command, the VS code extension lets you create the  `appsettings.json` file, with default set of environments, keys, and values:
 
@@ -65,28 +71,34 @@ On the first time you run the **B2C Policy build** command, the VS code extensio
 {
   "Environments": [
   {
+    "Name": "Development",
+    "Production": false,
+    "Tenant": "your-tenant.onmicrosoft.com",
+    "PolicySettings" : {
+      "IdentityExperienceFrameworkAppId": "Your dev environment AD app Id",
+      "ProxyIdentityExperienceFrameworkAppId": "Your AD dev environment Proxy app Id",
+      "FacebookAppId": "0"
+    }
+  },
+  {
     "Name": "Test",
     "Production": false,
     "Tenant": "your-tenant.onmicrosoft.com",
-    "IdentityExperienceFrameworkAppId": "Your AD app Id",
-    "ProxyIdentityExperienceFrameworkAppId": "Your AD Proxy app Id",
-    "FacebookAppId": "0"
-  },
-  {
-    "Name": "QA",
-    "Production": false,
-    "Tenant": "your-tenant.onmicrosoft.com",
-    "IdentityExperienceFrameworkAppId": "Your AD app Id",
-    "ProxyIdentityExperienceFrameworkAppId": "Your AD Proxy app Id",
-    "FacebookAppId": "0"
+    "PolicySettings" : {
+      "IdentityExperienceFrameworkAppId": "Your test environment AD app Id",
+      "ProxyIdentityExperienceFrameworkAppId": "Your test environment AD Proxy app Id",
+      "FacebookAppId": "0"
+    }
   },
   {
     "Name": "Production",
     "Production": true,
     "Tenant": "your-tenant.onmicrosoft.com",
-    "IdentityExperienceFrameworkAppId": "Your AD app Id",
-    "ProxyIdentityExperienceFrameworkAppId": "Your AD Proxy app Id",
-    "FacebookAppId": "0"
+    "PolicySettings" : {
+      "IdentityExperienceFrameworkAppId": "Your production environment AD app Id",
+      "ProxyIdentityExperienceFrameworkAppId": "Your production environment AD Proxy app Id",
+      "FacebookAppId": "0"
+    }
   }]
 }
 ```
@@ -95,6 +107,10 @@ You can add, or remove environments, keys, and values, to accommodate your needs
 ```JSON
 {
   "Environments": [
+  {
+    "Name": "Development",
+    ...
+  },
   {
     "Name": "Test",
     ...
@@ -110,13 +126,15 @@ You can add, or remove environments, keys, and values, to accommodate your needs
     "Name": "Production",
     "Production": true,
     "Tenant": "your-tenant.onmicrosoft.com",
-    "IdentityExperienceFrameworkAppId": "Your AD app Id",
-    "ProxyIdentityExperienceFrameworkAppId": "Your AD Proxy app Id",
-    "FacebookAppId": "0",
-    "MicrosoftAppId": "0",
-    "GoogleAppId": "0",
-    "RESTApiServer": "The location of your REST API",
-    "HTMLPagesServer": "The location of your HTML page layout files"
+    "PolicySettings" : {
+      "IdentityExperienceFrameworkAppId": "Your AD app Id",
+      "ProxyIdentityExperienceFrameworkAppId": "Your AD Proxy app Id",
+      "FacebookAppId": "0",
+      "MicrosoftAppId": "0",
+      "GoogleAppId": "0",
+      "RESTApiServer": "The location of your REST API",
+      "HTMLPagesServer": "The location of your HTML page layout files"
+    }
   }]
 }
 ```

@@ -614,28 +614,44 @@ export default class Consts {
 {
     "Environments": [
         {
+            "Name": "Development",
+            "Production": false,
+            "Tenant": "your-dev-tenant.onmicrosoft.com",
+            "PolicySettings" : {
+                "IdentityExperienceFrameworkAppId": "Your dev environment AD app Id",
+                "ProxyIdentityExperienceFrameworkAppId": "Your dev environment AD Proxy app Id",
+                "FacebookAppId": "0"
+            }
+        },
+        {
             "Name": "Test",
             "Production": false,
-            "Tenant": "your-tenant.onmicrosoft.com",
-            "IdentityExperienceFrameworkAppId": "Your AD app Id",
-            "ProxyIdentityExperienceFrameworkAppId": "Your AD Proxy app Id",
-            "FacebookAppId": "0"
+            "Tenant": "your-test-tenant.onmicrosoft.com",
+            "PolicySettings" : {
+                "IdentityExperienceFrameworkAppId": "Your test environment AD app Id",
+                "ProxyIdentityExperienceFrameworkAppId": "Your AD test environment Proxy app Id",
+                "FacebookAppId": "0"
+            }
         },
         {
             "Name": "QA",
             "Production": false,
-            "Tenant": "your-tenant.onmicrosoft.com",
-            "IdentityExperienceFrameworkAppId": "Your AD app Id",
-            "ProxyIdentityExperienceFrameworkAppId": "Your AD Proxy app Id",
-            "FacebookAppId": "0"
+            "Tenant": "your-qa-tenant.onmicrosoft.com",
+            "PolicySettings" : {
+                "IdentityExperienceFrameworkAppId": "Your QA environment AD app Id",
+                "ProxyIdentityExperienceFrameworkAppId": "Your QA environment AD Proxy app Id",
+                "FacebookAppId": "0"
+            }
         },
         {
             "Name": "Production",
             "Production": true,
-            "Tenant": "your-tenant.onmicrosoft.com",
-            "IdentityExperienceFrameworkAppId": "Your AD app Id",
-            "ProxyIdentityExperienceFrameworkAppId": "Your AD Proxy app Id",
-            "FacebookAppId": "0"
+            "Tenant": "your-production-tenant.onmicrosoft.com",
+            "PolicySettings" : {
+                "IdentityExperienceFrameworkAppId": "Your production environment AD app Id",
+                "ProxyIdentityExperienceFrameworkAppId": "Your production environment AD Proxy app Id",
+                "FacebookAppId": "0"
+            }
         }
     ]
 }`;

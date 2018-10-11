@@ -64,29 +64,39 @@ export default class PolicBuild {
 
                                 // Iterate through environments  
                                 appSettings.Environments.forEach(function (entry) {
-                                    var environmentRootPath = path.join(environmentsRootPath, entry.Name);
 
-                                    // Ensure environment folder exists
-                                    if (!fs.existsSync(environmentRootPath)) {
-                                        fs.mkdirSync(environmentRootPath);
+                                    if (entry.PolicySettings == null) {
+                                        vscode.window.showErrorMessage("Can't generate '" + entry.Name + "' environment policies. Error: Accepted PolicySettings element is missing. You may use old version of the appSettings.json file. For more information, see [App Settings](https://github.com/yoelhor/aad-b2c-vs-code-extension/blob/master/README.md#app-settings)");
                                     }
+                                    else {
+                                        var environmentRootPath = path.join(environmentsRootPath, entry.Name);
 
-                                    // Iterate through the list of settings
-                                    policyFiles.forEach(function (file) {
+                                        // Ensure environment folder exists
+                                        if (!fs.existsSync(environmentRootPath)) {
+                                            fs.mkdirSync(environmentRootPath);
+                                        }
 
-                                        var policContent = file.Data;
+                                        // Iterate through the list of settings
+                                        policyFiles.forEach(function (file) {
 
-                                        Object.keys(entry).forEach(key => {
-                                            policContent = policContent.replace(new RegExp("\{Settings:" + key + "\}", "g"), entry[key]);
+                                            var policContent = file.Data;
+
+                                            // Replace the tenant name
+                                            policContent = policContent.replace(new RegExp("\{Settings:Tenant" + "\}", "g"), entry.Tenant);
+
+                                            // Replace the rest of the policy settings
+                                            Object.keys(entry.PolicySettings).forEach(key => {
+                                                policContent = policContent.replace(new RegExp("\{Settings:" + key + "\}", "g"), entry.PolicySettings[key]);
+                                            });
+
+                                            // Save the  policy
+                                            fs.writeFile(path.join(environmentRootPath, file.FileName), policContent, 'utf8', (err) => {
+                                                if (err) throw err;
+                                            });
                                         });
 
-                                        // Save the  policy
-                                        fs.writeFile(path.join(environmentRootPath, file.FileName), policContent, 'utf8', (err) => {
-                                            if (err) throw err;
-                                        });
-                                    });
-
-                                    vscode.window.showInformationMessage("You policies successfully exported and stored under the Environment folder.");
+                                        vscode.window.showInformationMessage("You policies successfully exported and stored under the Environment folder.");
+                                    }
                                 });
 
                             });
