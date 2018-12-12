@@ -51,12 +51,11 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 	onActiveEditorChanged(): void {
 		if ((this.panel && this.panel.visible) ||
 			(this.panelConfig && this.panelConfig.visible) ||
-			(vscode.window.activeTextEditor && vscode.window.activeTextEditor.document.uri.scheme === 'file' && vscode.window.activeTextEditor.document.languageId === 'xml')){
+			(vscode.window.activeTextEditor && vscode.window.activeTextEditor.document.uri.scheme === 'file' && vscode.window.activeTextEditor.document.languageId === 'xml')) {
 			vscode.commands.executeCommand('setContext', 'CustomPolicyExplorerEnabled', true);
 		}
-		else
-		{
-			vscode.commands.executeCommand('setContext', 'CustomPolicyExplorerEnabled', false);	
+		else {
+			vscode.commands.executeCommand('setContext', 'CustomPolicyExplorerEnabled', false);
 		}
 	}
 
@@ -101,13 +100,19 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 				this.AppInsightsItems = [];
 				for (var i = 0; i < info.value.length; i++) {
 					var element = info.value[i];
+					
+					// Find the orchestration steps
+					var startIndex = 0, index, currentStep = '';
+					while ((index = element.trace.message.indexOf('CurrentStep', startIndex)) > -1) {
+						startIndex = index + 'CurrentStep'.length;
+						index = element.trace.message.indexOf(':', index);
+						var endOfRaw = element.trace.message.indexOf('\r\n', index);
+						currentStep += element.trace.message.substring(index + 1, endOfRaw).trim() + ', ';
+					}
 
-					var currentStepIndex = element.trace.message.indexOf('CurrentStep');
-					var currentStep = '';
-					if (currentStepIndex > 0) {
-						currentStepIndex = element.trace.message.indexOf(':', currentStepIndex);
-						var endOfRaw = element.trace.message.indexOf('\r\n', currentStepIndex);
-						currentStep = "Step " + element.trace.message.substring(currentStepIndex + 1, endOfRaw).trim();
+					if (currentStep.length > 1)
+					{
+						currentStep = "Step " + currentStep.substr(0, currentStep.length-2);
 					}
 
 					this.AppInsightsItems.push(new AppInsightsItem(
@@ -283,10 +288,8 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 				// And set its HTML content
 				this.panel.webview.html = this.getWebviewContent(this.AppInsightsItems[i]);
 				this.panel.reveal();
-				this.panel.onDidChangeViewState( (e) => 
-				{
-					if (e.webviewPanel._visible)
-					{
+				this.panel.onDidChangeViewState((e) => {
+					if (e.webviewPanel._visible) {
 						vscode.commands.executeCommand('setContext', 'CustomPolicyExplorerEnabled', true);
 					}
 				})
