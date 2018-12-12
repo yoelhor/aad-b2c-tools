@@ -174,6 +174,7 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 						keys.push("UserJourney|" + userJourney);
 					}
 				}
+				keys.sort();
 			}
 			else {
 				const elementValues: String[] = parentElementKey.split("|");
@@ -205,6 +206,7 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 							keys.push("CorrelationId|" + this.formatDate(minTimestamp) + " (" + correlationId.split("-")[0] + ")|" + correlationId);
 						}
 					}
+					keys.sort().reverse();
 				}
 				else if (elementValues[0] == "CorrelationId") {
 					// Load the list of orchestration steps
@@ -217,9 +219,10 @@ export default class ApplicationInsightsExplorerExplorerProvider implements vsco
 							keys.push("OrchestrationStep|" + this.formatDate(timestamp) + setp + "|" + this.AppInsightsItems[i].Id + "|" + this.AppInsightsItems[i].HasException);
 						}
 					}
+					keys.sort();
 				}
 			}
-			keys.sort();
+			
 		}
 
 		return Promise.resolve(keys);
