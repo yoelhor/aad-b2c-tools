@@ -5,7 +5,7 @@
     "version": "1.2.58",
     "publisher": "AzureADB2CTools",
     "engines": {
-        "vscode": "^1.22.0"
+        "vscode": "^1.30.0"
     },
     "categories": [
         "Other"
@@ -43,6 +43,14 @@
             {
                 "command": "extension.policy.build",
                 "title": "B2C Policy build"
+            },
+            {
+                "command": "extension.policy.smartCopy",
+                "title": "Copy Azure AD B2C element"
+            },
+            {
+                "command": "extension.policy.smartPaste",
+                "title": "B2C Paste XML element"
             },
             {
                 "command": "ApplicationInsightsExplorer.refresh",
@@ -138,6 +146,14 @@
                     "when": "view == ApplicationInsightsExplorer",
                     "group": "navigation"
                 }
+            ],
+            "editor/context": [
+                {
+                    "command": "extension.policy.smartCopy",
+                    "title": "Copy Azure AD B2C element",
+                    "group": "MyGroup",
+                    "when": "editorTextFocus"
+                }
             ]
         },
         "configuration": {
@@ -174,15 +190,14 @@
         "test": "npm run compile && node ./node_modules/vscode/bin/test"
     },
     "devDependencies": {
-        "typescript": "^2.6.1",
-        "vscode": "^1.1.6",
-        "@types/node": "^7.0.43",
-        "@types/mocha": "^2.2.42",
-        "xmldom": "^0.1.27",
-        "request": "2.88.0"
+        "typescript": "^3.2.2",
+        "@types/node": "^10.12.18",
+        "@types/mocha": "^5.2.5"
     },
     "dependencies": {
+        "vscode": "^1.1.26",
         "xmldom": "^0.1.27",
-        "request": "2.88.0"
+        "request": "^2.88.0",
+        "clipboardy": "^1.2.3"
     }
 }

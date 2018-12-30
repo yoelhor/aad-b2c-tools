@@ -11,6 +11,7 @@ import ApplicationInsightsExplorerExplorerProvider from './ApplicationInsightsEx
 import { ReferenceProvider } from './ReferenceProvider';
 import InsertCommands from './InsertCommands';
 import PolicBuild from './PolicyBuild';
+import SmartCopy from './SmartCopy';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -75,6 +76,12 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Policy build
     context.subscriptions.push(vscode.commands.registerCommand('extension.policy.build', () => PolicBuild.Build()));
+    
+    // Smart copy
+    context.subscriptions.push(vscode.commands.registerCommand('extension.policy.smartCopy', () => SmartCopy.Copy()));
+    
+    // Smart paste
+    context.subscriptions.push(vscode.commands.registerCommand('extension.policy.smartPaste', () => PolicBuild.Build()));
 }
 
 // this method is called when your extension is deactivated
