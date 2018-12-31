@@ -10,20 +10,20 @@ To start working with your custom policy. Open you Visual Studio Code, and open 
 
 ![Custom policy navigator](media/openfolder.png)
 
-## Azure AD B2C Custom policy Features
-### Custom policy explorer
+# Azure AD B2C Custom policy Features
+## Custom policy explorer
 From **Custom policy explorer** click on the XML element type and select the element you want to open. Note: custom policy explorer shows elements from  selected file only.
 
 ![Custom policy navigator](media/explorer.png)
 
-### Go to definition and find all references
+## Go to definition and find all references
 To go any XML element definition. Clt-Click, click F12 or right-click and select **Go to definition** or **Peak definition**. Note: Go to definition navigates you to the source element in the selected file only.
 
 To search for references in your **Open folder** XML files or any XML file you open with VS code, select **Find all references** or click Shift+F12.
 
 ![Go to definition and find all references](media/goto.png)
 
-### Adding XML elements
+## Adding XML elements
 You can add following elements to your policy. Note: make sure your cursor is located in the right place.
 * B2C Add Identity provider technical profile (shift+ctrl+1)
 * B2C Add REST API technical profile (shift+ctrl+2)
@@ -32,23 +32,47 @@ You can add following elements to your policy. Note: make sure your cursor is lo
 
 ![Adding XML elements](media/commands.png)
 
-### Help and more information
+
+## Smart Copy & Paste
+When you cusomize a XML element in the extension policy, **Smart Copy** allows you copy the entire element with its parents elements from the base policy. For example, when you copy the AAD-UserWriteUsingAlternativeSecurityId technical profile, smart copy generates a XML containing the following elements, so you don't need to look for the parents element, such as the claim provider. 
+
+```XML
+<ClaimsProviders>
+  <ClaimsProvider>
+    <DisplayName>Azure Active Directory</DisplayName>
+    <TechnicalProfiles>
+      <TechnicalProfile Id="AAD-UserWriteUsingAlternativeSecurityId">
+        ...
+      </TechnicalProfile>
+    </TechnicalProfiles>
+  </ClaimsProvider>
+<ClaimsProviders>
+```
+
+On contrariety, the **Smart Paste**, pastes from the clipboard only the necessary elements. Given the above XML, and your extension policy already has a claims provider named `Azure Active Directory`, the smart paste will paste only the technical profile without the claims provider. But if there is no such claims provider, the smart paste will paste the entire XML (including the claims provider and the technical profile).
+
+![Smart copy and paste](media/smart-copy.png)
+
+>Note: In this version the samrt copy and paste is limited to a single XML node. 
+
+
+## Help and more information
 After you run the commends, B2C extension shows you information message with a link to relevant article.
 
 ![InformationMessage](media/moreinfo.png)
 
-### XML Schema quick help
+## XML Schema quick help
 
 Move your mouse over any XML tag name, to see the description
 
 ![XML Schema quick help](media/hover.gif)
 
-### Application Insights
+## Application Insights
 Collect logs from Azure AD B2C and diagnose problems with your Azure AD B2C vscode extension. Read more [here](https://github.com/yoelhor/aad-b2c-vs-code-extension/blob/master/src/help/app-insights.md). The logs are organized by the **policy name**, **correlation Id** (the application insights presents the first digit of the correlation Id), and the **log timestamp**. This allows you to find the relevant log based on the local timestamp and see the user journey as executed by Azure AD B2C.
 
 ![Application Insights](media/ai.png)
 
-### App Settings
+## App Settings
 Allows you to manage the values of your Azure AD B2C environments. When you execute the **B2C Policy build** command, the VS code extension finds and replaces the values of your settings with the ones configure in the policy file, and creates a directory that contains all of your policy files (after the replacement). In the following example, the extension replaces the keys with the value configure in the `appsettings.json` file: 
 - {Settings:Tenant}
 - {Settings:IdentityExperienceFrameworkAppId}

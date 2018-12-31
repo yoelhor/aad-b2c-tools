@@ -81,7 +81,7 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand('extension.policy.smartCopy', () => SmartCopy.Copy()));
     
     // Smart paste
-    context.subscriptions.push(vscode.commands.registerCommand('extension.policy.smartPaste', () => PolicBuild.Build()));
+    context.subscriptions.push(vscode.commands.registerCommand('extension.policy.smartPaste', () => SmartCopy.Paste()));
 }
 
 // this method is called when your extension is deactivated

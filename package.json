@@ -46,11 +46,11 @@
             },
             {
                 "command": "extension.policy.smartCopy",
-                "title": "Copy Azure AD B2C element"
+                "title": "B2C smart copy"
             },
             {
                 "command": "extension.policy.smartPaste",
-                "title": "B2C Paste XML element"
+                "title": "B2C smart paste"
             },
             {
                 "command": "ApplicationInsightsExplorer.refresh",
@@ -107,6 +107,18 @@
                 "key": "shift+ctrl+5",
                 "mac": "shift+cmd+5",
                 "when": "editorTextFocus"
+            },
+            {
+                "command": "extension.policy.smartCopy",
+                "key": "shift+ctrl+c",
+                "mac": "shift+cmd+c",
+                "when": "editorTextFocus"
+            },
+            {
+                "command": "extension.policy.smartPaste",
+                "key": "shift+ctrl+v",
+                "mac": "shift+cmd+v",
+                "when": "editorTextFocus"
             }
         ],
         "snippets": [
@@ -150,8 +162,12 @@
             "editor/context": [
                 {
                     "command": "extension.policy.smartCopy",
-                    "title": "Copy Azure AD B2C element",
-                    "group": "MyGroup",
+                    "group": "MyGroup@1",
+                    "when": "editorTextFocus"
+                },
+                {
+                    "command": "extension.policy.smartPaste",
+                    "group": "MyGroup@2",
                     "when": "editorTextFocus"
                 }
             ]

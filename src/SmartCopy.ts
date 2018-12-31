@@ -1,21 +1,21 @@
 import * as vscode from 'vscode';
 const clipboardy = require('clipboardy');
-
+const DOMParser = require('xmldom').DOMParser;
 export default class SmartCopy {
     static Copy() {
 
         let editor = vscode.window.activeTextEditor;
 
         if (!editor) {
-            vscode.window.showErrorMessage("Can't insert text because no document is open.");
+            vscode.window.showErrorMessage("Can't copy Azure AD B2C element, because no document is open.");
             return;
         }
 
+        // Get the selection range
         let selection = editor.selection;
-
         let range = new vscode.Range(selection.start, selection.end);
 
-        var DOMParser = require('xmldom').DOMParser;
+        // Load the current XML document from the active text editor
         var xmlDoc = new DOMParser().parseFromString(editor.document.getText());
 
         var nodeList = xmlDoc.getElementsByTagName("*");
@@ -54,7 +54,7 @@ export default class SmartCopy {
 
                         // Add the last element with its children 
                         var newElement = docToBeAdded.importNode(nodeListToBeAdded[iNode], true);
-                        rootElement = SmartCopy.AddXMLElement(docToBeAdded, rootElement, newElement, iNode);
+                        rootElement = SmartCopy.AddXmlElement(docToBeAdded, rootElement, newElement, iNode);
                     }
                     else {
 
@@ -91,7 +91,7 @@ export default class SmartCopy {
                         }
 
                         // Add the node to the new XML document 
-                        rootElement = SmartCopy.AddXMLElement(docToBeAdded, rootElement, newElement, iNode);
+                        rootElement = SmartCopy.AddXmlElement(docToBeAdded, rootElement, newElement, iNode);
 
                     }
                 }
@@ -103,14 +103,13 @@ export default class SmartCopy {
                 xmlString = xmlString.replace(' xmlns="http://schemas.microsoft.com/online/cpim/schemas/2013/06"', '');
 
                 // Copy the new formatted XML document to the clipboard 
-                console.log(xmlString);
                 clipboardy.writeSync(xmlString);
                 break;
             }
         }
     }
 
-    static AddXMLElement(xmlDoc, parentNode, newNode, newNodeIndex) {
+    static AddXmlElement(xmlDoc, parentNode, newNode, newNodeIndex) {
         var ident: string = "  ";
         var newLineStr: string = "\n" + ident.repeat(newNodeIndex);
         var textNode1 = xmlDoc.createTextNode(newLineStr);
@@ -119,5 +118,128 @@ export default class SmartCopy {
         var newRootElement = parentNode.appendChild(newNode);
         parentNode.appendChild(textNode2);
         return newRootElement;
+    }
+
+    static Paste() {
+        const errorMessage = "Can't paste Azure AD B2C element, because no document is open.";
+        let editor = vscode.window.activeTextEditor;
+
+        if (!editor) {
+            vscode.window.showErrorMessage(errorMessage);
+            return;
+        }
+
+        // Load the current XML document from the active text editor
+        var xmlDoc = new DOMParser().parseFromString(editor.document.getText());
+
+        // Try to load the data from the clipboard
+        var clipboardXmlDoc;
+        try {
+
+            clipboardXmlDoc = new DOMParser().parseFromString(clipboardy.readSync());
+        }
+        catch (e) {
+            vscode.window.showWarningMessage("The clipboard data is not in XML format or dosn't contain any Azure AD B2C element");
+            return;
+        }
+
+        // Check the XML data is valid
+        if ((!clipboardXmlDoc) || clipboardXmlDoc.getElementsByTagName("*").length <= 1) {
+            vscode.window.showWarningMessage("The clipboard data is not in XML format or dosn't contain any Azure AD B2C element");
+            return;
+        }
+
+        // Remove the fist level element
+        clipboardXmlDoc = SmartCopy.FindXmlElement(xmlDoc, clipboardXmlDoc);
+
+        // Remove the second level element
+        clipboardXmlDoc = SmartCopy.FindXmlElement(xmlDoc, clipboardXmlDoc);
+
+        // Add the clippoard XML to the selected targer document
+        let selection = editor.selection;
+
+        let range = new vscode.Range(selection.start, selection.end);
+
+        editor.edit((editBuilder) => {
+            editBuilder.replace(range, clipboardXmlDoc.toString());
+        });
+    }
+
+    static FindXmlElement(xmlDoc, clipboardXmlDoc) {
+
+        var currentElement;
+
+        // Try to get the root element
+        for (var i = 0; i < clipboardXmlDoc.childNodes.length; i++) {
+            if (clipboardXmlDoc.childNodes[i].nodeName != "#text") {
+                currentElement = clipboardXmlDoc.childNodes[i];
+                break;
+            }
+        }
+
+        // Check whether the root element exists
+        if (!currentElement)
+            return clipboardXmlDoc;
+
+        // Try to find similar element in the target XML document
+        var docLookupList = xmlDoc.getElementsByTagName(currentElement.nodeName);
+        if (docLookupList.length > 0) {
+
+            var lineBreak: string = '';
+
+            // Find similar node by display name (child node)
+            if (currentElement.nodeName === "ClaimsProvider") {
+                // If found, check if the node is claims proivder. If yes, compare the display name
+
+                var clipboardDisplayName = SmartCopy.GetChildValueByTagName(currentElement, "DisplayName");
+                for (var iCP = 0; iCP < docLookupList.length; iCP++) {
+                    var currentElementDisplayName = SmartCopy.GetChildValueByTagName(docLookupList[iCP], "DisplayName");
+
+                    // If an cliams provider with the same display name found, the element can be removed along side the TechnicalProfiles node
+                    if (clipboardDisplayName && clipboardDisplayName === currentElementDisplayName) {
+
+                        var newXML: string = '';
+                        var allTechnicalProfiles = currentElement.getElementsByTagName("TechnicalProfile");
+
+                        for (var iTP = 0; iTP < allTechnicalProfiles.length; iTP++) {
+                            newXML += allTechnicalProfiles[iTP].toString();
+                        }
+
+                        return new DOMParser().parseFromString(newXML);
+                    }
+                }
+            }
+            // Find similar node by Id (same node)
+            else if (currentElement.hasAttribute("Id")) {
+                // If found, check if the node is claims proivder. If yes, compare the ID
+                for (var i = 0; i < docLookupList.length; i++) {
+                    if (docLookupList[i].getAttribute("Id") === currentElement.getAttribute("Id")) {
+                        return new DOMParser().parseFromString(currentElement.toString());
+                    }
+                }
+            }
+            // Find a unique element, such as BuildingBlocks, ClaimsProviders and ClaimsSchema that can appear once per XML document
+            else {
+                // If found, remove that element from the clipboard Xml document
+                for (var i = 0; i < currentElement.childNodes.length; i++) {
+                    if (currentElement.childNodes[i].nodeName != "#text") {
+                        return new DOMParser().parseFromString(lineBreak + currentElement.childNodes[i].toString());
+                    }
+                    else
+                        lineBreak = currentElement.childNodes[i].toString()
+                }
+            }
+        }
+
+        // Otherwise return the same clipboard XML document
+        return clipboardXmlDoc;
+    }
+
+    static GetChildValueByTagName(xmlNode, nodeName) {
+        for (var i = 0; i < xmlNode.childNodes.length; i++) {
+            if (xmlNode.childNodes[i].nodeName === nodeName) {
+                return xmlNode.childNodes[i].textContent;
+            }
+        }
     }
 }
