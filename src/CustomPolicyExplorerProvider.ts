@@ -65,16 +65,25 @@ export default class CustomPolicyExplorerProvider implements vscode.TreeDataProv
         return '';
     }*/
 
+	getElementByTagName(tagName: string) {
+		var nsAttr = this.xmlDoc.getElementsByTagName(tagName);
+
+		if (nsAttr.length == 1)
+			return nsAttr[0].lineNumber + "|" + nsAttr[0].columnNumber;
+		else
+			return "";
+	}
+
 	getChildren(parentElementKey?: String): Thenable<String[]> {
 		const keys: String[] = [];
 
 		if (!parentElementKey) {
-			keys.push("root|UserJourney|User Journeys");
-			keys.push("root|ClaimsProvider|Claims Providers");
+			keys.push("root|UserJourney|User Journeys|" + this.getElementByTagName("UserJourneys"));
+			keys.push("root|ClaimsProvider|Claims Providers|" + this.getElementByTagName("ClaimsProviders"));
 			keys.push("root|TechnicalProfile|Technical Profiles");
-			keys.push("root|ClaimType|Claim Types");
-			keys.push("root|ClaimsTransformation|Claims Transformations");
-			keys.push("root|ContentDefinition|Content Definitions");
+			keys.push("root|ClaimType|Claim Types|" + this.getElementByTagName("ClaimsSchema"));
+			keys.push("root|ClaimsTransformation|Claims Transformations|" + this.getElementByTagName("ClaimsTransformations"));
+			keys.push("root|ContentDefinition|Content Definitions|" + this.getElementByTagName("ContentDefinitions"));
 		}
 		else {
 			const elementValues: String[] = parentElementKey.split("|");
@@ -123,7 +132,7 @@ export default class CustomPolicyExplorerProvider implements vscode.TreeDataProv
 							var nsAttr = this.xmlDoc.getElementById(entry);
 
 							// Add the element to the list
-							keys.push(nsAttr.tagName + "|" + nsAttr.getAttribute("id") + "|" + nsAttr.lineNumber + "|" + nsAttr.columnNumber );
+							keys.push(nsAttr.tagName + "|" + nsAttr.getAttribute("id") + "|" + nsAttr.lineNumber + "|" + nsAttr.columnNumber);
 						}
 					}
 
@@ -145,6 +154,19 @@ export default class CustomPolicyExplorerProvider implements vscode.TreeDataProv
 			// For the root elements, check the amount of such element type
 			var nsAttr = this.xmlDoc.getElementsByTagName(elementValues[1]);
 			treeItem = new vscode.TreeItem(elementValues[2] as string, nsAttr.length > 0 ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None);
+
+			// Add a link to the root elements such as ClaimsSchema, ClaimsProviders and UserJourneys
+			if (elementValues.length == 5) {
+				const start: vscode.Position = new vscode.Position(Number(elementValues[3]) - 1, Number(elementValues[4]));
+				const end: vscode.Position = new vscode.Position(Number(elementValues[3]) - 1, Number(elementValues[4]));
+
+				treeItem.command = {
+					command: 'extension.openJsonSelection',
+					title: '',
+					arguments: [new vscode.Range(start, end)]
+				};
+			}
+
 		}
 		else {
 			if (elementValues[0] == "ClaimsProvider") {
