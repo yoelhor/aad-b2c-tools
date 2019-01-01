@@ -32,10 +32,15 @@ export default class HoverProvider {
         position: vscode.Position,
         token: vscode.CancellationToken): Thenable<Hover> {
 
-
+        // Get the selected word
         const wordPosition = document.getWordRangeAtPosition(position);
+        
+        // If no selected word found, return
         if (!wordPosition) return new Promise((resolve) => resolve());
+        
+        // Get the correct selected word. This fixes issues with words that contain hyphen, minus or dash. (-) or words inside parenthesis 
         const word = ReferenceProvider.getSelectedWord(document, position);
+        
         var key: KeywordData = new KeywordData("", "", "", null);
 
         try {
@@ -88,8 +93,8 @@ export default class HoverProvider {
             var promise = goDefinitionProvider.provideDefinitionExt(document, position, token, true)
                 .then((locations) => {
                     var message: String = "**" + word + "**\r\n\r\n";
-                    
-                    var locs:vscode.Location[] = locations as vscode.Location[];
+
+                    var locs: vscode.Location[] = locations as vscode.Location[];
 
                     for (var i = 0; i < locs.length; i++) {
                         message += "[" + path.basename(locations[i].uri.toString()) + "](" + locations[i].uri._formatted + "#" + locations[i].range.start.line + ")\r\n\r\n";

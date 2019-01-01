@@ -29,9 +29,8 @@ export default class GoDefinitionProvider implements vscode.DefinitionProvider {
 
 		var files: FileData[] = [];
 
-		// Add the selected file
-		// Skip deployment output environments files 
-		if (!document.uri.fsPath.toLowerCase().indexOf("/environments/")) {
+		// Add the selected file while skipping the deployment output environments files 
+		if (document.uri.fsPath.toLowerCase().indexOf("/environments/") == (-1)) {
 			files.push(new FileData(document.uri, document.getText().replace(/( )(Id=|Id =|Id  =)/gi, " id=")));
 		}
 		
@@ -53,7 +52,7 @@ export default class GoDefinitionProvider implements vscode.DefinitionProvider {
 				.then((uris) => {
 					uris.forEach((uri) => {
 						if (uri.fsPath.indexOf("?") <= 0) {
-							// Check if the file is open. If yes, take precedence over unsaved version
+							// Check if the file is open. If yes, take precedence over the saved version
 							var openedFile = files.filter(x => x.Uri.fsPath == uri.fsPath)
 
 							if (openedFile == null || openedFile.length == 0) {
