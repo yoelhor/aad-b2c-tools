@@ -4,6 +4,8 @@
 - Adding Smart copy and pasted feature
 - Fixing the 'add claim type' to include the claim type element's parents 
 - New string claim type
+- In the policy explorer, adding a link to the root elements such as ClaimsSchema, ClaimsProviders and UserJourneys
+- Go to definition now supports navigating to a base policy and link to ClaimsExchange
 
 ## October 2018
 - Adding Azure Application Insights trace log integration. Learn more [here](https://github.com/yoelhor/aad-b2c-vs-code-extension/blob/master/src/help/app-insights.md)

@@ -3,6 +3,7 @@ import * as vscode from 'vscode';
 import { ReferenceProvider } from './ReferenceProvider';
 import { FileData } from './ReferenceProvider';
 import fs = require('fs');
+const DOMParser = require('xmldom').DOMParser;
 
 export default class GoDefinitionProvider implements vscode.DefinitionProvider {
 
@@ -21,10 +22,41 @@ export default class GoDefinitionProvider implements vscode.DefinitionProvider {
 		showAll: boolean): Thenable<vscode.Definition> {
 
 		// Get the selected word
-		const word = ReferenceProvider.getSelectedWord(document, position).toLowerCase();
+		var selectedWord: SelectedWord = new SelectedWord();
+		selectedWord.Value = ReferenceProvider.getSelectedWord(document, position).toLowerCase();
 
-		if (word.length == 0)
+		if (selectedWord.Value.length == 0)
 			return new Promise((resolve) => resolve());
+
+		var xmlDoc = new DOMParser().parseFromString(document.getText());
+		var nodeList = xmlDoc.getElementsByTagName("*");
+
+		// Try to get the XML element in the selected range
+		for (var i = 0; i < nodeList.length; i++) {
+			var node = nodeList[i];
+
+			// TBD: check the column as well
+			if (node.lineNumber == (position.line + 1)) {
+				selectedWord.ElementType = node.nodeName;
+
+				let parentNode = node;
+				// If the element is ClaimsProviderSelection try to find its parent Id
+				if (selectedWord.ElementType === "ClaimsProviderSelection") {
+					while (parentNode) {
+						if (parentNode.hasAttribute("Id")) {
+							selectedWord.ParentID = parentNode.getAttribute("Id");
+							selectedWord.ParentElementType = parentNode.nodeName;
+
+							break;
+						}
+
+						if (parentNode && parentNode.parentNode)
+							parentNode = parentNode.parentNode;
+					}
+				}
+				break;
+			}
+		}
 
 
 		var files: FileData[] = [];
@@ -33,7 +65,7 @@ export default class GoDefinitionProvider implements vscode.DefinitionProvider {
 		if (document.uri.fsPath.toLowerCase().indexOf("/environments/") == (-1)) {
 			files.push(new FileData(document.uri, document.getText().replace(/( )(Id=|Id =|Id  =)/gi, " id=")));
 		}
-		
+
 		// Add the rest of open files
 		for (const doc of vscode.workspace.textDocuments) {
 
@@ -62,25 +94,24 @@ export default class GoDefinitionProvider implements vscode.DefinitionProvider {
 						}
 					});
 				}).then(() => {
-					return this.processSearch(word, document, files, position, showAll);
+					return this.processSearch(selectedWord, document, files, position, showAll);
 				});
 
 			return promise;
 		}
 		else {
-			return this.processSearch(word, document, files, position, showAll);
+			return this.processSearch(selectedWord, document, files, position, showAll);
 		}
 	}
 
 	private processSearch(
-		word: String,
+		selectedWord: SelectedWord,
 		document: vscode.TextDocument,
 		files: FileData[],
 		position: vscode.Position,
 		showAll: boolean): Thenable<vscode.Location[]> {
 
 		// Load the ativated XML file and replace the element Id with id
-		var DOMParser = require('xmldom').DOMParser;
 		var hierarchyFiles: FileData[] = [];
 
 		for (var i = 0; i < files.length; i++) {
@@ -110,29 +141,69 @@ export default class GoDefinitionProvider implements vscode.DefinitionProvider {
 
 		// Iterate through files array
 		for (const file of hierarchyFiles) {
-
 			var xmlDoc = new DOMParser().parseFromString(file.Data.toLowerCase());
 
+			// Search for TrustFrameworkPolicy with PolicyId equals to the selected word
+			if (selectedWord.ElementType == "PolicyId") {
+
+				var docLookupList = xmlDoc.getElementsByTagName("trustframeworkpolicy");
+				if (docLookupList.length == 1 && docLookupList[0].getAttribute("policyid") == selectedWord.Value) {
+					var location = new vscode.Location(file.Uri, new vscode.Position(docLookupList[0].lineNumber, docLookupList[0].columnNumber));
+
+					// Return the selected element
+					locations.push(location);
+					if (!showAll) { return new Promise(resolve => { resolve(locations);; }); }
+				}
+			}
+			// Search for ClaimsProviderSelection we need to search for ClaimsExchange with the same Id within the scope of the UserJourney  
+			else if (selectedWord.ElementType == "ClaimsProviderSelection") {
+
+				// The ClaimsExchange is always in the same document
+				if (file.Uri != document.uri)
+					continue;
+
+				var docLookupList = xmlDoc.getElementsByTagName("userjourney");
+
+				for (var i = 0; i < docLookupList.length; i++) {
+					if (docLookupList[i].getAttribute("id") === selectedWord.ParentID.toLowerCase()) {
+
+
+						var nodeList = docLookupList[i].getElementsByTagName("*");
+
+						for (var i2 = 0; i2 < nodeList.length; i2++) {
+							if (nodeList[i2].getAttribute("id") === selectedWord.Value.toLowerCase()) {
+
+								// Return the selected element
+								var location = new vscode.Location(file.Uri, new vscode.Position(nodeList[i2].lineNumber, nodeList[i2].columnNumber));
+								locations.push(location);
+								if (!showAll) { return new Promise(resolve => { resolve(locations);; }); }
+
+								break;
+							}
+						}
+
+						break;
+					}
+				}
+
+
+			}
 			// Search for element with such ID
-			var nsAttr = xmlDoc.getElementById(word.toLowerCase());
+			else {
 
-			// If element found and it's not the same element the user pointing (same file and same line)
-			if (nsAttr != null &&
-				!(file.Uri === document.uri && (nsAttr.lineNumber == position.line || nsAttr.lineNumber - 1 == position.line)) &&
-				!(showAll && nsAttr.tagName == "claimsexchange")) // this element has multiple instances under different user journeys 
-			{
+				var nsAttr = xmlDoc.getElementById(selectedWord.Value.toLowerCase());
 
-				var location = new vscode.Location(
-					file.Uri,
-					new vscode.Position(nsAttr.lineNumber - 1, nsAttr.columnNumber));
+				// If element found and it's not the same element the user pointing (same file and same line)
+				if (nsAttr != null &&
+					!(file.Uri === document.uri && (nsAttr.lineNumber == position.line || nsAttr.lineNumber - 1 == position.line)) &&
+					!(showAll && nsAttr.tagName == "claimsexchange")) // this element has multiple instances under different user journeys 
+				{
 
-				locations.push(location);
+					var location = new vscode.Location(file.Uri, new vscode.Position(nsAttr.lineNumber, nsAttr.columnNumber));
 
-				// Return the selected element
-				if (!showAll) {
-					return new Promise(resolve => {
-						resolve(locations);;
-					});
+					// Return the selected element
+					locations.push(location);
+					if (!showAll) { return new Promise(resolve => { resolve(locations);; }); }
 				}
 			}
 		}
@@ -166,4 +237,11 @@ export default class GoDefinitionProvider implements vscode.DefinitionProvider {
 
 		return hierarchyFiles.sort(x => x.Level).reverse();
 	}
+}
+
+export class SelectedWord {
+	public Value: string;
+	public ElementType: string;
+	public ParentID: string;
+	public ParentElementType: string;
 }
