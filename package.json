@@ -46,11 +46,11 @@
             },
             {
                 "command": "extension.policy.smartCopy",
-                "title": "B2C smart copy"
+                "title": "B2C Smart copy"
             },
             {
                 "command": "extension.policy.smartPaste",
-                "title": "B2C smart paste"
+                "title": "B2C Smart paste"
             },
             {
                 "command": "ApplicationInsightsExplorer.refresh",

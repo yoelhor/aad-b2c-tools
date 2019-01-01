@@ -1,10 +1,12 @@
 import SnippetProvider from "./SnippetProvider";
 import Consts from './Consts';
 import * as vscode from 'vscode';
+const DOMParser = require('xmldom').DOMParser;
+
 
 export default class InsertCommands {
     static InsertClaimType() {
-        let UserInputTypeList = ['TextBox', 'Radio Single Select', 'Dropdown Single Select', 'Checkbox Multi Select', 'DateTime Dropdown', 'Read only', 'Paragraph', 'String collection', 'Integer', 'Long', 'Boolean'];
+        let UserInputTypeList = ['TextBox', 'Radio Single Select', 'Dropdown Single Select', 'Checkbox Multi Select', 'DateTime Dropdown', 'Read only', 'Paragraph', 'Boolean', 'Integer', 'Long', 'String', 'String collection'];
         let name: string | undefined = 'Default';
         let displayName: string | undefined = 'Default';
         let userInputType: string | undefined = 'none';
@@ -36,23 +38,46 @@ export default class InsertCommands {
             })
             .then(() => {
                 switch (userInputType) {
-                    case "TextBox": SnippetProvider.insertText(Consts.CLAIM_TextBox.replace("{name}", name as string).replace("{displayName}", displayName as string));
-                    case "Radio Single Select": SnippetProvider.insertText(Consts.CLAIM_RadioSingleSelect.replace("{name}", name as string).replace("{displayName}", displayName as string));
-                    case "Dropdown Single Select": SnippetProvider.insertText(Consts.CLAIM_DropdownSingleSelect.replace("{name}", name as string).replace("{displayName}", displayName as string));;
-                    case "Checkbox Multi Select": SnippetProvider.insertText(Consts.CLAIM_CheckboxMultiSelect.replace("{name}", name as string).replace("{displayName}", displayName as string));;
-                    case "DateTime Dropdown": SnippetProvider.insertText(Consts.CLAIM_DateTimeDropdown.replace("{name}", name as string).replace("{displayName}", displayName as string));;
-                    case "Read only": SnippetProvider.insertText(Consts.CLAIM_Readonly.replace("{name}", name as string).replace("{displayName}", displayName as string));;
-                    case "Paragraph": SnippetProvider.insertText(Consts.CLAIM_Paragraph.replace("{name}", name as string).replace("{displayName}", displayName as string));;
-                    case "String collection": SnippetProvider.insertText(Consts.CLAIM_stringCollection.replace("{name}", name as string).replace("{displayName}", displayName as string));;
-                    case "Integer": SnippetProvider.insertText(Consts.CLAIM_Integer.replace("{name}", name as string).replace("{displayName}", displayName as string));;
-                    case "Long": SnippetProvider.insertText(Consts.CLAIM_Long.replace("{name}", name as string).replace("{displayName}", displayName as string));;
-                    case "Boolean": SnippetProvider.insertText(Consts.CLAIM_Boolean.replace("{name}", name as string).replace("{displayName}", displayName as string));;
+                    case "TextBox": SnippetProvider.insertText(InsertCommands.GetClaimTypeWithParents(Consts.CLAIM_TextBox, name , displayName));
+                    case "Radio Single Select": SnippetProvider.insertText(InsertCommands.GetClaimTypeWithParents(Consts.CLAIM_RadioSingleSelect, name , displayName));
+                    case "Dropdown Single Select": SnippetProvider.insertText(InsertCommands.GetClaimTypeWithParents(Consts.CLAIM_DropdownSingleSelect, name , displayName));
+                    case "Checkbox Multi Select": SnippetProvider.insertText(InsertCommands.GetClaimTypeWithParents(Consts.CLAIM_CheckboxMultiSelect, name , displayName));
+                    case "DateTime Dropdown": SnippetProvider.insertText(InsertCommands.GetClaimTypeWithParents(Consts.CLAIM_DateTimeDropdown, name , displayName));
+                    case "Read only": SnippetProvider.insertText(InsertCommands.GetClaimTypeWithParents(Consts.CLAIM_Readonly, name , displayName));
+                    case "Paragraph": SnippetProvider.insertText(InsertCommands.GetClaimTypeWithParents(Consts.CLAIM_Paragraph, name , displayName));
+                    case "Boolean": SnippetProvider.insertText(InsertCommands.GetClaimTypeWithParents(Consts.CLAIM_Boolean, name , displayName));
+                    case "Integer": SnippetProvider.insertText(InsertCommands.GetClaimTypeWithParents(Consts.CLAIM_Integer, name , displayName));
+                    case "Long": SnippetProvider.insertText(InsertCommands.GetClaimTypeWithParents(Consts.CLAIM_Long, name , displayName));
+                    case "String": SnippetProvider.insertText(InsertCommands.GetClaimTypeWithParents(Consts.CLAIM_String, name , displayName));
+                    case "String collection": SnippetProvider.insertText(InsertCommands.GetClaimTypeWithParents(Consts.CLAIM_stringCollection, name , displayName));
                 }
             })
             .then(() => {
                 return vscode.window.showInformationMessage("For more information, see: [Modify sign up to add new claims and configure user input.](https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-configure-signup-self-asserted-custom). To store a custom attributes in Azure AD directory, you need also to change the Claim type name to 'extension_" + name + "' and set the application. For more information, see [Creating and using custom attributes in a custom profile edit policy](https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-create-custom-attributes-profile-edit-custom) ")
             });
 
+    }
+    static GetClaimTypeWithParents(xml: string, name, displayName) {
+
+        // Load the current XML document from the active text editor
+        if (!vscode.window.activeTextEditor) {
+            return xml;
+        }
+        var xmlDoc = new DOMParser().parseFromString(vscode.window.activeTextEditor.document.getText());
+
+        // Try to find the BuildingBlocks element in the target XML document. If not exists add a new one
+        var docLookupList = xmlDoc.getElementsByTagName("BuildingBlocks");
+        if (docLookupList.length == 0) {
+            xml = '  <BuildingBlocks>\r\n    <ClaimsSchema>\r\n' + xml + '    </ClaimsSchema>\r\n  </BuildingBlocks>\r\n';
+        }
+        else {
+            // Try to find the ClaimsSchema element in the target XML document. If not exists add a new one
+            var docLookupList = xmlDoc.getElementsByTagName("ClaimsSchema");
+            if (docLookupList.length == 0)
+                xml = '    <ClaimsSchema>\r\n' + xml + '    </ClaimsSchema>\r\n';
+        }
+
+        return xml.replace(/\|/g, "      ").replace("{name}", name).replace("{displayName}", displayName);
     }
 
     static InsertTechnicalProfileIdp() {
@@ -105,8 +130,7 @@ export default class InsertCommands {
 
     }
 
-    static InsertTechnicalProfileRESTAPI()
-    {
+    static InsertTechnicalProfileRESTAPI() {
         let authenticationTypeList = ['None', 'Basic', 'Client Certificate'];
         let name: string | undefined = 'Default';
         let serviceUri: string | undefined = 'https://server-name/api/sign-up';
@@ -150,8 +174,7 @@ export default class InsertCommands {
 
     }
 
-    static InsertApplicationInsights()
-    {
+    static InsertApplicationInsights() {
         let instrumentationKey: string | undefined = 'Default';
 
 
