@@ -38,18 +38,18 @@ export default class InsertCommands {
             })
             .then(() => {
                 switch (userInputType) {
-                    case "TextBox": SnippetProvider.insertText(InsertCommands.GetClaimTypeWithParents(Consts.CLAIM_TextBox, name , displayName));
-                    case "Radio Single Select": SnippetProvider.insertText(InsertCommands.GetClaimTypeWithParents(Consts.CLAIM_RadioSingleSelect, name , displayName));
-                    case "Dropdown Single Select": SnippetProvider.insertText(InsertCommands.GetClaimTypeWithParents(Consts.CLAIM_DropdownSingleSelect, name , displayName));
-                    case "Checkbox Multi Select": SnippetProvider.insertText(InsertCommands.GetClaimTypeWithParents(Consts.CLAIM_CheckboxMultiSelect, name , displayName));
-                    case "DateTime Dropdown": SnippetProvider.insertText(InsertCommands.GetClaimTypeWithParents(Consts.CLAIM_DateTimeDropdown, name , displayName));
-                    case "Read only": SnippetProvider.insertText(InsertCommands.GetClaimTypeWithParents(Consts.CLAIM_Readonly, name , displayName));
-                    case "Paragraph": SnippetProvider.insertText(InsertCommands.GetClaimTypeWithParents(Consts.CLAIM_Paragraph, name , displayName));
-                    case "Boolean": SnippetProvider.insertText(InsertCommands.GetClaimTypeWithParents(Consts.CLAIM_Boolean, name , displayName));
-                    case "Integer": SnippetProvider.insertText(InsertCommands.GetClaimTypeWithParents(Consts.CLAIM_Integer, name , displayName));
-                    case "Long": SnippetProvider.insertText(InsertCommands.GetClaimTypeWithParents(Consts.CLAIM_Long, name , displayName));
-                    case "String": SnippetProvider.insertText(InsertCommands.GetClaimTypeWithParents(Consts.CLAIM_String, name , displayName));
-                    case "String collection": SnippetProvider.insertText(InsertCommands.GetClaimTypeWithParents(Consts.CLAIM_stringCollection, name , displayName));
+                    case "TextBox": SnippetProvider.insertText(InsertCommands.GetClaimTypeWithParents(Consts.CLAIM_TextBox, name, displayName));
+                    case "Radio Single Select": SnippetProvider.insertText(InsertCommands.GetClaimTypeWithParents(Consts.CLAIM_RadioSingleSelect, name, displayName));
+                    case "Dropdown Single Select": SnippetProvider.insertText(InsertCommands.GetClaimTypeWithParents(Consts.CLAIM_DropdownSingleSelect, name, displayName));
+                    case "Checkbox Multi Select": SnippetProvider.insertText(InsertCommands.GetClaimTypeWithParents(Consts.CLAIM_CheckboxMultiSelect, name, displayName));
+                    case "DateTime Dropdown": SnippetProvider.insertText(InsertCommands.GetClaimTypeWithParents(Consts.CLAIM_DateTimeDropdown, name, displayName));
+                    case "Read only": SnippetProvider.insertText(InsertCommands.GetClaimTypeWithParents(Consts.CLAIM_Readonly, name, displayName));
+                    case "Paragraph": SnippetProvider.insertText(InsertCommands.GetClaimTypeWithParents(Consts.CLAIM_Paragraph, name, displayName));
+                    case "Boolean": SnippetProvider.insertText(InsertCommands.GetClaimTypeWithParents(Consts.CLAIM_Boolean, name, displayName));
+                    case "Integer": SnippetProvider.insertText(InsertCommands.GetClaimTypeWithParents(Consts.CLAIM_Integer, name, displayName));
+                    case "Long": SnippetProvider.insertText(InsertCommands.GetClaimTypeWithParents(Consts.CLAIM_Long, name, displayName));
+                    case "String": SnippetProvider.insertText(InsertCommands.GetClaimTypeWithParents(Consts.CLAIM_String, name, displayName));
+                    case "String collection": SnippetProvider.insertText(InsertCommands.GetClaimTypeWithParents(Consts.CLAIM_stringCollection, name, displayName));
                 }
             })
             .then(() => {
@@ -93,17 +93,17 @@ export default class InsertCommands {
                     return Promise.reject('user cancelled');
 
                 switch (idp) {
-                    case "Microsoft": SnippetProvider.insertText(Consts.TP_IDP_Microsoft);;
-                    case "Facebook": SnippetProvider.insertText(Consts.TP_IDP_Facebook);;
-                    case "Azure AD": SnippetProvider.insertText(Consts.TP_IDP_AzureAD);;
-                    case "Azure AD Multi tenant": SnippetProvider.insertText(Consts.TP_IDP_AzueADMulti);;
-                    case "Google+": SnippetProvider.insertText(Consts.TP_IDP_Google);;
-                    case "LinkedIn": SnippetProvider.insertText(Consts.TP_IDP_LinkeIn);;
-                    case "Twitter": SnippetProvider.insertText(Consts.TP_IDP_Twitter);;
-                    case "AD-FS": SnippetProvider.insertText(Consts.TP_IDP_ADFS);;
-                    case "Salesforce": SnippetProvider.insertText(Consts.TP_IDP_Saleforce);;
-                    case "VK": SnippetProvider.insertText(Consts.TP_IDP_VK);;
-                    case "Amazon": SnippetProvider.insertText(Consts.TP_IDP_Amazon);;
+                    case "Microsoft": SnippetProvider.insertText(InsertCommands.GetTechnicalProfileIdpWithParents(Consts.TP_IDP_Microsoft));
+                    case "Facebook": SnippetProvider.insertText(InsertCommands.GetTechnicalProfileIdpWithParents(Consts.TP_IDP_Facebook));
+                    case "Azure AD": SnippetProvider.insertText(InsertCommands.GetTechnicalProfileIdpWithParents(Consts.TP_IDP_AzureAD));
+                    case "Azure AD Multi tenant": SnippetProvider.insertText(InsertCommands.GetTechnicalProfileIdpWithParents(Consts.TP_IDP_AzueADMulti));
+                    case "Google+": SnippetProvider.insertText(InsertCommands.GetTechnicalProfileIdpWithParents(Consts.TP_IDP_Google));
+                    case "LinkedIn": SnippetProvider.insertText(InsertCommands.GetTechnicalProfileIdpWithParents(Consts.TP_IDP_LinkeIn));
+                    case "Twitter": SnippetProvider.insertText(InsertCommands.GetTechnicalProfileIdpWithParents(Consts.TP_IDP_Twitter));
+                    case "AD-FS": SnippetProvider.insertText(InsertCommands.GetTechnicalProfileIdpWithParents(Consts.TP_IDP_ADFS));
+                    case "Salesforce": SnippetProvider.insertText(InsertCommands.GetTechnicalProfileIdpWithParents(Consts.TP_IDP_Saleforce));
+                    case "VK": SnippetProvider.insertText(InsertCommands.GetTechnicalProfileIdpWithParents(Consts.TP_IDP_VK));
+                    case "Amazon": SnippetProvider.insertText(InsertCommands.GetTechnicalProfileIdpWithParents(Consts.TP_IDP_Amazon));
                 }
             })
             .then(() => {
@@ -130,6 +130,22 @@ export default class InsertCommands {
 
     }
 
+    static GetTechnicalProfileIdpWithParents(xml: string) {
+
+        // Load the current XML document from the active text editor
+        if (!vscode.window.activeTextEditor) {
+            return xml;
+        }
+        var xmlDoc = new DOMParser().parseFromString(vscode.window.activeTextEditor.document.getText());
+
+        // Try to find the ClaimsProviders element in the target XML document. If not exists add a new one
+        var docLookupList = xmlDoc.getElementsByTagName("ClaimsProviders");
+        if (docLookupList.length == 0) {
+            xml = '  <ClaimsProviders>\r\n' + xml + '  </ClaimsProviders>\r\n';
+        }
+
+        return xml.replace(/\|/g, "    ");
+    }
     static InsertTechnicalProfileRESTAPI() {
         let authenticationTypeList = ['None', 'Basic', 'Client Certificate'];
         let name: string | undefined = 'Default';
@@ -163,15 +179,53 @@ export default class InsertCommands {
             })
             .then(() => {
                 switch (authenticationType) {
-                    case "None": SnippetProvider.insertText(Consts.TP_REST_None.replace("{name}", name as string).replace("{serviceUri}", serviceUri as string));
-                    case "Basic": SnippetProvider.insertText(Consts.TP_REST_Basic.replace("{name}", name as string).replace("{serviceUri}", serviceUri as string));
-                    case "Client Certificate": SnippetProvider.insertText(Consts.TP_REST_ClientCertificate.replace("{name}", name as string).replace("{serviceUri}", serviceUri as string));;
+                    case "None": SnippetProvider.insertText(InsertCommands.GetTechnicalProfileRESTAPIWithParents(Consts.TP_REST_None, name, serviceUri));
+                    case "Basic": SnippetProvider.insertText(InsertCommands.GetTechnicalProfileRESTAPIWithParents(Consts.TP_REST_Basic, name, serviceUri));
+                    case "Client Certificate": SnippetProvider.insertText(InsertCommands.GetTechnicalProfileRESTAPIWithParents(Consts.TP_REST_ClientCertificate, name, serviceUri));
                 }
             })
             .then(() => {
                 return vscode.window.showInformationMessage("For more information, see: [Integrate REST API claims exchanges in your Azure AD B2C user journey as validation of user input](https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-custom-rest-api-netfw)")
             });
 
+    }
+
+    static GetTechnicalProfileRESTAPIWithParents(xml: string, name: string | any, serviceUri: string | any) {
+
+        // Load the current XML document from the active text editor
+        if (!vscode.window.activeTextEditor) {
+            return xml;
+        }
+        var xmlDoc = new DOMParser().parseFromString(vscode.window.activeTextEditor.document.getText());
+
+        // Check if the custom REST API claims provider already exists
+        var RestClaimsProviderExists: boolean = false;
+        var docLookupList = xmlDoc.getElementsByTagName("ClaimsProvider");
+        for (var i = 0; i < docLookupList.length; i++) {
+            var subNode = docLookupList[i].getElementsByTagName("DisplayName");
+            if (subNode != null && subNode.length >0 && subNode[0].textContent === 'Custom REST API') {
+                RestClaimsProviderExists = true;
+                break;
+            }
+        }
+
+        if (!RestClaimsProviderExists) {
+            xml =
+                '|<ClaimsProvider>\r\n' +
+                '|  <DisplayName>Custom REST API</DisplayName>\r\n' +
+                '|  <TechnicalProfiles>\r\n' +
+                xml +
+                '|  </TechnicalProfiles>\r\n' +
+                '|</ClaimsProvider>\r\n';
+        }
+
+        // Try to find the ClaimsProviders element in the target XML document. If not exists add a new one
+        docLookupList = xmlDoc.getElementsByTagName("ClaimsProviders");
+        if (docLookupList.length == 0) {
+            xml = '  <ClaimsProviders>\r\n' + xml + '  </ClaimsProviders>\r\n';
+        }
+
+        return xml.replace(/\|/g, "    ").replace("{name}", name).replace("{serviceUri}", serviceUri);
     }
 
     static InsertApplicationInsights() {
