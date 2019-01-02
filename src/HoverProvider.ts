@@ -5,8 +5,6 @@ import path = require('path');
 import { ReferenceProvider } from './ReferenceProvider';
 import { SelectedWord } from './models/SelectedWord';
 import XmlHelper from './XmlHelper';
-import { KeywordData } from './models/KeywordData';
-import { SelectedWordXmlElement } from './models/SelectedWordXmlElement';
 
 export default class HoverProvider {
 
