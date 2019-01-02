@@ -3,29 +3,12 @@ import { Hover } from 'vscode';
 import GoDefinitionProvider from './GoDefinitionProvider';
 import path = require('path');
 import { ReferenceProvider } from './ReferenceProvider';
+import { SelectedWord } from './models/SelectedWord';
+import XmlHelper from './XmlHelper';
+import { KeywordData } from './models/KeywordData';
+import { SelectedWordXmlElement } from './models/SelectedWordXmlElement';
 
 export default class HoverProvider {
-
-    readonly Keys: KeywordData[] = [
-        new KeywordData("BuildingBlocks", "ClaimsSchema", "Defines the claim types that can be referenced as part of the policy. Claims schema is the place where you declare your claims, such as first name, last name, display name, phone number and more.\r\n\r\n `ClaimsSchema` element contains list of `ClaimType` elements", null),
-        new KeywordData("ClaimsSchema", "ClaimType", "Define the claim, its display name, the user input type and other properties", "https://docs.microsoft.com/en-us/azure/active-directory-b2c/claimsschema"),
-        new KeywordData("ClaimType", "DisplayName", "The value which is displayed to the end users on various screens. \r\n\r\nNote: you can use localization to override this value", "https://docs.microsoft.com/en-us/azure/active-directory-b2c/claimsschema"),
-        new KeywordData("ClaimType", "DataType", "[Required] One the following supported data types: boolean, date, int, long, string, stringCollection", "https://docs.microsoft.com/en-us/azure/active-directory-b2c/claimsschema"),
-        new KeywordData("ClaimType", "DefaultPartnerClaimTypes", "Enable to specify the partner default claim types to use for a specified protocol.", "https://docs.microsoft.com/en-us/azure/active-directory-b2c/claimsschema"),
-        new KeywordData("ClaimType", "Mask", "Specify an optional string of masking characters that can be applied to the claim when displaying the claim. For example, the phone number 324-232-4343 masked as XXX-XXX-4343", "https://docs.microsoft.com/en-us/azure/active-directory-b2c/claimsschema"),
-        new KeywordData("ClaimType", "UserHelpText", "Specify a description of the claim type that can be helpful for the end users to understand the purpose and/or usage of the claim type. \r\n\r\nNote: you can use localization to override this value.", "https://docs.microsoft.com/en-us/azure/active-directory-b2c/claimsschema"),
-        new KeywordData("ClaimType", "AdminHelpText", "Specify a description of the claim type that can be helpful for administrators to understand the purpose and/or usage of the claim type. \r\n\r\nNote: you can use localization to override this value.", "https://docs.microsoft.com/en-us/azure/active-directory-b2c/claimsschema"),
-        new KeywordData("ClaimType", "UserInputType", "Specify the type of input control that should be available to the end user, when manually entering claim data for this claim type. One of the following supported type of input controls: TextBox, DateTimeDropdown, DropdownSingleSelect, CheckboxMultiSelect, Password, Readonly. \r\n\r\nNote: if you declare a claim type for internal use, without end-user interactions. For example, you declare a claim type to send or receive values from custom Rest API. In this case, you don't need to specify UserInputType.", "https://docs.microsoft.com/en-us/azure/active-directory-b2c/claimsschema"),
-        new KeywordData("ClaimType", "Restriction", "Provide The value restrictions for this claim, such as a regular expression (Regex) or a list of acceptable values.", "https://docs.microsoft.com/en-us/azure/active-directory-b2c/claimsschema"),
-        new KeywordData("BuildingBlocks", "ClaimsTransformations", "Contains a list of claims transformations that can be used in the user journeys as part of the policy\r\n\r\n `ClaimsTransformations` element contains list of `ClaimsTransformation` elements", "https://docs.microsoft.com/en-us/azure/active-directory-b2c/claimstransformations"),
-        new KeywordData("ClaimsTransformations", "ClaimsTransformation", "Function essentially converts a given claim into another one. In the claims transformation, you specify the suitable transform method, such as: \r\n* Adding item to string collection \r\n* Change the case of the provided string claim to the one specified (to lower or upper) \r\n* Compares two claims and returns a claim with true indicating that the claims match, false otherwise \r\n* Creates a JSON representation of the user’s alternativeSecurityId property that can be used in calls to Graph API. This string is consumed by the Azure AD claims provider when PartnerClaimType is alternativeSecurityId \r\n* Creates a string claim from the provided parameter in the policy \r\n* Creates a random string using the random number generator used. \r\n* Format a given claim according to the provided format string.", "https://docs.microsoft.com/en-us/azure/active-directory-b2c/claimstransformations"),
-        new KeywordData("ClaimsTransformation", "InputClaims", "", "https://docs.microsoft.com/en-us/azure/active-directory-b2c/claimstransformations"),
-        new KeywordData("ClaimsTransformation", "OutputClaims", "", "https://docs.microsoft.com/en-us/azure/active-directory-b2c/claimstransformations"),
-        new KeywordData("BuildingBlocks", "ContentDefinitions", "Contain URLs to external content, for example, URLs to pages used in claims providers as part of the policy.\r\n\r\n `ContentDefinitions` element contains list of `ContentDefinition` elements", "https://docs.microsoft.com/en-us/azure/active-directory-b2c/contentdefinitions"),
-        new KeywordData("ContentDefinitions", "ContentDefinition", "In a custom policy, a content definition defines the HTML5 page URI that is used for a specified UI step. For example, the sign-in or sign-up, password reset, or error pages. You can modify the look and feel by overriding the LoadUri for the HTML5 file. Or create new content definitions according to your needs. `ContentDefinition` element may contain a localized resources reference, to the localization ID specify in the next section.", "https://docs.microsoft.com/en-us/azure/active-directory-b2c/contentdefinitions"),
-        new KeywordData("ContentDefinition", "LoadUri", "Specify the URL of the CSHTML page (i.e. an ASP.NET Razor Web page) or an HTML5/CSS page for the content definition.\r\n\r\nNote: Make sure you enable CORS on your web server. And your HTML page is public available ", "https://docs.microsoft.com/en-us/azure/active-directory-b2c/contentdefinitions"),
-        new KeywordData("ContentDefinition", "LocalizedResourcesReferences", "List of localized resources references for this page.\r\n\r\n `LocalizedResourcesReferences` element contains list of `LocalizedResourcesReference` elements", "https://docs.microsoft.com/en-us/azure/active-directory-b2c/contentdefinitions"),
-    ]
 
     provideHover(
         document: vscode.TextDocument,
@@ -33,58 +16,22 @@ export default class HoverProvider {
         token: vscode.CancellationToken): Thenable<Hover> {
 
         // Get the selected word
-        const wordPosition = document.getWordRangeAtPosition(position);
-        
-        // If no selected word found, return
-        if (!wordPosition) return new Promise((resolve) => resolve());
-        
-        // Get the correct selected word. This fixes issues with words that contain hyphen, minus or dash. (-) or words inside parenthesis 
-        const word = ReferenceProvider.getSelectedWord(document, position);
-        
-        var key: KeywordData = new KeywordData("", "", "", null);
+        var selectedWord: SelectedWord = new SelectedWord();
+        selectedWord.Title = ReferenceProvider.getSelectedWord(document, position);
+        selectedWord.Value = selectedWord.Title.toLocaleLowerCase();
 
-        try {
-            // Get parent element
-            if (word != null && word != "") {
+        if (selectedWord.Value.length == 0)
+            return new Promise((resolve) => resolve());
 
-                var DOMParser = require('xmldom').DOMParser;
+        // Check if the selected word is a XML element (not a value)    
+        selectedWord.IsTag = ReferenceProvider.isTagSelected(document, position);
 
-                var xmlDoc = new DOMParser().parseFromString(document.getText().toLowerCase());
+        // Get more information regarding the selected word	
+        selectedWord = XmlHelper.GetSelectedWordData(selectedWord, position, document);
 
-                var nsAttr = xmlDoc.getElementsByTagName(word.toLowerCase());
-
-                var i: number;
-                for (i = 0; i < nsAttr.length; i++) {
-                    if (nsAttr[i].lineNumber == position.line || nsAttr[i].lineNumber == (position.line - 1) || nsAttr[i].lineNumber == (position.line + 1)) {
-
-                        var keyArray = this.Keys.filter(x => x.KeywordLowerCase == word.toLowerCase() &&
-                            x.ParentKeywordLowerCase == nsAttr[i].parentNode.tagName);
-
-                        if (keyArray != null && keyArray.length > 0) {
-                            key = keyArray[0];
-                        }
-
-                        break;
-                    }
-                }
-            }
-        }
-        catch (e) {
-            console.log(e.message)
-        }
-
-
-        if (key && key.Keyword) {
+        if (selectedWord.IsTag) {
             return new Promise(resolve => {
-
-                // Add element title and description
-                var message: string = key.ParentKeyword + " >> **" + key.Keyword + "**\r\n\r\n" + key.Text;
-
-                // Add element link to more information
-                if (key.Url)
-                    message += "\r\n\r\nFor more infromation [click here](" + key.Url + ")";
-
-                resolve(new Hover(message));
+                resolve(new Hover(this.GetHelp(selectedWord)));
             });
         }
         else {
@@ -92,7 +39,7 @@ export default class HoverProvider {
 
             var promise = goDefinitionProvider.provideDefinitionExt(document, position, token, true)
                 .then((locations) => {
-                    var message: String = "**" + word + "**\r\n\r\n";
+                    var message: String = "**" + selectedWord.Title + "**\r\n\r\n";
 
                     var locs: vscode.Location[] = locations as vscode.Location[];
 
@@ -113,26 +60,294 @@ export default class HoverProvider {
 
         }
     }
-}
 
-export class KeywordData {
-    public Keyword: string;
-    public KeywordLowerCase: string;
+    GetHelp(selectedWord: SelectedWord): string {
 
-    public ParentKeyword: string;
-    public ParentKeywordLowerCase: string;
+        var message = "";
+        var links: string[] = [];
 
-    public Text: string;
-    public Url: string | null;
+        if (selectedWord.GetSelectedElement().ElementNodeName === "TrustFrameworkPolicy".toLocaleLowerCase()) {
+            links.push("TrustFrameworkPolicy|https://docs.microsoft.com/en-us/azure/active-directory-b2c/trustframeworkpolicy")
+        }
+        else if (selectedWord.GetSelectedElement().ElementNodeName === "BasePolicy".toLocaleLowerCase()) {
+            links.push("Base policy|https://docs.microsoft.com/en-us/azure/active-directory-b2c/trustframeworkpolicy#base-policy")
+            links.push("Trust Framework Policy|https://docs.microsoft.com/en-us/azure/active-directory-b2c/trustframeworkpolicy")
+        }
+        else if (selectedWord.GetSelectedElement().ElementNodeName === "BuildingBlocks".toLocaleLowerCase()) {
+            links.push("Building Blocks|https://docs.microsoft.com/en-us/azure/active-directory-b2c/buildingblocks")
+        }
+        else if (selectedWord.GetSelectedElement().ElementNodeName === "ClaimsSchema".toLocaleLowerCase() ||
+            selectedWord.GetSelectedElement().ElementNodeName === "ClaimType".toLocaleLowerCase()) {
+            links.push("Claims definition|https://docs.microsoft.com/en-us/azure/active-directory-b2c/claimsschema")
+        }
+        else if (selectedWord.GetSelectedElement().ElementNodeName === "ClaimsTransformations".toLocaleLowerCase()) {
+            links.push("Claims Transformations|https://docs.microsoft.com/en-us/azure/active-directory-b2c/claimstransformations")
+        }
+        else if (selectedWord.GetSelectedElement().ElementNodeName === "Predicates".toLocaleLowerCase() ||
+            selectedWord.GetSelectedElement().ElementNodeName === "Predicate".toLocaleLowerCase() ||
+            selectedWord.GetSelectedElement().ElementNodeName === "PredicateValidations".toLocaleLowerCase() ||
+            selectedWord.GetSelectedElement().ElementNodeName === "PredicateValidation".toLocaleLowerCase() ||
+            selectedWord.GetSelectedElement().ElementNodeName === "PredicateGroups".toLocaleLowerCase() ||
+            selectedWord.GetSelectedElement().ElementNodeName === "PredicateGroup".toLocaleLowerCase()) {
+            links.push("Predicates and PredicateValidations|https://docs.microsoft.com/en-us/azure/active-directory-b2c/predicates")
+        }
+        else if (selectedWord.GetSelectedElement().ElementNodeName === "ContentDefinitions".toLocaleLowerCase() ||
+            selectedWord.GetSelectedElement().ElementNodeName === "ContentDefinition".toLocaleLowerCase()) {
+            links.push("Content Definitions|https://docs.microsoft.com/en-us/azure/active-directory-b2c/contentdefinitions");
+            links.push("Localization|https://docs.microsoft.com/en-us/azure/active-directory-b2c/localization");
+        }
+        else if (selectedWord.GetSelectedElement().ElementNodeName === "ClaimsProviders".toLocaleLowerCase() ||
+            selectedWord.GetSelectedElement().ElementNodeName === "ClaimsProvider".toLocaleLowerCase()) {
+            links.push("Claims Providers|https://docs.microsoft.com/en-us/azure/active-directory-b2c/claimsproviders")
+        }
+        else if (selectedWord.GetSelectedElement().ElementNodeName === "UserJourneys".toLocaleLowerCase() ||
+            selectedWord.GetSelectedElement().ElementNodeName === "UserJourney".toLocaleLowerCase()) {
+            links.push("User Journeys|https://docs.microsoft.com/en-us/azure/active-directory-b2c/userjourneys")
+        }
+        else if (selectedWord.GetSelectedElement().ElementNodeName === "OrchestrationSteps".toLocaleLowerCase() ||
+            selectedWord.GetSelectedElement().ElementNodeName === "OrchestrationStep".toLocaleLowerCase()) {
+            links.push("Orchestration Steps|https://docs.microsoft.com/en-us/azure/active-directory-b2c/userjourneys#orchestrationsteps")
+        }
+        else if (selectedWord.GetSelectedElement().ElementNodeName === "ClaimsProviderSelections".toLocaleLowerCase() ||
+            selectedWord.GetSelectedElement().ElementNodeName === "ClaimsProviderSelection".toLocaleLowerCase()) {
+            links.push("Claims Provider Selection|https://docs.microsoft.com/en-us/azure/active-directory-b2c/userjourneys#claimsproviderselection")
+        }
+        else if (selectedWord.GetSelectedElement().ElementNodeName === "ClaimsExchanges".toLocaleLowerCase() ||
+            selectedWord.GetSelectedElement().ElementNodeName === "ClaimsExchange".toLocaleLowerCase()) {
+            links.push("Claims Exchange|https://docs.microsoft.com/en-us/azure/active-directory-b2c/userjourneys#claimsexchanges")
+        }
+        else if (selectedWord.GetSelectedElement().ElementNodeName === "RelyingParty".toLocaleLowerCase()) {
+            links.push("Relying Party Policy|https://docs.microsoft.com/en-us/azure/active-directory-b2c/relyingparty")
+        }
+        else if (selectedWord.GetSelectedElement().ElementNodeName === "DefaultUserJourney".toLocaleLowerCase()) {
+            links.push("DefaultUserJourney|https://docs.microsoft.com/en-us/azure/active-directory-b2c/relyingparty#defaultuserjourney")
+        }
+        else if (selectedWord.GetSelectedElement().ElementNodeName === "UserJourneyBehaviors".toLocaleLowerCase()) {
+            links.push("UserJourneyBehaviors|https://docs.microsoft.com/en-us/azure/active-directory-b2c/relyingparty#userjourneybehaviors")
+        }
+        else if (selectedWord.GetSelectedElement().ElementNodeName === "JourneyInsights".toLocaleLowerCase()) {
+            links.push("JourneyInsights|https://docs.microsoft.com/en-us/azure/active-directory-b2c/relyingparty#journeyinsights")
+            links.push("Collecting Logs|https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-troubleshoot-custom")
+        }
+        else if (selectedWord.GetSelectedElement().ElementNodeName === "ContentDefinitionParameters".toLocaleLowerCase()) {
+            links.push("ContentDefinitionParameters|https://docs.microsoft.com/en-us/azure/active-directory-b2c/relyingparty#contentdefinitionparameters")
+        }
+        // Technical profiles help
+        else if (selectedWord.GetSelectedElement().ElementNodeName === "technicalprofile") {
 
-    constructor(parentKeyword: string, keyword: string, text: string, url: string | null) {
-        this.Keyword = keyword;
-        this.KeywordLowerCase = this.Keyword.toLowerCase();
+            switch (selectedWord.GetSelectedElement().ElementType) {
+                case "openidconnect": {
+                    links.push("OpenId Connect technical profile|https://docs.microsoft.com/en-us/azure/active-directory-b2c/openid-connect-technical-profile")
+                    break;
+                }
+                case "oauth2": {
+                    links.push("OAuth2 technical profile|https://docs.microsoft.com/en-us/azure/active-directory-b2c/oauth2-technical-profile")
+                    break;
+                }
+                case "oauth1": {
+                    links.push("OAuth1 technical profile|https://docs.microsoft.com/en-us/azure/active-directory-b2c/oauth1-technical-profile")
+                    break;
+                }
+                case "saml": {
+                    links.push(" SAML technical profile|https://docs.microsoft.com/en-us/azure/active-directory-b2c/saml-technical-profile")
+                    break;
+                }
+                case "web.tpengine.providers.restfulprovider": {
+                    links.push("RESTful technical|https://docs.microsoft.com/en-us/azure/active-directory-b2c/restful-technical-profile")
+                    break;
+                }
+                case "web.tpengine.providers.selfassertedattributeprovider": {
+                    links.push("Self-asserted technical profile|https://docs.microsoft.com/en-us/azure/active-directory-b2c/self-asserted-technical-profile")
+                    break;
+                }
+                case "web.tpengine.sso.defaultssosessionprovider":
+                case "web.tpengine.sso.externalloginssosessionprovider":
+                case "web.tpengine.sso.noopssosessionprovider":
+                case "web.tpengine.sso.samlssosessionprovider":
+                    {
+                        links.push("Single sign-on session management|https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-reference-sso-custom")
+                        break;
+                    }
+                case "web.tpengine.providers.azureactivedirectoryprovider": {
+                    links.push("Azure Active Directory technical profile|https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-technical-profile")
+                    break;
+                }
+                case "web.tpengine.providers.claimstransformationprotocolprovider": {
+                    links.push("Claims transformation technical profile|https://docs.microsoft.com/en-us/azure/active-directory-b2c/claims-transformation-technical-profile")
+                    break;
+                }
+                case "none": {
+                    links.push("Technical profile for a JWT token issuer|https://docs.microsoft.com/en-us/azure/active-directory-b2c/jwt-issuer-technical-profile")
+                    break;
+                }
+            }
 
-        this.ParentKeyword = parentKeyword;
-        this.ParentKeywordLowerCase = this.ParentKeyword.toLowerCase();
+            links.push("About Technical Profiles|https://docs.microsoft.com/en-us/azure/active-directory-b2c/technical-profiles-overview")
+            links.push("Technical Profiles Schema reference|https://docs.microsoft.com/en-us/azure/active-directory-b2c/technicalprofiles")
+        }
+        else if (selectedWord.GetSelectedElement().ElementNodeName === "claimstransformation") {
+            // Claims transformation help
+            switch (selectedWord.GetSelectedElement().ElementType) {
+                case "AndClaims".toLowerCase(): {
+                    links.push("AndClaims claims transformation|https://docs.microsoft.com/en-us/azure/active-directory-b2c/boolean-transformations#andclaims")
+                    break;
+                }
+                case "AssertBooleanClaimIsEqualToValue".toLowerCase(): {
+                    links.push("AssertBooleanClaimIsEqualToValue claims transformation|https://docs.microsoft.com/en-us/azure/active-directory-b2c/boolean-transformations#assertbooleanclaimisequaltovalue")
+                    break;
+                }
+                case "NotClaims".toLowerCase(): {
+                    links.push("NotClaims claims transformation|https://docs.microsoft.com/en-us/azure/active-directory-b2c/boolean-transformations#notclaims")
+                    break;
+                }
+                case "OrClaims".toLowerCase(): {
+                    links.push("OrClaims claims transformation|https://docs.microsoft.com/en-us/azure/active-directory-b2c/boolean-transformations#orclaims")
+                    break;
+                }
+                case "AssertDateTimeIsGreaterThan".toLowerCase(): {
+                    links.push("AssertDateTimeIsGreaterThan claims transformation|https://docs.microsoft.com/en-us/azure/active-directory-b2c/date-transformations#assertdatetimeisgreaterthan")
+                    break;
+                }
+                case "ConvertDateToDateTimeClaim".toLowerCase(): {
+                    links.push("ConvertDateToDateTimeClaim claims transformation|https://docs.microsoft.com/en-us/azure/active-directory-b2c/date-transformations#convertdatetodatetimeclaim")
+                    break;
+                }
+                case "GetCurrentDateTime".toLowerCase(): {
+                    links.push("GetCurrentDateTime claims transformation|https://docs.microsoft.com/en-us/azure/active-directory-b2c/date-transformations#getcurrentdatetime")
+                    break;
+                }
+                case "DateTimeComparison".toLowerCase(): {
+                    links.push(" claims transformation|https://docs.microsoft.com/en-us/azure/active-directory-b2c/date-transformations#datetimecomparison")
+                    break;
+                }
+                case "DoesClaimExist".toLowerCase(): {
+                    links.push("DoesClaimExist claims transformation|https://docs.microsoft.com/en-us/azure/active-directory-b2c/general-transformations#doesclaimexist")
+                    break;
+                }
+                case "Hash".toLowerCase(): {
+                    links.push("Hash claims transformation|https://docs.microsoft.com/en-us/azure/active-directory-b2c/general-transformations#hash")
+                    break;
+                }
+                case "ConvertNumberToStringClaim".toLowerCase(): {
+                    links.push("ConvertNumberToStringClaim claims transformation|https://docs.microsoft.com/en-us/azure/active-directory-b2c/integer-transformations#convertnumbertostringclaim")
+                    break;
+                }
+                case "GetClaimFromJson".toLowerCase(): {
+                    links.push("GetClaimFromJson claims transformation|https://docs.microsoft.com/en-us/azure/active-directory-b2c/json-transformations#getclaimfromjson")
+                    break;
+                }
+                case "GetClaimsFromJsonArray".toLowerCase(): {
+                    links.push("GetClaimsFromJsonArray claims transformation|https://docs.microsoft.com/en-us/azure/active-directory-b2c/json-transformations#getclaimsfromjsonarray")
+                    break;
+                }
+                case "GetNumericClaimFromJson".toLowerCase(): {
+                    links.push("GetNumericClaimFromJson claims transformation|https://docs.microsoft.com/en-us/azure/active-directory-b2c/json-transformations#getnumericclaimfromjson")
+                    break;
+                }
+                case "GetSingleValueFromJsonArray".toLowerCase(): {
+                    links.push("GetSingleValueFromJsonArray claims transformation|https://docs.microsoft.com/en-us/azure/active-directory-b2c/json-transformations#getsinglevaluefromjsonarray")
+                    break;
+                }
+                case "XmlStringToJsonString".toLowerCase(): {
+                    links.push("XmlStringToJsonString claims transformation|https://docs.microsoft.com/en-us/azure/active-directory-b2c/json-transformations#xmlstringtojsonstring")
+                    break;
+                }
+                case "CreateAlternativeSecurityId".toLowerCase(): {
+                    links.push("CreateAlternativeSecurityId claims transformation|https://docs.microsoft.com/en-us/azure/active-directory-b2c/social-transformations#createalternativesecurityid")
+                    break;
+                }
+                case "AndClaAddItemToAlternativeSecurityIdCollectionims".toLowerCase(): {
+                    links.push("AddItemToAlternativeSecurityIdCollection claims transformation|https://docs.microsoft.com/en-us/azure/active-directory-b2c/social-transformations#additemtoalternativesecurityidcollection")
+                    break;
+                }
+                case "GetIdentityProvidersFromAlternativeSecurityIdCollectionTransformation".toLowerCase(): {
+                    links.push("GetIdentityProvidersFromAlternativeSecurityIdCollectionTransformation claims transformation|https://docs.microsoft.com/en-us/azure/active-directory-b2c/social-transformations#getidentityprovidersfromalternativesecurityidcollectiontransformation")
+                    break;
+                }
+                case "RemoveAlternativeSecurityIdByIdentityProvider".toLowerCase(): {
+                    links.push("RemoveAlternativeSecurityIdByIdentityProvider claims transformation|https://docs.microsoft.com/en-us/azure/active-directory-b2c/social-transformations#removealternativesecurityidbyidentityprovider")
+                    break;
+                }
+                case "AddItemToStringCollection".toLowerCase(): {
+                    links.push("AddItemToStringCollection claims transformation|https://docs.microsoft.com/en-us/azure/active-directory-b2c/stringcollection-transformations#additemtostringcollection")
+                    break;
+                }
+                case "AddParameterToStringCollection".toLowerCase(): {
+                    links.push("AddParameterToStringCollection claims transformation|https://docs.microsoft.com/en-us/azure/active-directory-b2c/stringcollection-transformations#addparametertostringcollection")
+                    break;
+                }
+                case "GetSingleItemFromStringCollection".toLowerCase(): {
+                    links.push("GetSingleItemFromStringCollection claims transformation|https://docs.microsoft.com/en-us/azure/active-directory-b2c/stringcollection-transformations#getsingleitemfromstringcollection")
+                    break;
+                }
+                case "AssertStringClaimsAreEqual".toLowerCase(): {
+                    links.push("AssertStringClaimsAreEqual claims transformationhttps://docs.microsoft.com/en-us/azure/active-directory-b2c/string-transformations#assertstringclaimsareequal")
+                    break;
+                }
+                case "AndClaChangeCaseims".toLowerCase(): {
+                    links.push("ChangeCase claims transformation|https://docs.microsoft.com/en-us/azure/active-directory-b2c/string-transformations#changecase")
+                    break;
+                }
+                case "AndClCreateStringClaimaims".toLowerCase(): {
+                    links.push("CreateStringClaim claims transformation|https://docs.microsoft.com/en-us/azure/active-directory-b2c/string-transformations#createstringclaim")
+                    break;
+                }
+                case "CompareClaims".toLowerCase(): {
+                    links.push("CompareClaims claims transformation|https://docs.microsoft.com/en-us/azure/active-directory-b2c/string-transformations#compareclaims")
+                    break;
+                }
+                case "AndClaCompareClaimToValueims".toLowerCase(): {
+                    links.push("CompareClaimToValue claims transformation|https://docs.microsoft.com/en-us/azure/active-directory-b2c/string-transformations#compareclaimtovalue")
+                    break;
+                }
+                case "CreateRandomString".toLowerCase(): {
+                    links.push("CreateRandomStringclaims transformation|https://docs.microsoft.com/en-us/azure/active-directory-b2c/string-transformations#createrandomstring")
+                    break;
+                }
+                case "FormatStringClaim".toLowerCase(): {
+                    links.push("FormatStringClaim claims transformation|https://docs.microsoft.com/en-us/azure/active-directory-b2c/string-transformations#formatstringclaim")
+                    break;
+                }
+                case "FormatStringMultipleClaims".toLowerCase(): {
+                    links.push("FormatStringMultipleClaims claims transformation|https://docs.microsoft.com/en-us/azure/active-directory-b2c/string-transformations#formatstringmultipleclaims")
+                    break;
+                }
+                case "GetMappedValueFromLocalizedCollection".toLowerCase(): {
+                    links.push("GetMappedValueFromLocalizedCollection claims transformation|https://docs.microsoft.com/en-us/azure/active-directory-b2c/string-transformations#getmappedvaluefromlocalizedcollection")
+                    break;
+                }
+                case "LookupValue".toLowerCase(): {
+                    links.push("LookupValue claims transformation|https://docs.microsoft.com/en-us/azure/active-directory-b2c/string-transformations#lookupvalue")
+                    break;
+                }
+                case "NullClaim".toLowerCase(): {
+                    links.push("NullClaim claims transformation|https://docs.microsoft.com/en-us/azure/active-directory-b2c/string-transformations#nullclaim")
+                    break;
+                }
+                case "AndClParseDomainaims".toLowerCase(): {
+                    links.push("ParseDomain claims transformation|https://docs.microsoft.com/en-us/azure/active-directory-b2c/string-transformations#parsedomain")
+                    break;
+                }
+                case "SetClaimsIfStringsAreEqual".toLowerCase(): {
+                    links.push("SetClaimsIfStringsAreEqual claims transformation|https://docs.microsoft.com/en-us/azure/active-directory-b2c/string-transformations#setclaimsifstringsareequal")
+                    break;
+                }
+                case "SetClaimsIfStringsMatch".toLowerCase(): {
+                    links.push("SetClaimsIfStringsMatch claims transformation|https://docs.microsoft.com/en-us/azure/active-directory-b2c/string-transformations#setclaimsifstringsmatch")
+                    break;
+                }
+            }
 
-        this.Text = text;
-        this.Url = url;
+            links.push("About Claims Transformations|https://docs.microsoft.com/en-us/azure/active-directory-b2c/claimstransformations")
+        }
+
+        if (links.length > 0)
+            message = "Quick help\r\n\r\n";
+
+        links.forEach(function (value) {
+            message += "- [" + value.split("|")[0] + "](" + value.split("|")[1] + ")\r\n"
+        });
+
+        return message;
     }
 }

@@ -3,6 +3,8 @@ import * as vscode from 'vscode';
 import { ReferenceProvider } from './ReferenceProvider';
 import { FileData } from './ReferenceProvider';
 import fs = require('fs');
+import { SelectedWord } from './models/SelectedWord';
+import XmlHelper from './XmlHelper';
 const DOMParser = require('xmldom').DOMParser;
 
 export default class GoDefinitionProvider implements vscode.DefinitionProvider {
@@ -28,36 +30,8 @@ export default class GoDefinitionProvider implements vscode.DefinitionProvider {
 		if (selectedWord.Value.length == 0)
 			return new Promise((resolve) => resolve());
 
-		var xmlDoc = new DOMParser().parseFromString(document.getText());
-		var nodeList = xmlDoc.getElementsByTagName("*");
-
-		// Try to get the XML element in the selected range
-		for (var i = 0; i < nodeList.length; i++) {
-			var node = nodeList[i];
-
-			// TBD: check the column as well
-			if (node.lineNumber == (position.line + 1)) {
-				selectedWord.ElementType = node.nodeName;
-
-				let parentNode = node;
-				// If the element is ClaimsProviderSelection try to find its parent Id
-				if (selectedWord.ElementType === "ClaimsProviderSelection") {
-					while (parentNode) {
-						if (parentNode.hasAttribute("Id")) {
-							selectedWord.ParentID = parentNode.getAttribute("Id");
-							selectedWord.ParentElementType = parentNode.nodeName;
-
-							break;
-						}
-
-						if (parentNode && parentNode.parentNode)
-							parentNode = parentNode.parentNode;
-					}
-				}
-				break;
-			}
-		}
-
+		// Get more information regarding the selected word	
+		selectedWord = XmlHelper.GetSelectedWordData(selectedWord, position, document);
 
 		var files: FileData[] = [];
 
@@ -144,7 +118,7 @@ export default class GoDefinitionProvider implements vscode.DefinitionProvider {
 			var xmlDoc = new DOMParser().parseFromString(file.Data.toLowerCase());
 
 			// Search for TrustFrameworkPolicy with PolicyId equals to the selected word
-			if (selectedWord.ElementType == "PolicyId") {
+			if (selectedWord.GetSelectedElement().ElementNodeName == "policyid") {
 
 				var docLookupList = xmlDoc.getElementsByTagName("trustframeworkpolicy");
 				if (docLookupList.length == 1 && docLookupList[0].getAttribute("policyid") == selectedWord.Value) {
@@ -156,7 +130,7 @@ export default class GoDefinitionProvider implements vscode.DefinitionProvider {
 				}
 			}
 			// Search for ClaimsProviderSelection we need to search for ClaimsExchange with the same Id within the scope of the UserJourney  
-			else if (selectedWord.ElementType == "ClaimsProviderSelection") {
+			else if (selectedWord.GetSelectedElement().ElementNodeName == "claimsproviderselection") {
 
 				// The ClaimsExchange is always in the same document
 				if (file.Uri != document.uri)
@@ -165,7 +139,7 @@ export default class GoDefinitionProvider implements vscode.DefinitionProvider {
 				var docLookupList = xmlDoc.getElementsByTagName("userjourney");
 
 				for (var i = 0; i < docLookupList.length; i++) {
-					if (docLookupList[i].getAttribute("id") === selectedWord.ParentID.toLowerCase()) {
+					if (docLookupList[i].getAttribute("id") === selectedWord.GetFirstElementWithId().ElementID) {
 
 
 						var nodeList = docLookupList[i].getElementsByTagName("*");
@@ -239,9 +213,3 @@ export default class GoDefinitionProvider implements vscode.DefinitionProvider {
 	}
 }
 
-export class SelectedWord {
-	public Value: string;
-	public ElementType: string;
-	public ParentID: string;
-	public ParentElementType: string;
-}

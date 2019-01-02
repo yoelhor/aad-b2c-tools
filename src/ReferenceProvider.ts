@@ -22,6 +22,19 @@ export class ReferenceProvider implements vscode.ReferenceProvider {
 
     }
 
+    public static isTagSelected(document: vscode.TextDocument, position: vscode.Position): boolean {
+
+        var range = document.getWordRangeAtPosition(position);
+
+        if (!range)
+            return false;
+
+        var word = document.getText(range);
+        var index = document.lineAt(position.line).text.indexOf("<" + word);
+        return ( index >= 0)
+        
+    }
+
     public static getSelectedWord(document: vscode.TextDocument, position: vscode.Position): string {
 
         // Get the selected word
@@ -71,9 +84,9 @@ export class ReferenceProvider implements vscode.ReferenceProvider {
 
         // Run this code only if open files directly
         for (const doc of vscode.workspace.textDocuments) {
-             // Skip deployment output environments files 
+            // Skip deployment output environments files 
             if (doc.uri.fsPath.toLowerCase().indexOf("/environments/")) continue;
-            
+
             promises_array.push(new Promise((resolve: any) => resolve(new FileData(doc.uri, doc.getText()))));
             openedFiles.push(doc.uri.fsPath.toLocaleLowerCase())
         }
