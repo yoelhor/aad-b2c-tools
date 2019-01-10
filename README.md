@@ -1,6 +1,6 @@
 # Azure AD B2C extension
 
-The Azure AD B2C extension for VS Code lets you quickly navigate through Azure AD B2C [custom policy](https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-overview-custom). Create new elements, such as: technical profiles and claim definition. For more information, see [Get started with custom policies](https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-get-started-custom).
+The Azure AD B2C extension for VS Code lets you quickly navigate through Azure AD B2C [custom policy](https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-overview-custom). Create elements, such as: technical profiles and claim definition. For more information, see [Get started with custom policies](https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-get-started-custom).
 
 ## Having an issue?
 Please contact us at b2ctools@outlook.com
@@ -13,12 +13,22 @@ To start working with your custom policy. Open you Visual Studio Code, and open 
 # Azure AD B2C Custom policy Features
 
 ## Autocomplete 
-With autocomplete, you can save your time customizing a B2C policy. B2C extension guide provide you the list of claims, technical profiles and claims transformation. Select one of the following attributes `ClaimTypeReferenceId`, `TechnicalProfileReferenceId`, `ReferenceId`, `DefaultValue`, click **ctrl+space** (cmd+sapce) 
+With autocomplete feature, you can save your time customizing a B2C policy. B2C extension provides you the list of policy settings, claims, technical profiles, and claims transformation aggregated from your policy files. Select one of the following attributes and click **ctrl+space** (cmd+space):
+
+- ClaimTypeReferenceId. Or ReferenceId in the following XML elements: InputClaimsTransformation and OutputClaimsTransformation, list the claim types
+
+- ReferenceId in the following XML elements: InputClaimsTransformation and OutputClaimsTransformation, list the claims transformations
+
+- TechnicalProfileReferenceId. Or ReferenceId in the following XML elements: ValidationTechnicalProfile, IncludeTechnicalProfile, and UseTechnicalProfileForSessionManagement, lists the technical profiles
+
+- DefaultValue in following XML elements: InputClaim and OutputClaim, lists the [claim resolvers](https://docs.microsoft.com/en-us/azure/active-directory-b2c/claim-resolver-overview)
+ 
+ To get the list of your [policy settings](#Policy-Settings) type the curly brackets `{` anywhere in your policy.
 
 ![Autocomplete](media/autocomplete.png) 
 
 ## Custom policy explorer
-From **Custom policy explorer** click on the XML element type and select the element you want to open. Note: custom policy explorer shows elements from  selected file only.
+From **Custom policy explorer** click the XML element type and select the element you want to open. Note: custom policy explorer shows elements from  selected file only.
 
 ![Custom policy navigator](media/explorer.png)
 
@@ -40,7 +50,7 @@ You can add following elements to your policy. Note: make sure your cursor is lo
 
 
 ## Smart Copy & Paste
-When you cusomize a XML element in the extension policy, **Smart Copy** allows you copy the entire element with its parents elements from the base policy. For example, when you copy the AAD-UserWriteUsingAlternativeSecurityId technical profile, smart copy generates a XML containing the following elements, so you don't need to look for the parents element, such as the claim provider. 
+When you customize an XML element in the extension policy, **Smart Copy** allows you copy the entire element with its parents elements from the base policy. For example, when you copy the AAD-UserWriteUsingAlternativeSecurityId technical profile, smart copy generates an XML containing the following elements, so you don't need to look for the parents element, such as the claim provider. 
 
 ```XML
 <ClaimsProviders>
@@ -74,28 +84,27 @@ Move your mouse over any XML tag name, to see the description
 ![XML Schema quick help](media/hover.gif)
 
 ## Application Insights
-Collect logs from Azure AD B2C and diagnose problems with your Azure AD B2C vscode extension. Read more [here](https://github.com/yoelhor/aad-b2c-vs-code-extension/blob/master/src/help/app-insights.md). The logs are organized by the **policy name**, **correlation Id** (the application insights presents the first digit of the correlation Id), and the **log timestamp**. This allows you to find the relevant log based on the local timestamp and see the user journey as executed by Azure AD B2C.
+Collect logs from Azure AD B2C and diagnose problems with your Azure AD B2C vocode extension. Read more [here](https://github.com/yoelhor/aad-b2c-vs-code-extension/blob/master/src/help/app-insights.md). The logs are organized by the **policy name**, **correlation Id** (the application insights presents the first digit of the correlation Id), and the **log timestamp**. This allows you to find the relevant log based on the local timestamp and see the user journey as executed by Azure AD B2C.
 
 ![Application Insights](media/ai.png)
 
-## App Settings
+## Policy Settings
 Allows you to manage the values of your Azure AD B2C environments. When you execute the **B2C Policy build** command, the VS code extension finds and replaces the values of your settings with the ones configure in the policy file, and creates a directory that contains all of your policy files (after the replacement). In the following example, the extension replaces the keys with the value configure in the `appsettings.json` file: 
 - {Settings:Tenant}
-- {Settings:IdentityExperienceFrameworkAppId}
 - {Settings:ProxyIdentityExperienceFrameworkAppId}
 - {Settings:FacebookAppId}
 
 ![App Settings](media/app-settings.png)
 
 The configuration `appsettings.json` file contains the keys with their values for each environment. 
-- **Name** contains the environment name which VS code extension uses to create the environmant folder (under the environments parent folder). Use your operation system legal characters only. 
-- **Tenant** specify the tenant name, such as contoso.onmicrosoft.com. In the policy file, use the format of **Settings:Tenant**, for example `{Settings:Tenant}`.
+- **Name** contains the environment name which VS code extension uses to create the environment folder (under the environments parent folder). Use your operation system legal characters only. 
+- **Tenant** specifies the tenant name, such as contoso.onmicrosoft.com. In the policy file, use the format of **Settings:Tenant**, for example `{Settings:Tenant}`.
 -  **Production**  (boolean) is preserved for future use, indicating whether the environment is a production one. 
 - **PolicySettings** contains a collection of key-value pair with your settings. In the policy file, use the format of **Settings:** and the key name, for example `{Settings:FacebookAppId}`.
 
 
 
-On the first time you run the **B2C Policy build** command, the VS code extension lets you create the  `appsettings.json` file, with default set of environments, keys, and values:
+On the first time, you run the **B2C Policy build** command, the VS code extension lets you create the  `appsettings.json` file, with default set of environments, keys, and values:
 
 ```JSON
 {
@@ -132,7 +141,7 @@ On the first time you run the **B2C Policy build** command, the VS code extensio
   }]
 }
 ```
-You can add, or remove environments, keys, and values, to accommodate your needs. For example, you can add new settings, such as the URL of a REST API end point, Google+ app Id, URL of content definitions, and so on. You can also add new environment, such as pre-prod. Make sure you provide the same set of key (with the relevant values) for each environment. In the following example, we add the **Pre-Production** environment and new set of key-values.
+You can add, or remove environments, keys, and values, to accommodate your needs. For example, you can add new settings, such as the URL of a REST API end point, Google+ app Id, URL of content definitions. You can also add new environment, such as pre-prod. Make sure you provide the same set of key (with the relevant values) for each environment. In the following example, we add the **Pre-Production** environment and new set of key-values.
 
 ```JSON
 {
