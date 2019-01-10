@@ -25,7 +25,7 @@ With autocomplete feature, you can save your time customizing a B2C policy. B2C 
  
  To get the list of your [policy settings](#Policy-Settings) type the curly brackets `{` anywhere in your policy.
 
-![Autocomplete](media/autocomplete.png) 
+![Autocomplete](media/autocomplete-new.png) 
 
 ## Custom policy explorer
 From **Custom policy explorer** click the XML element type and select the element you want to open. Note: custom policy explorer shows elements from  selected file only.
