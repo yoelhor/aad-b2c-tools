@@ -4,7 +4,7 @@ import GoDefinitionProvider from './GoDefinitionProvider';
 import path = require('path');
 import { ReferenceProvider } from './ReferenceProvider';
 import { SelectedWord } from './models/SelectedWord';
-import XmlHelper from './XmlHelper';
+import XmlHelper from './services/XmlHelper';
 
 export default class HoverProvider {
 

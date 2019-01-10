@@ -105,6 +105,44 @@ export default class PolicBuild {
 
             });
     };
+
+    static GetAllSettings(): string[] {
+
+        var items: string[] = [];
+
+        var rootPath: string;
+        // Check if a folder is opend
+        if ((!vscode.workspace.workspaceFolders) || (vscode.workspace.workspaceFolders.length == 0)) {
+            vscode.window.showWarningMessage("To build a policy you need to open the policy folder in VS code");
+            return items;
+        }
+
+        // Get the app settings file path
+        rootPath = vscode.workspace.workspaceFolders[0].uri.fsPath;
+        var filePath = path.join(rootPath, "appsettings.json");
+
+        // Check if file exists
+        if (fs.existsSync(filePath)) {
+            var fileContent = fs.readFileSync(filePath, "utf8");
+            var appSettings = JSON.parse(fileContent);
+
+            // Add the items from each environment
+            items.push('{Settings:Tenant}');
+
+            appSettings.Environments.forEach(function (entry) {
+
+                // Replace the rest of the policy settings
+                Object.keys(entry.PolicySettings).forEach(key => {
+
+                    if (items.indexOf('{Settings:' + key + '}') == (-1)) {
+                        items.push('{Settings:' + key + '}');
+                    }
+                });
+            });
+        }
+
+        return items;
+    }
 }
 
 export class PolicyFile {

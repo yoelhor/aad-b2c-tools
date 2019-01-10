@@ -2,9 +2,8 @@
 import * as vscode from 'vscode';
 import { ReferenceProvider } from './ReferenceProvider';
 import { FileData } from './ReferenceProvider';
-import fs = require('fs');
 import { SelectedWord } from './models/SelectedWord';
-import XmlHelper from './XmlHelper';
+import XmlHelper from './services/XmlHelper';
 const DOMParser = require('xmldom').DOMParser;
 
 export default class GoDefinitionProvider implements vscode.DefinitionProvider {
@@ -33,49 +32,11 @@ export default class GoDefinitionProvider implements vscode.DefinitionProvider {
 		// Get more information regarding the selected word	
 		selectedWord = XmlHelper.GetSelectedWordData(selectedWord, position, document);
 
-		var files: FileData[] = [];
-
-		// Add the selected file while skipping the deployment output environments files 
-		if (document.uri.fsPath.toLowerCase().indexOf("/environments/") == (-1)) {
-			files.push(new FileData(document.uri, document.getText().replace(/( )(Id=|Id =|Id  =)/gi, " id=")));
-		}
-
-		// Add the rest of open files
-		for (const doc of vscode.workspace.textDocuments) {
-
-			// Skip deployment output environments files 
-			if (doc.uri.fsPath.toLowerCase().indexOf("/environments/")) continue;
-
-			// Skip selected file
-			if (doc.uri != document.uri && doc.uri.scheme != "git")
-				files.push(new FileData(doc.uri, doc.getText().replace(/( )(Id=|Id =|Id  =)/gi, " id=")))
-		}
-
-		// Run this code only if user open a directory workspace
-		if (vscode.workspace.rootPath) {
-
-			var promise = vscode.workspace.findFiles(new vscode.RelativePattern(vscode.workspace.rootPath as string, '*.{xml}'))
-				.then((uris) => {
-					uris.forEach((uri) => {
-						if (uri.fsPath.indexOf("?") <= 0) {
-							// Check if the file is open. If yes, take precedence over the saved version
-							var openedFile = files.filter(x => x.Uri.fsPath == uri.fsPath)
-
-							if (openedFile == null || openedFile.length == 0) {
-								var data = fs.readFileSync(uri.fsPath, 'utf8');
-								files.push(new FileData(uri, data.toString().replace(/( )(Id=|Id =|Id  =)/gi, " id=")));
-							}
-						}
-					});
-				}).then(() => {
-					return this.processSearch(selectedWord, document, files, position, showAll);
-				});
-
-			return promise;
-		}
-		else {
+		var promise = XmlHelper.GetXmlFilesWithCurrentFile(document).then((files) => {
 			return this.processSearch(selectedWord, document, files, position, showAll);
-		}
+		});
+
+		return promise;
 	}
 
 	private processSearch(
@@ -109,7 +70,7 @@ export default class GoDefinitionProvider implements vscode.DefinitionProvider {
 		var locations: vscode.Location[] = [];
 
 		if (!showAll)
-			hierarchyFiles = this.getHierarchy(files, files[0], hierarchyFiles, 1);
+			hierarchyFiles = XmlHelper.GetFileHierarchy(files, files[0], hierarchyFiles, 1);
 		else
 			hierarchyFiles = files;
 
@@ -190,26 +151,6 @@ export default class GoDefinitionProvider implements vscode.DefinitionProvider {
 
 		// Return no found (null)
 		return new Promise((resolve) => resolve());
-	}
-
-	private getHierarchy(files: FileData[], file: FileData, hierarchyFiles: FileData[], level: number): FileData[] {
-
-		if (level == 1) {
-			file.Level = level;
-			hierarchyFiles.push(file);
-		}
-
-		var paretnPolicy: FileData[] = files.filter(x => x.Policy == file.ParentPolicy);
-
-		if (paretnPolicy != null && paretnPolicy.length > 0) {
-			level++;
-			paretnPolicy[0].Level = level;
-			hierarchyFiles.push(paretnPolicy[0]);
-
-			hierarchyFiles = this.getHierarchy(files, paretnPolicy[0], hierarchyFiles, level);
-		}
-
-		return hierarchyFiles.sort(x => x.Level).reverse();
 	}
 }
 

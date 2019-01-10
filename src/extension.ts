@@ -12,6 +12,7 @@ import { ReferenceProvider } from './ReferenceProvider';
 import InsertCommands from './InsertCommands';
 import PolicBuild from './PolicyBuild';
 import SmartCopy from './SmartCopy';
+import CompletionProvider from './CompletionProvider';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -35,32 +36,42 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand('ApplicationInsightsExplorer.show', range => applicationInsightsExplorerProvider.show(range));
     vscode.commands.registerCommand('ApplicationInsightsExplorer.settings', range => applicationInsightsExplorerProvider.settings());
 
-    // Demo: Find all reference
+    // Refister find all reference
     context.subscriptions.push(
         vscode.languages.registerReferenceProvider(
             "xml", new ReferenceProvider()));
 
-    // Demo: register go to definiton provider
+    // Register go to definiton provider
     context.subscriptions.push(
         vscode.languages.registerDefinitionProvider([
             { language: 'xml', scheme: 'file', pattern: '**/*xml*' }
         ],
             new GoDefinitionProvider()));
 
-    // Demo: register find all references
+    // Register find all references
     context.subscriptions.push(
         vscode.languages.registerReferenceProvider([
             { language: 'xml', scheme: 'file', pattern: '**/*xml*' }
         ],
             new ReferenceProvider()));
 
-    // Demo: register the hover provider
+    // Register the hover provider
     context.subscriptions.push(
         vscode.languages.registerHoverProvider([
             { language: 'xml', scheme: 'file', pattern: '**/*xml*' }
         ],
-            new HoverProvider()));
+            new HoverProvider()
+        ));
 
+    // Register the autocomplete provider
+    context.subscriptions.push(
+        vscode.languages.registerCompletionItemProvider(
+            [
+                { language: 'xml', scheme: 'file', pattern: '**/*xml*' }
+            ],
+            new CompletionProvider(),
+            '{'
+        ));
 
     // Add Claim Type command
     context.subscriptions.push(vscode.commands.registerCommand('extension.insertClaimType', () => InsertCommands.InsertClaimType()));
@@ -76,10 +87,10 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Policy build
     context.subscriptions.push(vscode.commands.registerCommand('extension.policy.build', () => PolicBuild.Build()));
-    
+
     // Smart copy
     context.subscriptions.push(vscode.commands.registerCommand('extension.policy.smartCopy', () => SmartCopy.Copy()));
-    
+
     // Smart paste
     context.subscriptions.push(vscode.commands.registerCommand('extension.policy.smartPaste', () => SmartCopy.Paste()));
 }
