@@ -13,7 +13,7 @@ To start working with your custom policy. Open you Visual Studio Code, and open 
 # Azure AD B2C Custom policy Features
 
 ## Autocomplete 
-With autocomplete feature, you can save your time customizing a B2C policy. B2C extension provides you the list of policy settings, claims, technical profiles, and claims transformation aggregated from your policy files. Select one of the following attributes and click **ctrl+space** (cmd+space), or start typing an XML element `<` or an attribute:
+With autocomplete feature, you can save your time customizing a B2C policy. B2C extension provides you the list of policy settings, claims, technical profiles, and claims transformation aggregated from your policy files. Select one of the following attributes and click **ctrl+space** (cmd+space), or start:
 
 
 ![Autocomplete](media/autocomplete-new.png) 
@@ -94,6 +94,9 @@ The configuration `appsettings.json` file contains the keys with their values fo
 - **PolicySettings** contains a collection of key-value pair with your settings. In the policy file, use the format of **Settings:** and the key name, for example `{Settings:FacebookAppId}`.
 
 
+To build your policy. Type `Ctrl+Shift+P`, which brings up the Command Palette. From here, type `B2C` and select **B2C Policy Build**. You have access to all of the B2C functionality of VS Code, including keyboard shortcuts `Ctrl+Shift+5`.
+
+![policy build](media/policy-build.png)
 
 On the first time, you run the **B2C Policy build** command, the VS code extension lets you create the  `appsettings.json` file, with default set of environments, keys, and values:
 
