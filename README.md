@@ -94,7 +94,7 @@ The configuration `appsettings.json` file contains the keys with their values fo
 - **PolicySettings** contains a collection of key-value pair with your settings. In the policy file, use the format of **Settings:** and the key name, for example `{Settings:FacebookAppId}`.
 
 
-To build your policy. Type `Ctrl+Shift+P`, which brings up the Command Palette. From here, type `B2C` and select **B2C Policy Build**. You have access to all of the B2C functionality of VS Code, including keyboard shortcuts `Ctrl+Shift+5`.
+To build your policy, type `Ctrl+Shift+P`, which brings up the Command Palette. From here, type `B2C` and select **B2C Policy Build**. You have access to all of the B2C functionality of VS Code, including keyboard shortcuts `Ctrl+Shift+5`.
 
 ![policy build](media/policy-build.png)
 
