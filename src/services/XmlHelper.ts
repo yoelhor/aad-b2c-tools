@@ -4,6 +4,7 @@ import * as vscode from 'vscode';
 import { FileData } from "../ReferenceProvider";
 const DOMParser = require('xmldom').DOMParser;
 import fs = require('fs');
+import { TextDocument, Position, Range } from "vscode";
 
 export default class XmlHelper {
     static GetSelectedWordData(
@@ -170,7 +171,7 @@ export default class XmlHelper {
         return (index >= 0 && index < 15);
     }
 
-    public static IsInNodeAndCloseToAttribute(attributeName: string, nodeName: string, line: string, position: vscode.Position): boolean {
+    public static IsInNodeAndCloseToAttribute(nodeName: string, attributeName: string, line: string, position: vscode.Position): boolean {
 
         return (XmlHelper.IsCloseToAttribute(attributeName, line, position) &&
             (line.toLowerCase().indexOf(nodeName.toLowerCase()) > 0) &&
@@ -198,6 +199,166 @@ export default class XmlHelper {
         }
 
         return items;
+    }
+
+    public static IsStartOfOpeningElement(document: TextDocument, position: Position): boolean {
+        return XmlHelper.IsTextBeforeTypedWordEqualTo(document, position, '<');
+    }
+
+    public static IsStartOfClosingElement(document: TextDocument, position: Position): boolean {
+        return XmlHelper.IsTextBeforeTypedWordEqualTo(document, position, '</');
+    }
+
+    public static IsEndOfElement(document: TextDocument, position: Position): boolean {
+        return XmlHelper.IsTextBeforeTypedWordEqualTo(document, position, '>');
+    }
+
+    public static IsTextBeforeTypedWordEqualTo(document: TextDocument, position: Position, textToMatch: string) {
+        let wordRange = document.getWordRangeAtPosition(position);
+        let wordStart = wordRange ? wordRange.start : position;
+        if (wordStart.character < textToMatch.length) {
+            // Not enough room to match
+            return false;
+        }
+        let charBeforeWord = document.getText(new Range(new Position(wordStart.line, wordStart.character - textToMatch.length), wordStart));
+        return charBeforeWord === textToMatch;
+    }
+
+    public static IsNodeClosed(document: TextDocument, position: Position) {
+        let wordRange = document.getWordRangeAtPosition(position);
+        let wordStart = wordRange ? wordRange.start : position;
+
+        let charAfterWord = document.getText(new Range(new Position(wordStart.line, wordStart.character + 1), wordStart));
+        return charAfterWord === '>';
+    }
+
+    public static IsStartOfAttribute(document: TextDocument, position: Position): boolean {
+        let wordRange = document.getWordRangeAtPosition(position);
+        let wordStart = wordRange ? wordRange.start : position;
+        let text = document.getText();
+        return XmlHelper.IsTextBeforeTypedWordEqualTo(document, position, ' ') &&
+            text.lastIndexOf('<', document.offsetAt(wordStart)) > text.lastIndexOf('>', document.offsetAt(wordStart) - 1);
+    }
+
+    // Check if the cursor is about complete the value of an attribute.
+    public static IsStartOfAttributeValue(document: TextDocument, position: Position): boolean {
+        let wordRange = document.getWordRangeAtPosition(position);
+        let wordStart = wordRange ? wordRange.start : position;
+        let wordEnd = wordRange ? wordRange.end : position;
+        if (wordStart.character === 0 || wordEnd.character > document.lineAt(wordEnd.line).text.length - 1) {
+            return false;
+        }
+        // TODO: This detection is very limited, only if the char before the word is ' or "
+        let rangeBefore = new Range(wordStart.line, wordStart.character - 1, wordStart.line, wordStart.character);
+        if (document.getText(rangeBefore).match(/'|"/)) {
+            return true;
+        }
+        return false;
+    }
+
+    public static GetCloseAttributeName(document: TextDocument, position: Position): string | any {
+
+        // Get the attribute name
+        let wordRange = document.getWordRangeAtPosition(position);
+        let wordStart = wordRange ? wordRange.start : position;
+        let line = document.getText(new Range(wordStart.line, 0, wordStart.line, wordStart.character));
+        let attrNamePattern = /[\.\-:_a-zA-Z0-9]+=/g;
+        let match = line.match(attrNamePattern);
+        if (match) {
+            let attrName = match.reverse()[0];
+            attrName = attrName.slice(0, -1);
+
+            return attrName;
+        }
+    }
+    // Get the full XPath to the current tag.
+    public static GetXPath(document: TextDocument, position: Position): string[] {
+        // For every row, checks if it's an open, close, or autoopenclose tag and
+        // update a list of all the open tags.
+        //{row, column} = bufferPosition
+        let xpath: string[] = [];
+        let skipList: string[] = [];
+        let waitingStartTag = false;
+        let waitingStartComment = false;
+
+        // This will catch:
+        // * Start tags: <tagName
+        // * End tags: </tagName
+        // * Auto close tags: />
+        let startTagPattern = '<\s*[\\.\\-:_a-zA-Z0-9]+';
+        let endTagPattern = '<\\/\s*[\\.\\-:_a-zA-Z0-9]+';
+        let autoClosePattern = '\\/>';
+        let startCommentPattern = '\s*<!--';
+        let endCommentPattern = '\s*-->';
+        let fullPattern = new RegExp("(" +
+            startTagPattern + "|" + endTagPattern + "|" + autoClosePattern + "|" +
+            startCommentPattern + "|" + endCommentPattern + ")", "g");
+
+        // For the first line read, excluding the word the cursor is over
+        let wordRange = document.getWordRangeAtPosition(position);
+        let wordStart = wordRange ? wordRange.start : position;
+        let line = document.getText(new Range(position.line, 0, position.line, wordStart.character));
+        let row = position.line;
+
+        while (row >= 0) { //and (!maxDepth or xpath.length < maxDepth)
+            row--;
+
+            // Apply the regex expression, read from right to left.
+            let matches = line.match(fullPattern);
+            if (matches) {
+                matches.reverse();
+
+                for (let i = 0; i < matches.length; i++) {
+                    let match = matches[i];
+                    let tagName;
+
+                    // Start comment
+                    if (match === "<!--") {
+                        waitingStartComment = false;
+                    }
+                    // End comment
+                    else if (match === "-->") {
+                        waitingStartComment = true;
+                    }
+                    // Omit comment content
+                    else if (waitingStartComment) {
+                        continue;
+                    }
+                    // Auto tag close
+                    else if (match === "/>") {
+                        waitingStartTag = true;
+                    }
+                    // End tag
+                    else if (match[0] === "<" && match[1] === "/") {
+                        skipList.push(match.slice(2));
+                    }
+                    // This should be a start tag
+                    else if (match[0] === "<" && waitingStartTag) {
+                        waitingStartTag = false;
+                    } else if (match[0] == "<") {
+                        tagName = match.slice(1);
+                        // Omit XML definition.
+                        if (tagName === "?xml") {
+                            continue;
+                        }
+
+                        let idx = skipList.lastIndexOf(tagName);
+                        if (idx != -1) {
+                            skipList.splice(idx, 1);
+                        } else {
+                            xpath.push(tagName);
+                        }
+                    }
+                };
+            }
+
+            // Get next line
+            if (row >= 0) {
+                line = document.lineAt(row).text;
+            }
+        }
+
+        return xpath.reverse();
     }
 }
 

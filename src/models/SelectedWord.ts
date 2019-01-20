@@ -22,6 +22,12 @@ export class SelectedWord {
 			return new SelectedWordXmlElement();
 	}
 
+	public GetSelectedGrandParentElement() {
+		if (this.Parents.length >= 3)
+			return this.Parents[2];
+		else
+			return new SelectedWordXmlElement();
+	}
 	public GetFirstElementWithId() {
 		for (let entry of this.Parents) {
 			if (entry.ElementID && entry.ElementID != "")

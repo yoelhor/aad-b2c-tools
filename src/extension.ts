@@ -70,7 +70,7 @@ export function activate(context: vscode.ExtensionContext) {
                 { language: 'xml', scheme: 'file', pattern: '**/*xml*' }
             ],
             new CompletionProvider(),
-            '{'
+            '{', '<', '/', '>', ' ', '"', "'"
         ));
 
     // Add Claim Type command

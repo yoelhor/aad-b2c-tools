@@ -211,9 +211,10 @@
         "@types/mocha": "^5.2.5"
     },
     "dependencies": {
+        "clipboardy": "^1.2.3",
+        "request": "^2.88.0",
         "vscode": "^1.1.26",
         "xmldom": "^0.1.27",
-        "request": "^2.88.0",
-        "clipboardy": "^1.2.3"
+        "xpath": "0.0.27"
     }
 }

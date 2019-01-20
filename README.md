@@ -13,17 +13,8 @@ To start working with your custom policy. Open you Visual Studio Code, and open 
 # Azure AD B2C Custom policy Features
 
 ## Autocomplete 
-With autocomplete feature, you can save your time customizing a B2C policy. B2C extension provides you the list of policy settings, claims, technical profiles, and claims transformation aggregated from your policy files. Select one of the following attributes and click **ctrl+space** (cmd+space):
+With autocomplete feature, you can save your time customizing a B2C policy. B2C extension provides you the list of policy settings, claims, technical profiles, and claims transformation aggregated from your policy files. Select one of the following attributes and click **ctrl+space** (cmd+space), or start typing an XML element `<` or an attribute:
 
-- ClaimTypeReferenceId. Or ReferenceId in the following XML elements: InputClaimsTransformation and OutputClaimsTransformation, list the claim types
-
-- ReferenceId in the following XML elements: InputClaimsTransformation and OutputClaimsTransformation, list the claims transformations
-
-- TechnicalProfileReferenceId. Or ReferenceId in the following XML elements: ValidationTechnicalProfile, IncludeTechnicalProfile, and UseTechnicalProfileForSessionManagement, lists the technical profiles
-
-- DefaultValue in following XML elements: InputClaim and OutputClaim, lists the [claim resolvers](https://docs.microsoft.com/en-us/azure/active-directory-b2c/claim-resolver-overview)
- 
- To get the list of your [policy settings](#Policy-Settings) type the curly brackets `{` anywhere in your policy.
 
 ![Autocomplete](media/autocomplete-new.png) 
 
