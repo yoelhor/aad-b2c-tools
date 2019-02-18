@@ -132,7 +132,7 @@ export default class CustomPolicyExplorerProvider implements vscode.TreeDataProv
 							var nsAttr = this.xmlDoc.getElementById(entry);
 
 							// Add the element to the list
-							keys.push(nsAttr.tagName + "|" + nsAttr.getAttribute("id") + "|" + nsAttr.lineNumber + "|" + nsAttr.columnNumber);
+							keys.push(nsAttr.nodeName + "|" + nsAttr.getAttribute("id") + "|" + nsAttr.lineNumber + "|" + nsAttr.columnNumber);
 						}
 					}
 

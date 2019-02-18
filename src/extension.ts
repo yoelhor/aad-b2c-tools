@@ -13,6 +13,7 @@ import InsertCommands from './InsertCommands';
 import PolicBuild from './PolicyBuild';
 import SmartCopy from './SmartCopy';
 import CompletionProvider from './CompletionProvider';
+import XsdHelper from './services/XsdHelper';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -93,6 +94,9 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Smart paste
     context.subscriptions.push(vscode.commands.registerCommand('extension.policy.smartPaste', () => SmartCopy.Paste()));
+
+    // Load IEF schema
+    XsdHelper.getIefSchema();
 }
 
 // this method is called when your extension is deactivated

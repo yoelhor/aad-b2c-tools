@@ -131,7 +131,7 @@ export default class GoDefinitionProvider implements vscode.DefinitionProvider {
 				// If element found and it's not the same element the user pointing (same file and same line)
 				if (nsAttr != null &&
 					!(file.Uri === document.uri && (nsAttr.lineNumber == position.line || nsAttr.lineNumber - 1 == position.line)) &&
-					!(showAll && nsAttr.tagName == "claimsexchange")) // this element has multiple instances under different user journeys 
+					!(showAll && nsAttr.nodeName == "claimsexchange")) // this element has multiple instances under different user journeys 
 				{
 
 					var location = new vscode.Location(file.Uri, new vscode.Position(nsAttr.lineNumber, nsAttr.columnNumber));

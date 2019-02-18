@@ -1,224 +1,246 @@
 import Consts from "../Consts";
 import { Suggestion } from "../models/Suggestion";
 import xmldom = require('xmldom')
+import { IefSchema } from "../models/IefSchema";
 const DOMParser = require('xmldom').DOMParser;
 
 export default class XsdHelper {
 
     static staticXsdDod = null;
-    static GetSelectedElements(xPathArray: string[], xsdDoc) {
+    static staticIefSchema: Array<IefSchema>;
 
-        if ((!xPathArray) || xPathArray.length == 0) {
+    static GetXpahElement(xpath, xsdDoc, parentElemnt, parentElemntName: string, parentElemntType: string, iefSchema, select) {
+        let element: IefSchema = new IefSchema();
+
+        if (parentElemntName === 'BuildingBlocks') {
+            console.log('BuildingBlocks');
+        }
+
+        //
+        if (parentElemnt === undefined) {
+            console.log("Return");
             return;
         }
 
-        let xpath = require('xpath')
-        let select = xpath.useNamespaces({ "xs": "http://www.w3.org/2001/XMLSchema" });
-        let currentNode;
+        // Get the element path
+        element.Type = 'e';
+        element.Name = parentElemntName;
+        element.parentXpath = xpath;
+        element.xpath = xpath + '/' + element.Name;
 
-        for (let i = 0; i < xPathArray.length; i++) {
-            var nodes;
+        // Check whether element has content
+        element.HasContent = (parentElemntType.startsWith('xs:') || parentElemnt.nodeName === 'xs:simpleType');
 
-            if (i == 0) {
-                // Get the TrustFrameworkPolicy element
-                currentNode = select("//xs:schema/xs:element[@name='TrustFrameworkPolicy']", xsdDoc)[0];
-                continue;
+        // Get the element description
+        let documentation = select("./xs:annotation/xs:documentation", parentElemnt);
+        if (documentation.length > 0) {
+            element.Description = documentation[0].textContent.replace(/\s{2,}/g, '');
+        }
+
+        // Get attributes
+        var attributes
+        if (parentElemnt.nodeName === 'xs:element')
+            attributes = select("./xs:complexType/xs:attribute", parentElemnt);
+        else
+            attributes = select("./xs:attribute|./xs:simpleContent/xs:extension/xs:attribute", parentElemnt);
+
+        for (var i = 0; i < attributes.length; i++) {
+            let attribute: IefSchema = new IefSchema();
+            attribute.Type = 'a';
+            attribute.Name = attributes[i].getAttribute("name");
+            attribute.parentXpath = element.xpath;
+            attribute.xpath = element.xpath + '/' + attribute.Name;
+            iefSchema.push(attribute);
+
+            // Get attribute restrictions
+            if (attributes[i].getAttribute("type").startsWith("tfp:")) {
+                var restrictions = select("//xs:schema/xs:simpleType[@name='" + attributes[i].getAttribute("type").substring(4) + "']/xs:restriction/xs:enumeration", xsdDoc);
+                for (var r = 0; r < restrictions.length; r++) {
+                    let attribute: IefSchema = new IefSchema();
+                    attribute.Type = 'av';
+                    attribute.Name = restrictions[r].getAttribute("value");
+                    attribute.parentXpath = element.xpath;
+                    attribute.xpath = element.xpath + '/' + attribute.Name;
+
+                    let documentation = select("./xs:annotation/xs:documentation", restrictions[r]);
+                    if (documentation.length > 0) {
+                        element.Description = documentation[0].textContent.replace(/\s{2,}/g, '');
+                    }
+                    iefSchema.push(attribute);
+                }
             }
+            else if(attributes[i].getAttribute("type") === 'xs:boolean')
+            {
+                let attribute1: IefSchema = new IefSchema();
+                attribute1.Type = 'av';
+                attribute1.Name = 'false';
+                attribute1.parentXpath = element.xpath;
+                attribute1.xpath = element.xpath + '/' + attribute.Name;
+                iefSchema.push(attribute1);
 
-            if (currentNode) {
-                // Find the child node
-                nodes = select(".//xs:element[@name='" + xPathArray[i] + "']", currentNode);
-                if (nodes.length == 1) currentNode = nodes[0];
-            }
-
-            // Check if an xml element found. If yes, check whether it has a reference to complex type
-            if (currentNode && currentNode.getAttribute("type").startsWith("tfp:")) {
-
-                let complexTypeName = currentNode.getAttribute("type").substring(4)
-
-                // Find the complex type in the XSD document
-                nodes = select("//xs:schema/xs:complexType[@name='" + complexTypeName + "']", xsdDoc);
-
-                if (nodes.length == 1) currentNode = nodes[0];
+                let attribute2: IefSchema = new IefSchema();
+                attribute2.Type = 'av';
+                attribute2.Name = 'true';
+                attribute2.parentXpath = element.xpath;
+                attribute2.xpath = element.xpath + '/' + attribute.Name;
+                iefSchema.push(attribute2);
             }
 
         }
 
-        return currentNode;
+        // Get attribute restrictions
+        if (parentElemnt.nodeName === 'xs:simpleType') {
+            var restrictions = select("./xs:restriction/xs:enumeration", parentElemnt);
+            for (var i = 0; i < restrictions.length; i++) {
+                let attribute: IefSchema = new IefSchema();
+                attribute.Type = 'av';
+                attribute.Name = restrictions[i].getAttribute("value");
+                attribute.parentXpath = element.xpath;
+                attribute.xpath = element.xpath + '/' + attribute.Name;
+
+                let documentation = select("./xs:annotation/xs:documentation", restrictions[i]);
+                if (documentation.length > 0) {
+                    element.Description = documentation[0].textContent.replace(/\s{2,}/g, '');
+                }
+                iefSchema.push(attribute);
+            }
+        }
+        // Get parent element's children
+        var children
+        if (parentElemnt.nodeName === 'xs:element')
+            children = select("./xs:complexType/xs:sequence/xs:element|./xs:complexType/xs:choice/xs:element", parentElemnt);
+        else
+            children = select("./xs:sequence/xs:element|./xs:choice/xs:element", parentElemnt);
+
+        for (var i = 0; i < children.length; i++) {
+
+            if (children[i].getAttribute("type").startsWith("tfp:")) {
+
+                // Get the complex type
+                var realElement = select("//xs:schema/xs:complexType[@name='" + children[i].getAttribute("type").substring(4) + "']", xsdDoc);
+                if (realElement.length > 0)
+                    XsdHelper.GetXpahElement(element.xpath, xsdDoc, realElement[0], children[i].getAttribute("name"), children[i].getAttribute("type"), iefSchema, select)
+                else {
+                    // If not found get the simple type
+                    realElement = select("//xs:schema/xs:simpleType[@name='" + children[i].getAttribute("type").substring(4) + "']", xsdDoc);
+                    if (realElement.length > 0)
+                        XsdHelper.GetXpahElement(element.xpath, xsdDoc, realElement[0], children[i].getAttribute("name"), children[i].getAttribute("type"), iefSchema, select)
+                }
+            }
+            else {
+                XsdHelper.GetXpahElement(element.xpath, xsdDoc, children[i], children[i].getAttribute("name"), children[i].getAttribute("type"), iefSchema, select)
+            }
+        }
+
+        iefSchema.push(element);
+
+        return null;
     }
+
     static GetSubElements(xPathArray: string[]): Suggestion[] | any {
 
-        // Load the XML file    
-        var xsdDoc = XsdHelper.getXsdDocument();
-
         if ((!xPathArray) || xPathArray.length == 0) {
             return;
         }
 
-        let xpath = require('xpath')
-        let select = xpath.useNamespaces({ "xs": "http://www.w3.org/2001/XMLSchema" });
-
-        let currentNode = XsdHelper.GetSelectedElements(xPathArray, xsdDoc);
-        let xpathQuery = currentNode.localName === 'complexType' ? "./xs:sequence/xs:element" : "./xs:complexType/xs:sequence/xs:element";
-
-
-        let nodes = select(xpathQuery, currentNode);
-
-
-        if ((!nodes) || nodes.length == 0) return;
-
-        let elements: Suggestion[] = [];
-        for (var i = 0; i < nodes.length; i++) {
-            let suggestion: Suggestion = new Suggestion();
-            suggestion.InsertText = nodes[i].getAttribute("name");
-
-            // Check if an xml element found. If yes, check whether it has a reference to complex type
-            let documentationLookupList, childrenLookupList;
-
-            if (nodes[i] && nodes[i].getAttribute("type").startsWith("xs:")) {
-                suggestion.HasContent = true;
-            }
-
-            if (nodes[i] && nodes[i].getAttribute("type").startsWith("tfp:")) {
-
-                let complexTypeName = nodes[i].getAttribute("type").substring(4)
-
-                // Find the complex type documentation and children in the XSD document 
-                documentationLookupList = select("//xs:schema/xs:complexType[@name='" + complexTypeName + "']/xs:annotation/xs:documentation[text()]|//xs:schema/xs:simpleType[@name='" + complexTypeName + "']/xs:annotation/xs:documentation[text()]", xsdDoc);
-                childrenLookupList = select("//xs:schema/xs:complexType[@name='" + complexTypeName + "']/xs:sequence/xs:element", xsdDoc);
-
-                suggestion.HasContent = ((select("//xs:schema/xs:simpleType[@name='" + complexTypeName + "']|//xs:schema/xs:complexType[@name='" + complexTypeName + "']/xs:simpleContent", nodes[i]).length == 1));
-
-            }
-            else if (nodes[i]) {
-                // Find the complex type documentation and children inside the element 
-                documentationLookupList = select("./xs:annotation/xs:documentation[text()]|./xs:complexType/xs:annotation/xs:documentation[text()]", nodes[i]);
-                childrenLookupList = select("./xs:complexType/xs:sequence/xs:element", nodes[i]);
-            }
-
-            // If documentation found (inside the element or in a complex type), add the documentation 
-            if (documentationLookupList.length == 1) {
-                suggestion.Help = documentationLookupList[0].textContent.replace(/\s{2,}/g, '');
-            }
-
-            // If documentation found (inside the element or in a complex type), check whether the element has children 
-            suggestion.HasChildren = childrenLookupList && childrenLookupList.length > 0;
-
-            elements.push(suggestion)
+        let xPathString = '';
+        for (let i = 0; i < xPathArray.length; i++) {
+            xPathString += '/' + xPathArray[i];
         }
 
-        return elements;
+        let suggestions: Suggestion[] = [];
+        let IefSchema: Array<IefSchema> = XsdHelper.getIefSchema();
+        let selectedElements = IefSchema.filter((iefSchema: IefSchema) => iefSchema.Type === 'e' && iefSchema.parentXpath === xPathString)
+        for (var i = 0; i < selectedElements.length; i++) {
+            let suggestion: Suggestion = new Suggestion();
+            suggestion.InsertText = selectedElements[i].Name;
+            suggestion.Help = selectedElements[i].Description;
+            suggestion.HasChildren = (IefSchema.filter((iefSchema: IefSchema) => iefSchema.Type === 'e' && iefSchema.parentXpath === selectedElements[i].xpath).length > 0);
+            suggestion.HasContent = selectedElements[i].HasContent;
+            suggestions.push(suggestion)
+        }
+        return suggestions;
     }
 
 
     static GetAttributes(xPathArray: string[]): Suggestion[] | any {
 
-        // Load the XML file    
-        var xsdDoc = XsdHelper.getXsdDocument();
-
         if ((!xPathArray) || xPathArray.length == 0) {
             return;
         }
 
-        let xpath = require('xpath')
-        let select = xpath.useNamespaces({ "xs": "http://www.w3.org/2001/XMLSchema" });
-
-        let currentNode = XsdHelper.GetSelectedElements(xPathArray, xsdDoc);
-        let nodes = select("./xs:attribute|./xs:complexType/xs:attribute|./xs:simpleContent/xs:extension/xs:attribute", currentNode);
-
-
-        if ((!nodes) || nodes.length == 0) return;
-
-        let attributes: Suggestion[] = [];
-        for (var i = 0; i < nodes.length; i++) {
-            let suggestion: Suggestion = new Suggestion();
-            suggestion.InsertText = nodes[i].getAttribute("name");
-
-            // Find the attribute documentation inside the element 
-            let documentationLookupList;
-
-            if (nodes[i] && nodes[i].getAttribute("type").startsWith("tfp:")) {
-
-                let complexTypeName = nodes[i].getAttribute("type").substring(4)
-
-                // Find the simple type documentation and children in the XSD document 
-                documentationLookupList = select("//xs:schema/xs:simpleType[@name='" + complexTypeName + "']/xs:annotation/xs:documentation[text()]|//xs:schema/xs:simpleType[@name='" + complexTypeName + "']/xs:annotation/xs:documentation[text()]", xsdDoc);
-
-            }
-            else if (nodes[i]) {
-                // Find the simple type documentation and children inside the element 
-                documentationLookupList = select("./xs:annotation/xs:documentation[text()]", nodes[i]);
-            }
-
-            // If documentation found, add the documentation 
-            if (documentationLookupList.length == 1) {
-                suggestion.Help = documentationLookupList[0].textContent.replace(/\s{2,}/g, '');
-            }
-
-            attributes.push(suggestion)
+        let xPathString = '';
+        for (let i = 0; i < xPathArray.length; i++) {
+            xPathString += '/' + xPathArray[i];
         }
 
-        return attributes;
+        let suggestions: Suggestion[] = [];
+        let IefSchema: Array<IefSchema> = XsdHelper.getIefSchema();
+        let selectedElements = IefSchema.filter((iefSchema: IefSchema) => iefSchema.Type === 'a' && iefSchema.parentXpath === xPathString)
+        for (var i = 0; i < selectedElements.length; i++) {
+            let suggestion: Suggestion = new Suggestion();
+            suggestion.InsertText = selectedElements[i].Name;
+            suggestion.Help = selectedElements[i].Description;
+            suggestions.push(suggestion)
+        }
+        return suggestions;
     }
+
 
     public static GetAttributeValues(xPathArray: string[], attributeName: string): Suggestion[] | any {
 
-        // Load the XML file    
-        var xsdDoc = XsdHelper.getXsdDocument();
-
         if ((!xPathArray) || xPathArray.length == 0) {
             return;
         }
 
-        let xpath = require('xpath')
-        let select = xpath.useNamespaces({ "xs": "http://www.w3.org/2001/XMLSchema" });
-
-        let currentNode = XsdHelper.GetSelectedElements(xPathArray, xsdDoc);
-        let nodes = select("./xs:complexType/xs:attribute[@name='" + attributeName + "']|./xs:simpleContent/xs:extension/xs:attribute[@name='" + attributeName + "']", currentNode);
-
-
-        if ((!nodes) || nodes.length == 0) return;
-
-        var node = nodes[0];
-
-        let attributes: Suggestion[] = [];
-
-        if (node && node.getAttribute("type") === "xs:boolean") {
-            // Add true or false options
-            let suggestionFalse: Suggestion = new Suggestion();
-            suggestionFalse.InsertText = 'false';
-            attributes.push(suggestionFalse);
-
-            let suggestionTrue: Suggestion = new Suggestion();
-            suggestionTrue.InsertText = 'true';
-            attributes.push(suggestionTrue);
-
-        }
-        else if (node && node.getAttribute("type").startsWith("tfp:")) {
-            let complexTypeName = node.getAttribute("type").substring(4)
-
-            // Find the complex type in the XSD document
-            nodes = select("//xs:schema/xs:simpleType[@name='" + complexTypeName + "']/xs:restriction/xs:enumeration", xsdDoc);
-
-            for (var i = 0; i < nodes.length; i++) {
-                let suggestion: Suggestion = new Suggestion();
-                suggestion.InsertText = nodes[i].getAttribute("value");
-                attributes.push(suggestion);
-            }
+        let xPathString = '';
+        for (let i = 0; i < xPathArray.length; i++) {
+            xPathString += '/' + xPathArray[i];
         }
 
-        return attributes;
+        let suggestions: Suggestion[] = [];
+        let IefSchema: Array<IefSchema> = XsdHelper.getIefSchema();
+        let selectedElements = IefSchema.filter((iefSchema: IefSchema) => iefSchema.Type === 'av' && iefSchema.parentXpath === xPathString)
+        for (var i = 0; i < selectedElements.length; i++) {
+            let suggestion: Suggestion = new Suggestion();
+            suggestion.InsertText = selectedElements[i].Name;
+            suggestion.Help = selectedElements[i].Description;
+            suggestions.push(suggestion)
+        }
+        return suggestions;
     }
 
 
-    private static getXsdDocument(): xmldom.Document {
+    public static getXsdDocument(): xmldom.Document {
 
-        if (!XsdHelper.staticXsdDod)
-        {
+        if (!XsdHelper.staticXsdDod) {
             var c = new DOMParser().parseFromString(Consts.IEF_Schema);
             XsdHelper.staticXsdDod = c
         }
 
         return XsdHelper.staticXsdDod;
+    }
+
+    public static getIefSchema(): Array<IefSchema> {
+
+        if ((!XsdHelper.staticIefSchema) || XsdHelper.staticIefSchema.length == 0) {
+            // Load the XML file    
+            var xsdDoc = XsdHelper.getXsdDocument();
+
+            let xpath = require('xpath')
+            let select = xpath.useNamespaces({ "xs": "http://www.w3.org/2001/XMLSchema" });
+
+            let TrustFrameworkPolicy = select("//xs:schema/xs:element[@name='TrustFrameworkPolicy']", xsdDoc)[0];
+
+            XsdHelper.staticIefSchema = new Array<IefSchema>();
+            XsdHelper.GetXpahElement('',
+                xsdDoc, TrustFrameworkPolicy,
+                TrustFrameworkPolicy.getAttribute("name"),
+                TrustFrameworkPolicy.getAttribute("type"),
+                XsdHelper.staticIefSchema,
+                select);
+        }
+
+        return XsdHelper.staticIefSchema;
     }
 }

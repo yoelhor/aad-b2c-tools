@@ -213,6 +213,10 @@ export default class XmlHelper {
         return XmlHelper.IsTextBeforeTypedWordEqualTo(document, position, '>');
     }
 
+    public static IsCurlyBrackets(document: TextDocument, position: Position): boolean {
+        return XmlHelper.IsTextBeforeTypedWordEqualTo(document, position, '{');
+    }
+    
     public static IsTextBeforeTypedWordEqualTo(document: TextDocument, position: Position, textToMatch: string) {
         let wordRange = document.getWordRangeAtPosition(position);
         let wordStart = wordRange ? wordRange.start : position;

@@ -16,9 +16,24 @@ export default class CompletionProvider implements vscode.CompletionItemProvider
     async GetItems(document: vscode.TextDocument, position: vscode.Position) {
         let linePrefix = document.lineAt(position).text.substr(0, position.character);
 
+        if (XmlHelper.IsCurlyBrackets(document, position)) {
+
+            let list: string[] = PolicBuild.GetAllSettings();
+
+            // Sort the array
+            list.sort();
+
+            let completionItems: vscode.CompletionItem[] = [];
+
+            list.forEach(function (value) {
+                completionItems.push(new vscode.CompletionItem(value.substr(1), vscode.CompletionItemKind.Field));
+            });
+
+            return completionItems;
+        }
         // Check whether the user is closing an open xml element, by typing the > character.
         // If yes suggest the closing xml element
-        if (XmlHelper.IsEndOfElement(document, position) || XmlHelper.IsStartOfClosingElement(document, position)) {
+        else if (XmlHelper.IsEndOfElement(document, position) || XmlHelper.IsStartOfClosingElement(document, position)) {
             let xPath = XmlHelper.GetXPath(document, position);
 
             if (xPath.length >= 1) {
@@ -27,6 +42,21 @@ export default class CompletionProvider implements vscode.CompletionItemProvider
                 suggestion.insertText = XmlHelper.IsStartOfClosingElement(document, position) ? xPath[xPath.length - 1] + '>' : '</' + xPath[xPath.length - 1] + '>';
 
                 completionItems.push(suggestion);
+
+                // Get the element body suggestion
+                let attributeName = XmlHelper.GetCloseAttributeName(document, position)
+                let values: Suggestion[] = XsdHelper.GetAttributeValues(xPath, attributeName);
+
+                if (values && values.length > 0) {
+                    values.sort();
+
+                    // Add the attribute' values
+                    values.forEach(function (value) {
+
+                        let suggestion = new vscode.CompletionItem(value.InsertText, vscode.CompletionItemKind.Field);
+                        completionItems.push(suggestion);
+                    });
+                }
                 return completionItems;
             }
         }
@@ -134,12 +164,12 @@ export default class CompletionProvider implements vscode.CompletionItemProvider
                 selectedWord = XmlHelper.GetSelectedWordData(selectedWord, position, document);
                 let completionItems: vscode.CompletionItem[] = [];
                 let items = Consts.TP_Metadata.filter(item => item.Protocol === selectedWord.GetSelectedGrandParentElement().ElementType)
-                
+
                 items.sort((a, b) => a.Key.localeCompare(b.Key))
                     .forEach(function (value) {
                         completionItems.push(new vscode.CompletionItem(value.Key, vscode.CompletionItemKind.Field));
                     }
-                );
+                    );
 
                 return completionItems;
             }

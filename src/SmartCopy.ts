@@ -36,7 +36,7 @@ export default class SmartCopy {
                     nodeToBeAdded = nodeToBeAdded.parentNode;
 
                     // Don't add the Azure AD B2C root element
-                    if (nodeToBeAdded.tagName === "TrustFrameworkPolicy")
+                    if (nodeToBeAdded.nodeName === "TrustFrameworkPolicy")
                         break;
                 }
 
@@ -59,7 +59,7 @@ export default class SmartCopy {
                     else {
 
                         // Add the element to the new XML document
-                        var newElement = docToBeAdded.createElement(nodeListToBeAdded[iNode].tagName);
+                        var newElement = docToBeAdded.createElement(nodeListToBeAdded[iNode].nodeName);
 
                         // Add the element's attributes
                         for (var iAtt = 0; iAtt < nodeListToBeAdded[iNode].attributes.length; iAtt++) {
@@ -69,7 +69,7 @@ export default class SmartCopy {
                         }
 
                         // For ClaimsProvider, add the dispaly name element
-                        if (nodeListToBeAdded[iNode].tagName === "ClaimsProvider" && nodeListToBeAdded[iNode].getElementsByTagName("DisplayName").length >= 1) {
+                        if (nodeListToBeAdded[iNode].nodeName === "ClaimsProvider" && nodeListToBeAdded[iNode].getElementsByTagName("DisplayName").length >= 1) {
                             for (var iDisplayNameElement = 0; iDisplayNameElement < nodeListToBeAdded[iNode].childNodes.length; iDisplayNameElement++) {
 
                                 // Find the DisplayName child node
